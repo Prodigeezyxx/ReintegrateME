@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 39 100% 50%; /* Orange color for ReME app */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -30,25 +31,9 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 39 100% 50%; /* Orange ring color */
 
     --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -61,7 +46,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 39 100% 50%; /* Orange color for ReME app */
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -78,15 +63,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --ring: 39 100% 50%; /* Orange ring color */
   }
 }
 
@@ -97,5 +74,136 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+@layer components {
+  .ios-card {
+    @apply bg-white shadow-lg rounded-xl overflow-hidden transform transition-all duration-300 ease-out;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .ios-button {
+    @apply bg-reme-orange text-white font-medium py-3 px-6 rounded-full shadow-md active:scale-95 transition-all duration-150;
+  }
+  
+  .ios-secondary-button {
+    @apply bg-gray-100 text-gray-800 font-medium py-3 px-6 rounded-full shadow-md active:scale-95 transition-all duration-150;
+  }
+
+  .ios-input {
+    @apply bg-gray-100 border-0 rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-reme-orange focus:ring-opacity-50 transition-all duration-200;
+  }
+
+  .swipe-card-container {
+    @apply relative w-full h-[480px] bg-transparent mx-auto;
+  }
+
+  .swipe-card {
+    @apply absolute inset-0 bg-white rounded-xl shadow-lg overflow-hidden;
+    will-change: transform;
+    touch-action: none;
+  }
+
+  .swipe-action-buttons {
+    @apply flex justify-center gap-4 mt-6;
+  }
+
+  .swipe-button {
+    @apply h-14 w-14 rounded-full flex items-center justify-center shadow-md transition-transform active:scale-90;
+  }
+
+  .like-button {
+    @apply bg-green-500 text-white;
+  }
+
+  .pass-button {
+    @apply bg-red-500 text-white;
+  }
+
+  .super-like-button {
+    @apply bg-blue-500 text-white;
+  }
+
+  .tab-icon {
+    @apply h-6 w-6;
+  }
+
+  .progress-bar {
+    @apply h-1 bg-gray-200 rounded-full overflow-hidden w-full;
+  }
+  
+  .progress-fill {
+    @apply h-full bg-reme-orange transition-all duration-500 ease-out;
+  }
+
+  .match-animation {
+    @apply fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center animate-fade-in;
+  }
+
+  .match-content {
+    @apply bg-white p-8 rounded-2xl text-center max-w-xs mx-auto animate-pulsate;
+  }
+
+  .match-text {
+    @apply text-3xl font-bold text-reme-orange mb-4;
+  }
+}
+
+/* iOS-style switch */
+.ios-switch {
+  position: relative;
+  display: inline-block;
+  width: 51px;
+  height: 31px;
+}
+
+.ios-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ios-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e9e9ea;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.ios-slider:before {
+  position: absolute;
+  content: "";
+  height: 27px;
+  width: 27px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+input:checked + .ios-slider {
+  background-color: #FFA500;
+}
+
+input:checked + .ios-slider:before {
+  transform: translateX(20px);
+}
+
+/* Mobile app container */
+.mobile-container {
+  max-width: 414px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: white;
 }
