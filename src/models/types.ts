@@ -60,6 +60,7 @@ export interface JobPosting {
     max?: number;
     currency?: string;
   };
+  status?: 'active' | 'draft' | 'archived';
   createdAt: Date;
 }
 
