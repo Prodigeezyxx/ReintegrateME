@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,6 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { jobAPI, jobCategories, employmentTypes, skills } from '../../services/api';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ArrowLeft } from 'lucide-react';
+import { JobPosting } from '@/models/types';
 
 const HirerCreateJob = () => {
   const navigate = useNavigate();
@@ -56,11 +56,11 @@ const HirerCreateJob = () => {
     try {
       setIsSubmitting(true);
       
-      // Update job data with selected skills
-      const jobDataWithSkills = {
+      // Update job data with selected skills and explicitly type the status
+      const jobDataWithSkills: Partial<JobPosting> = {
         ...jobData,
         requiredSkills: selectedSkills,
-        status: 'draft'
+        status: 'draft' as const
       };
       
       await jobAPI.createJob(jobDataWithSkills);
@@ -97,11 +97,11 @@ const HirerCreateJob = () => {
     try {
       setIsSubmitting(true);
       
-      // Update job data with selected skills
-      const jobDataWithSkills = {
+      // Update job data with selected skills and explicitly type the status
+      const jobDataWithSkills: Partial<JobPosting> = {
         ...jobData,
         requiredSkills: selectedSkills,
-        status: 'active'
+        status: 'active' as const
       };
       
       await jobAPI.createJob(jobDataWithSkills);
