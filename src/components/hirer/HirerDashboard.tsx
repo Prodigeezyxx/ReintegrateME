@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { seekerAPI, swipeAPI } from '../../services/api';
+import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
 import SwipeableCard from '../SwipeableCard';
 import { Button } from '@/components/ui/button';
@@ -41,7 +41,7 @@ const HirerDashboard = () => {
   const fetchSeekers = async () => {
     try {
       setIsRefreshing(true);
-      const data = await seekerAPI.getSeekersFeed();
+      const data = await jobAPI.getSeekersFeed();
       setSeekers(data);
       setIsLoading(false);
       setIsRefreshing(false);
