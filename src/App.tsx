@@ -14,6 +14,12 @@ import SeekerProfileSetupStep1 from "./components/seeker/SeekerProfileSetupStep1
 import SeekerProfileSetupStep2 from "./components/seeker/SeekerProfileSetupStep2";
 import SeekerProfileSetupStep3 from "./components/seeker/SeekerProfileSetupStep3";
 import HirerDashboard from "./components/hirer/HirerDashboard";
+import HirerDiscover from "./components/hirer/HirerDiscover";
+import HirerJobsList from "./components/hirer/HirerJobsList";
+import HirerCreateJob from "./components/hirer/HirerCreateJob";
+import HirerApplicants from "./components/hirer/HirerApplicants";
+import HirerMessages from "./components/hirer/HirerMessages";
+import HirerChatDetail from "./components/hirer/HirerChatDetail";
 import SeekerDashboard from "./components/seeker/SeekerDashboard";
 import MobileNavbar from "./components/MobileNavbar";
 import { authAPI } from "./services/api";
@@ -38,9 +44,12 @@ const App = () => {
             {/* Hirer Routes */}
             <Route path="/hirer-setup" element={<HirerProfileSetup />} />
             <Route path="/hirer-dashboard" element={<HirerDashboard />} />
-            <Route path="/hirer-discover" element={<HirerDashboard />} />
-            <Route path="/hirer-jobs" element={<Navigate to="/hirer-dashboard" replace />} />
-            <Route path="/hirer-messages" element={<Navigate to="/hirer-dashboard" replace />} />
+            <Route path="/hirer-discover" element={<HirerDiscover />} />
+            <Route path="/hirer-jobs" element={<HirerJobsList />} />
+            <Route path="/hirer-create-job" element={<HirerCreateJob />} />
+            <Route path="/hirer-applicants" element={<HirerApplicants />} />
+            <Route path="/hirer-messages" element={<HirerMessages />} />
+            <Route path="/hirer-messages/:threadId" element={<HirerChatDetail />} />
             <Route path="/hirer-profile" element={<Navigate to="/hirer-dashboard" replace />} />
             
             {/* Seeker Routes */}

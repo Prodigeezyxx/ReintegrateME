@@ -3,6 +3,7 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { UserRole } from '../models/types';
+import { LayoutDashboard, Briefcase, MessageSquare, Users, Search } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -21,47 +22,27 @@ const MobileNavbar = () => {
     {
       label: 'Dashboard',
       path: '/hirer-dashboard',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-      )
+      icon: <LayoutDashboard className="h-5 w-5" />
     },
     {
       label: 'Jobs',
       path: '/hirer-jobs',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      )
+      icon: <Briefcase className="h-5 w-5" />
+    },
+    {
+      label: 'Applicants',
+      path: '/hirer-applicants',
+      icon: <Users className="h-5 w-5" />
     },
     {
       label: 'Discover',
       path: '/hirer-discover',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-      )
+      icon: <Search className="h-5 w-5" />
     },
     {
       label: 'Messages',
       path: '/hirer-messages',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      )
-    },
-    {
-      label: 'Profile',
-      path: '/hirer-profile',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-      )
+      icon: <MessageSquare className="h-5 w-5" />
     }
   ];
   
@@ -69,51 +50,37 @@ const MobileNavbar = () => {
     {
       label: 'Discover',
       path: '/seeker-dashboard',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-      )
+      icon: <Search className="h-5 w-5" />
     },
     {
       label: 'Search',
       path: '/seeker-search',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-        </svg>
-      )
+      icon: <Search className="h-5 w-5" />
     },
     {
       label: 'Applications',
       path: '/seeker-applications',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      )
+      icon: <Briefcase className="h-5 w-5" />
     },
     {
       label: 'Messages',
       path: '/seeker-messages',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      )
+      icon: <MessageSquare className="h-5 w-5" />
     },
     {
       label: 'Profile',
       path: '/seeker-profile',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" className="tab-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      )
+      icon: <Users className="h-5 w-5" />
     }
   ];
   
   const navItems = userRole === 'hirer' ? getHirerNavItems() : getSeekerNavItems();
+  
+  // Don't show navbar on chat detail pages
+  if (location.pathname.includes('/hirer-messages/') || 
+      location.pathname.includes('/seeker-messages/')) {
+    return null;
+  }
   
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
