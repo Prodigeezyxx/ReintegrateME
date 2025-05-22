@@ -2,18 +2,28 @@
 import React from 'react';
 import { SwipeableCardData } from '../models/types';
 import { Button } from '@/components/ui/button';
-import { Heart } from 'lucide-react';
+import { Heart, X } from 'lucide-react';
 
 interface FavoritesBarProps {
   favorites: SwipeableCardData[];
   onFavoriteClick: (favorite: SwipeableCardData) => void;
   onRemoveFavorite: (favorite: SwipeableCardData) => void;
+  title?: string;
 }
 
-const FavoritesBar: React.FC<FavoritesBarProps> = ({ favorites, onFavoriteClick, onRemoveFavorite }) => {
+const FavoritesBar: React.FC<FavoritesBarProps> = ({ 
+  favorites, 
+  onFavoriteClick, 
+  onRemoveFavorite,
+  title = "Favorites"
+}) => {
+  if (favorites.length === 0) {
+    return null;
+  }
+
   return (
     <div className="mb-4">
-      <h2 className="text-lg font-semibold mb-2">Favorites</h2>
+      <h2 className="text-lg font-semibold mb-2">{title}</h2>
       <div className="flex overflow-x-auto gap-3 pb-2 -mx-1 px-1">
         {favorites.map((favorite) => (
           <div
@@ -22,7 +32,7 @@ const FavoritesBar: React.FC<FavoritesBarProps> = ({ favorites, onFavoriteClick,
             style={{ width: '100px' }}
           >
             <div 
-              className="w-full h-24 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden cursor-pointer"
+              className="w-full h-24 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
               onClick={() => onFavoriteClick(favorite)}
             >
               {favorite.primaryImageUrl ? (
@@ -47,7 +57,7 @@ const FavoritesBar: React.FC<FavoritesBarProps> = ({ favorites, onFavoriteClick,
                 onRemoveFavorite(favorite);
               }}
             >
-              <Heart className="h-4 w-4 fill-current text-red-500" />
+              <X className="h-3 w-3 text-gray-600" />
             </Button>
             
             <p className="text-xs font-medium text-center mt-1 truncate">{favorite.titleText}</p>

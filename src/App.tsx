@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
@@ -39,12 +39,19 @@ const App = () => {
             <Route path="/hirer-setup" element={<HirerProfileSetup />} />
             <Route path="/hirer-dashboard" element={<HirerDashboard />} />
             <Route path="/hirer-discover" element={<HirerDashboard />} />
+            <Route path="/hirer-jobs" element={<Navigate to="/hirer-dashboard" replace />} />
+            <Route path="/hirer-messages" element={<Navigate to="/hirer-dashboard" replace />} />
+            <Route path="/hirer-profile" element={<Navigate to="/hirer-dashboard" replace />} />
             
             {/* Seeker Routes */}
             <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
             <Route path="/seeker-setup-step2" element={<SeekerProfileSetupStep2 />} />
             <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
             <Route path="/seeker-dashboard" element={<SeekerDashboard />} />
+            <Route path="/seeker-search" element={<Navigate to="/seeker-dashboard" replace />} />
+            <Route path="/seeker-applications" element={<Navigate to="/seeker-dashboard" replace />} />
+            <Route path="/seeker-messages" element={<Navigate to="/seeker-dashboard" replace />} />
+            <Route path="/seeker-profile" element={<Navigate to="/seeker-dashboard" replace />} />
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />

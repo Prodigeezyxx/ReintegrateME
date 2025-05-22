@@ -6,31 +6,55 @@ import SwipeableCard from '../SwipeableCard';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import MatchAnimation from '../MatchAnimation';
+import FavoritesBar from '../FavoritesBar';
+import SeekerProfileView from '../SeekerProfileView';
+import { RefreshCw } from 'lucide-react';
 
 const SeekerDashboard = () => {
   const [jobs, setJobs] = useState<SwipeableCardData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [showMatch, setShowMatch] = useState(false);
+  const [favorites, setFavorites] = useState<SwipeableCardData[]>([]);
+  const [selectedProfile, setSelectedProfile] = useState<SwipeableCardData | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const data = await jobAPI.getJobsFeed();
-        setJobs(data);
-        setIsLoading(false);
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load job listings",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-      }
-    };
-    
     fetchJobs();
+    
+    // Load favorites from localStorage
+    const savedFavorites = localStorage.getItem('seekerFavorites');
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (error) {
+        console.error('Error parsing favorites from localStorage', error);
+      }
+    }
   }, []);
+  
+  useEffect(() => {
+    // Save favorites to localStorage when updated
+    localStorage.setItem('seekerFavorites', JSON.stringify(favorites));
+  }, [favorites]);
+  
+  const fetchJobs = async () => {
+    try {
+      setIsRefreshing(true);
+      const data = await jobAPI.getJobsFeed();
+      setJobs(data);
+      setIsLoading(false);
+      setIsRefreshing(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load job listings",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
   
   const handleSwipe = async (direction: 'left' | 'right' | 'up') => {
     if (jobs.length === 0 || currentIndex >= jobs.length) return;
@@ -38,7 +62,14 @@ const SeekerDashboard = () => {
     const currentJob = jobs[currentIndex];
     let swipeType: 'like' | 'pass' | 'super_like';
     
-    if (direction === 'right') swipeType = 'like';
+    if (direction === 'right') {
+      swipeType = 'like';
+      
+      // Add to favorites when swiping right
+      if (!favorites.some(fav => fav.id === currentJob.id)) {
+        setFavorites(prev => [...prev, currentJob]);
+      }
+    }
     else if (direction === 'left') swipeType = 'pass';
     else swipeType = 'super_like';
     
@@ -88,6 +119,43 @@ const SeekerDashboard = () => {
         handleSwipe(direction);
       }, 300);
     }
+  };
+  
+  const handleFavoriteProfileClick = (profile: SwipeableCardData) => {
+    setSelectedProfile(profile);
+  };
+  
+  const handleRemoveFavorite = (profile: SwipeableCardData) => {
+    setFavorites(prev => prev.filter(fav => fav.id !== profile.id));
+    toast({
+      title: "Removed from favorites",
+      description: `${profile.titleText} has been removed from your favorites.`,
+    });
+  };
+  
+  const handleToggleFavorite = () => {
+    if (!selectedProfile) return;
+    
+    const isFavorited = favorites.some(fav => fav.id === selectedProfile.id);
+    
+    if (isFavorited) {
+      setFavorites(prev => prev.filter(fav => fav.id !== selectedProfile.id));
+      toast({
+        title: "Removed from favorites",
+        description: `${selectedProfile.titleText} has been removed from your favorites.`,
+      });
+    } else {
+      setFavorites(prev => [...prev, selectedProfile]);
+      toast({
+        title: "Added to favorites",
+        description: `${selectedProfile.titleText} has been added to your favorites.`,
+      });
+    }
+  };
+  
+  const handleRefresh = () => {
+    setCurrentIndex(0);
+    fetchJobs();
   };
   
   const renderCards = () => {
@@ -144,10 +212,41 @@ const SeekerDashboard = () => {
     );
   };
   
+  // If we're showing a specific profile, render the profile view
+  if (selectedProfile) {
+    const isFavorite = favorites.some(fav => fav.id === selectedProfile.id);
+    
+    return (
+      <SeekerProfileView 
+        seeker={selectedProfile}
+        onBackClick={() => setSelectedProfile(null)}
+        isFavorite={isFavorite}
+        onFavoriteToggle={handleToggleFavorite}
+      />
+    );
+  }
+  
   return (
     <div className="mobile-container p-6">
       <div className="flex flex-col min-h-screen">
-        <h1 className="text-2xl font-bold mb-6">Discover Jobs</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Discover Jobs</h1>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="relative"
+          >
+            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
+        
+        <FavoritesBar 
+          favorites={favorites} 
+          onFavoriteClick={handleFavoriteProfileClick}
+          onRemoveFavorite={handleRemoveFavorite}
+        />
         
         <div className="swipe-card-container mb-6">
           {renderCards()}

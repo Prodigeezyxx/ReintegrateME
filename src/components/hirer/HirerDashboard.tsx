@@ -1,16 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { jobAPI, swipeAPI } from '../../services/api';
+import { seekerAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
 import SwipeableCard from '../SwipeableCard';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import MatchAnimation from '../MatchAnimation';
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { ArrowLeft, RefreshCcw, Heart } from 'lucide-react';
-import SeekerProfileView from '../SeekerProfileView';
 import FavoritesBar from '../FavoritesBar';
-import { useNavigate } from 'react-router-dom';
+import SeekerProfileView from '../SeekerProfileView';
+import { RefreshCw } from 'lucide-react';
 
 const HirerDashboard = () => {
   const [seekers, setSeekers] = useState<SwipeableCardData[]>([]);
@@ -18,20 +16,35 @@ const HirerDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showMatch, setShowMatch] = useState(false);
   const [favorites, setFavorites] = useState<SwipeableCardData[]>([]);
+  const [selectedProfile, setSelectedProfile] = useState<SwipeableCardData | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedSeeker, setSelectedSeeker] = useState<SwipeableCardData | null>(null);
-  const navigate = useNavigate();
   
   useEffect(() => {
     fetchSeekers();
+    
+    // Load favorites from localStorage
+    const savedFavorites = localStorage.getItem('hirerFavorites');
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (error) {
+        console.error('Error parsing favorites from localStorage', error);
+      }
+    }
   }, []);
   
+  useEffect(() => {
+    // Save favorites to localStorage when updated
+    localStorage.setItem('hirerFavorites', JSON.stringify(favorites));
+  }, [favorites]);
+  
   const fetchSeekers = async () => {
-    setIsLoading(true);
     try {
-      const data = await jobAPI.getSeekersFeed();
+      setIsRefreshing(true);
+      const data = await seekerAPI.getSeekersFeed();
       setSeekers(data);
       setIsLoading(false);
+      setIsRefreshing(false);
     } catch (error) {
       toast({
         title: "Error",
@@ -39,28 +52,6 @@ const HirerDashboard = () => {
         variant: "destructive"
       });
       setIsLoading(false);
-    }
-  };
-
-  const refreshSeekers = async () => {
-    if (isRefreshing) return;
-    
-    setIsRefreshing(true);
-    try {
-      const data = await jobAPI.getSeekersFeed();
-      setSeekers(data);
-      setCurrentIndex(0);
-      toast({
-        title: "Success",
-        description: "Talent profiles refreshed",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to refresh talent profiles",
-        variant: "destructive"
-      });
-    } finally {
       setIsRefreshing(false);
     }
   };
@@ -71,7 +62,14 @@ const HirerDashboard = () => {
     const currentSeeker = seekers[currentIndex];
     let swipeType: 'like' | 'pass' | 'super_like';
     
-    if (direction === 'right') swipeType = 'like';
+    if (direction === 'right') {
+      swipeType = 'like';
+      
+      // Add to favorites when swiping right
+      if (!favorites.some(fav => fav.id === currentSeeker.id)) {
+        setFavorites(prev => [...prev, currentSeeker]);
+      }
+    }
     else if (direction === 'left') swipeType = 'pass';
     else swipeType = 'super_like';
     
@@ -87,12 +85,6 @@ const HirerDashboard = () => {
         // Hide match animation after 3 seconds
         setTimeout(() => setShowMatch(false), 3000);
       }
-
-      // Add to favorites if liked or super liked
-      if ((direction === 'right' || direction === 'up') && !favorites.some(fav => fav.id === currentSeeker.id)) {
-        setFavorites(prev => [...prev, currentSeeker]);
-      }
-      
     } catch (error) {
       toast({
         title: "Error",
@@ -115,10 +107,8 @@ const HirerDashboard = () => {
       
       if (direction === 'left') {
         card.style.transform = 'translateX(-1000px) rotate(-30deg)';
-        card.classList.add('animate-card-swipe-left');
       } else if (direction === 'right') {
         card.style.transform = 'translateX(1000px) rotate(30deg)';
-        card.classList.add('animate-card-swipe-right');
       } else if (direction === 'up') {
         card.style.transform = 'translateY(-1000px) scale(0.8)';
       }
@@ -128,25 +118,42 @@ const HirerDashboard = () => {
       }, 300);
     }
   };
-
-  const handleCardClick = (card: SwipeableCardData) => {
-    setSelectedSeeker(card);
+  
+  const handleFavoriteProfileClick = (profile: SwipeableCardData) => {
+    setSelectedProfile(profile);
   };
-
-  const handleBackToSwiping = () => {
-    setSelectedSeeker(null);
+  
+  const handleRemoveFavorite = (profile: SwipeableCardData) => {
+    setFavorites(prev => prev.filter(fav => fav.id !== profile.id));
+    toast({
+      title: "Removed from favorites",
+      description: `${profile.titleText} has been removed from your favorites.`,
+    });
   };
-
-  const toggleFavorite = (seeker: SwipeableCardData) => {
-    if (favorites.some(fav => fav.id === seeker.id)) {
-      setFavorites(favorites.filter(fav => fav.id !== seeker.id));
+  
+  const handleToggleFavorite = () => {
+    if (!selectedProfile) return;
+    
+    const isFavorited = favorites.some(fav => fav.id === selectedProfile.id);
+    
+    if (isFavorited) {
+      setFavorites(prev => prev.filter(fav => fav.id !== selectedProfile.id));
+      toast({
+        title: "Removed from favorites",
+        description: `${selectedProfile.titleText} has been removed from your favorites.`,
+      });
     } else {
-      setFavorites([...favorites, seeker]);
+      setFavorites(prev => [...prev, selectedProfile]);
+      toast({
+        title: "Added to favorites",
+        description: `${selectedProfile.titleText} has been added to your favorites.`,
+      });
     }
   };
-
-  const handleBackToHome = () => {
-    navigate('/');
+  
+  const handleRefresh = () => {
+    setCurrentIndex(0);
+    fetchSeekers();
   };
   
   const renderCards = () => {
@@ -168,7 +175,7 @@ const HirerDashboard = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <h3 className="text-xl font-bold mb-2">No profiles found</h3>
+            <h3 className="text-xl font-bold mb-2">No talent found</h3>
             <p className="text-gray-500">We couldn't find any talent profiles matching your criteria.</p>
           </div>
         </div>
@@ -196,23 +203,23 @@ const HirerDashboard = () => {
     }
     
     return (
-      <div onClick={() => handleCardClick(seekers[currentIndex])} className="cursor-pointer">
-        <SwipeableCard
-          card={seekers[currentIndex]}
-          onSwipe={handleSwipe}
-        />
-      </div>
+      <SwipeableCard
+        card={seekers[currentIndex]}
+        onSwipe={handleSwipe}
+      />
     );
   };
-
-  // Return to swiping view if we were viewing a profile
-  if (selectedSeeker) {
+  
+  // If we're showing a specific profile, render the profile view
+  if (selectedProfile) {
+    const isFavorite = favorites.some(fav => fav.id === selectedProfile.id);
+    
     return (
       <SeekerProfileView 
-        seeker={selectedSeeker}
-        onBackClick={handleBackToSwiping}
-        isFavorite={favorites.some(fav => fav.id === selectedSeeker.id)}
-        onFavoriteToggle={() => toggleFavorite(selectedSeeker)}
+        seeker={selectedProfile}
+        onBackClick={() => setSelectedProfile(null)}
+        isFavorite={isFavorite}
+        onFavoriteToggle={handleToggleFavorite}
       />
     );
   }
@@ -221,36 +228,24 @@ const HirerDashboard = () => {
     <div className="mobile-container p-6">
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="mr-2"
-              onClick={handleBackToHome}
-            >
-              <ArrowLeft className="h-6 w-6" />
-            </Button>
-            <h1 className="text-2xl font-bold">Discover Talent</h1>
-          </div>
+          <h1 className="text-2xl font-bold">Discover Talent</h1>
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={refreshSeekers}
+            onClick={handleRefresh}
             disabled={isRefreshing}
+            className="relative"
           >
-            <RefreshCcw className={`h-6 w-6 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
           </Button>
         </div>
-
-        {favorites.length > 0 && (
-          <div className="mb-6">
-            <FavoritesBar 
-              favorites={favorites} 
-              onFavoriteClick={handleCardClick}
-              onRemoveFavorite={toggleFavorite}
-            />
-          </div>
-        )}
+        
+        <FavoritesBar 
+          favorites={favorites} 
+          onFavoriteClick={handleFavoriteProfileClick}
+          onRemoveFavorite={handleRemoveFavorite}
+          title="Favorite Talent"
+        />
         
         <div className="swipe-card-container mb-6">
           {renderCards()}
