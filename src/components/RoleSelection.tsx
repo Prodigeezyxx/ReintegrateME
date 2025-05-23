@@ -15,8 +15,12 @@ const RoleSelection = () => {
   return (
     <div className="mobile-container p-6">
       <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="h-20 w-20 rounded-2xl bg-gradient-to-r from-reme-orange to-reme-purple flex items-center justify-center mb-10">
-          <span className="text-3xl font-bold text-white">ReME</span>
+        <div className="h-20 w-20 rounded-2xl overflow-hidden mb-10">
+          <img 
+            src="/lovable-uploads/8c0cc7ea-9ba0-44bd-8baf-1606a7e2bdb8.png" 
+            alt="ReME Logo" 
+            className="w-full h-full object-cover"
+          />
         </div>
         
         <h1 className="text-3xl font-bold text-center mb-3">Welcome to ReME</h1>

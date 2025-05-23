@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { UserRole } from '../models/types';
-import { LayoutDashboard, Briefcase, MessageSquare, Users, Search } from 'lucide-react';
+import { LayoutDashboard, Briefcase, MessageSquare, Users, Search, Bot } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -48,13 +47,13 @@ const MobileNavbar = () => {
   
   const getSeekerNavItems = (): NavItem[] => [
     {
-      label: 'Discover',
+      label: 'Home',
       path: '/seeker-dashboard',
-      icon: <Search className="h-5 w-5" />
+      icon: <LayoutDashboard className="h-5 w-5" />
     },
     {
-      label: 'Search',
-      path: '/seeker-search',
+      label: 'Discover',
+      path: '/seeker-discover',
       icon: <Search className="h-5 w-5" />
     },
     {
@@ -63,14 +62,14 @@ const MobileNavbar = () => {
       icon: <Briefcase className="h-5 w-5" />
     },
     {
+      label: 'AI Chat',
+      path: '/seeker-ai-chat',
+      icon: <Bot className="h-5 w-5" />
+    },
+    {
       label: 'Messages',
       path: '/seeker-messages',
       icon: <MessageSquare className="h-5 w-5" />
-    },
-    {
-      label: 'Profile',
-      path: '/seeker-profile',
-      icon: <Users className="h-5 w-5" />
     }
   ];
   

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +19,8 @@ import HirerCreateJob from "./components/hirer/HirerCreateJob";
 import HirerApplicants from "./components/hirer/HirerApplicants";
 import HirerMessages from "./components/hirer/HirerMessages";
 import HirerChatDetail from "./components/hirer/HirerChatDetail";
-import SeekerDashboard from "./components/seeker/SeekerDashboard";
+import SeekerHome from "./components/seeker/SeekerHome";
+import SeekerAIChat from "./components/seeker/SeekerAIChat";
 import MobileNavbar from "./components/MobileNavbar";
 import MainMenu from "./components/MainMenu";
 import { authAPI } from "./services/api";
@@ -60,11 +60,14 @@ const App = () => {
             <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
             <Route path="/seeker-setup-step2" element={<SeekerProfileSetupStep2 />} />
             <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
-            <Route path="/seeker-dashboard" element={<SeekerDashboard />} />
-            <Route path="/seeker-search" element={<Navigate to="/seeker-dashboard" replace />} />
+            <Route path="/seeker-dashboard" element={<SeekerHome />} />
+            <Route path="/seeker-discover" element={<SeekerDashboard />} />
+            <Route path="/seeker-ai-chat" element={<SeekerAIChat />} />
+            <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
             <Route path="/seeker-applications" element={<Navigate to="/seeker-dashboard" replace />} />
             <Route path="/seeker-messages" element={<Navigate to="/seeker-dashboard" replace />} />
             <Route path="/seeker-profile" element={<Navigate to="/seeker-dashboard" replace />} />
+            <Route path="/seeker-saved" element={<Navigate to="/seeker-dashboard" replace />} />
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
