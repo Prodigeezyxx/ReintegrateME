@@ -1,3 +1,4 @@
+
 import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCardData, MatchRecord } from '../models/types';
 
 // Mock data and functions to simulate API calls
@@ -35,7 +36,7 @@ export const employmentTypes = [
   'Full-time',
   'Part-time',
   'Contract',
-  'Seasonal',
+  'Temporary',
   'Apprenticeship'
 ];
 
@@ -47,26 +48,26 @@ export const skills = [
   'Forklift Operation',
   'Welding',
   'HVAC',
-  'Commercial Driving',
+  'HGV Driving',
   'Food Service',
   'Customer Service',
   'Equipment Maintenance',
   'Machinery Operation',
-  'Safety Compliance'
+  'Health & Safety Compliance'
 ];
 
 // Sample countries
 export const countries = [
-  'United States',
-  'Canada',
   'United Kingdom',
-  'Australia',
-  'Germany',
+  'Ireland',
   'France',
+  'Germany',
   'Spain',
-  'India',
-  'Singapore',
-  'Japan'
+  'Italy',
+  'Netherlands',
+  'Belgium',
+  'Sweden',
+  'Denmark'
 ];
 
 // Authentication API
@@ -320,6 +321,7 @@ export const jobAPI = {
       requiredSkills: jobData.requiredSkills,
       salary: jobData.salary,
       createdAt: new Date(),
+      status: jobData.status as 'active' | 'draft' | 'archived' | undefined,
     };
     
     jobPostings.push(newJob);
@@ -350,48 +352,69 @@ export const jobAPI = {
           hirerId: 'demo',
           companyId: 'demo',
           title: 'Construction Worker',
-          description: 'Looking for experienced construction workers for commercial building projects.',
+          description: 'Looking for experienced construction workers for commercial building projects in Central London.',
           companyName: 'BuildRight Construction',
           companyLogoUrl: 'https://placehold.co/100x100?text=BC',
           category: 'Construction',
           employmentType: 'Full-time',
           experienceLevel: 'Entry-level to Mid-level',
-          locationCity: 'Portland',
-          locationCountry: 'United States',
-          requiredSkills: ['Physical Stamina', 'Tool Knowledge', 'Safety Awareness'],
+          locationCity: 'London',
+          locationCountry: 'United Kingdom',
+          requiredSkills: ['Physical Stamina', 'Tool Knowledge', 'Health & Safety Awareness'],
           createdAt: new Date(),
+          status: 'active' as const,
+          salary: {
+            min: 22000,
+            max: 30000,
+            currency: 'GBP',
+            period: 'annual'
+          }
         },
         {
           id: generateId(),
           hirerId: 'demo',
           companyId: 'demo',
           title: 'Electrician',
-          description: 'Join our team of skilled electricians for residential and commercial projects.',
+          description: 'Join our team of skilled electricians for residential and commercial projects throughout Greater Manchester.',
           companyName: 'PowerUp Electric',
           companyLogoUrl: 'https://placehold.co/100x100?text=PE',
           category: 'Construction',
           employmentType: 'Full-time',
           experienceLevel: 'Mid-level',
-          locationCity: 'Chicago',
-          locationCountry: 'United States',
+          locationCity: 'Manchester',
+          locationCountry: 'United Kingdom',
           requiredSkills: ['Electrical Systems', 'Wiring', 'Troubleshooting'],
           createdAt: new Date(),
+          status: 'active' as const,
+          salary: {
+            min: 25000,
+            max: 35000,
+            currency: 'GBP',
+            period: 'annual'
+          }
         },
         {
           id: generateId(),
           hirerId: 'demo',
           companyId: 'demo',
           title: 'Delivery Driver',
-          description: 'Local delivery routes, company vehicle provided.',
+          description: 'Local delivery routes throughout Birmingham, company vehicle provided. Must have valid UK driving license.',
           companyName: 'Swift Logistics',
           companyLogoUrl: 'https://placehold.co/100x100?text=SL',
           category: 'Transportation',
           employmentType: 'Full-time',
           experienceLevel: 'Entry-level',
-          locationCity: 'Dallas',
-          locationCountry: 'United States',
-          requiredSkills: ['Clean Driving Record', 'Navigation Skills', 'Time Management'],
+          locationCity: 'Birmingham',
+          locationCountry: 'United Kingdom',
+          requiredSkills: ['Clean Driving Licence', 'Navigation Skills', 'Time Management'],
           createdAt: new Date(),
+          status: 'active' as const,
+          salary: {
+            min: 21000,
+            max: 24000,
+            currency: 'GBP',
+            period: 'annual'
+          }
         }
       ];
       
@@ -423,14 +446,14 @@ export const jobAPI = {
         {
           id: generateId(),
           userId: 'demo1',
-          firstName: 'Mike',
-          lastName: 'Rodriguez',
-          displayName: 'Mike Rodriguez',
+          firstName: 'Michael',
+          lastName: 'Roberts',
+          displayName: 'Michael Roberts',
           profilePictureUrl: 'https://placehold.co/200x200?text=MR',
           headline: 'Experienced Carpenter',
           keySkills: ['Carpentry', 'Framing', 'Finishing Work'],
-          locationCity: 'Seattle',
-          locationCountry: 'United States',
+          locationCity: 'Bristol',
+          locationCountry: 'United Kingdom',
         },
         {
           id: generateId(),
@@ -441,8 +464,8 @@ export const jobAPI = {
           profilePictureUrl: 'https://placehold.co/200x200?text=SJ',
           headline: 'Licensed Electrician',
           keySkills: ['Electrical Systems', 'Wiring', 'Circuits'],
-          locationCity: 'Chicago',
-          locationCountry: 'United States',
+          locationCity: 'London',
+          locationCountry: 'United Kingdom',
         },
         {
           id: generateId(),
@@ -453,8 +476,8 @@ export const jobAPI = {
           profilePictureUrl: 'https://placehold.co/200x200?text=RC',
           headline: 'HVAC Technician',
           keySkills: ['HVAC', 'Refrigeration', 'Maintenance'],
-          locationCity: 'Houston',
-          locationCountry: 'United States',
+          locationCity: 'Glasgow',
+          locationCountry: 'United Kingdom',
         },
         {
           id: generateId(),
@@ -464,9 +487,9 @@ export const jobAPI = {
           displayName: 'Lisa Martinez',
           profilePictureUrl: 'https://placehold.co/200x200?text=LM',
           headline: 'Commercial Driver',
-          keySkills: ['CDL', 'Logistics', 'Safety Compliance'],
-          locationCity: 'Phoenix',
-          locationCountry: 'United States',
+          keySkills: ['HGV Licence', 'Logistics', 'Safety Compliance'],
+          locationCity: 'Edinburgh',
+          locationCountry: 'United Kingdom',
         },
         {
           id: generateId(),
@@ -477,8 +500,8 @@ export const jobAPI = {
           profilePictureUrl: 'https://placehold.co/200x200?text=JW',
           headline: 'Skilled Plumber',
           keySkills: ['Plumbing', 'Pipe Fitting', 'Repairs'],
-          locationCity: 'Denver',
-          locationCountry: 'United States',
+          locationCity: 'Leeds',
+          locationCountry: 'United Kingdom',
         },
         {
           id: generateId(),
@@ -488,9 +511,9 @@ export const jobAPI = {
           displayName: 'Emma Thompson',
           profilePictureUrl: 'https://placehold.co/200x200?text=ET',
           headline: 'Retail Supervisor',
-          keySkills: ['Customer Service', 'Inventory Management', 'Leadership'],
-          locationCity: 'Miami',
-          locationCountry: 'United States',
+          keySkills: ['Customer Service', 'Stock Management', 'Team Leadership'],
+          locationCity: 'Sheffield',
+          locationCountry: 'United Kingdom',
         }
       ];
       

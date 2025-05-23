@@ -76,16 +76,23 @@ const MobileNavbar = () => {
   
   const navItems = userRole === 'hirer' ? getHirerNavItems() : getSeekerNavItems();
   
+  // Only show the most important items in the bottom navbar (limit to 5)
+  const bottomNavItems = navItems.slice(0, 5);
+  
   // Don't show navbar on chat detail pages
   if (location.pathname.includes('/hirer-messages/') || 
-      location.pathname.includes('/seeker-messages/')) {
+      location.pathname.includes('/seeker-messages/') || 
+      location.pathname === '/splash' || 
+      location.pathname === '/' || 
+      location.pathname === '/role-selection' || 
+      location.pathname === '/auth') {
     return null;
   }
   
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
       <div className="flex justify-around items-center h-16 max-w-md mx-auto">
-        {navItems.map((item, index) => (
+        {bottomNavItems.map((item, index) => (
           <NavLink
             key={index}
             to={item.path}

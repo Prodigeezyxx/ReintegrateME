@@ -22,6 +22,7 @@ import HirerMessages from "./components/hirer/HirerMessages";
 import HirerChatDetail from "./components/hirer/HirerChatDetail";
 import SeekerDashboard from "./components/seeker/SeekerDashboard";
 import MobileNavbar from "./components/MobileNavbar";
+import MainMenu from "./components/MainMenu";
 import { authAPI } from "./services/api";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,9 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          {/* Add MainMenu for hamburger navigation */}
+          <MainMenu />
+          
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/splash" element={<SplashScreen />} />
