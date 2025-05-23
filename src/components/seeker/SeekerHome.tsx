@@ -54,6 +54,27 @@ const SeekerHome = () => {
     }
   ];
 
+  const handleMenuItemClick = (path: string) => {
+    navigate(path);
+  };
+
+  const handleStatClick = (statType: string) => {
+    // Navigate based on stat type
+    switch (statType) {
+      case 'jobs':
+        navigate('/seeker-discover');
+        break;
+      case 'applications':
+        navigate('/seeker-applications');
+        break;
+      case 'messages':
+        navigate('/seeker-messages');
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="mobile-container p-6 pb-20">
       <div className="mb-8">
@@ -67,7 +88,7 @@ const SeekerHome = () => {
         {menuItems.map((item, index) => (
           <div
             key={index}
-            onClick={() => navigate(item.path)}
+            onClick={() => handleMenuItemClick(item.path)}
             className="ios-card p-4 cursor-pointer hover:shadow-lg transition-all duration-200 active:scale-95"
           >
             <div className={`${item.color} w-12 h-12 rounded-xl flex items-center justify-center mb-3`}>
@@ -82,15 +103,24 @@ const SeekerHome = () => {
       <div className="mt-8 ios-card p-4">
         <h3 className="font-semibold mb-2">Quick Stats</h3>
         <div className="flex justify-between text-sm">
-          <div className="text-center">
+          <div 
+            className="text-center cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+            onClick={() => handleStatClick('jobs')}
+          >
             <div className="font-bold text-lg text-blue-500">24</div>
             <div className="text-gray-500">Jobs Viewed</div>
           </div>
-          <div className="text-center">
+          <div 
+            className="text-center cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+            onClick={() => handleStatClick('applications')}
+          >
             <div className="font-bold text-lg text-green-500">3</div>
             <div className="text-gray-500">Applications</div>
           </div>
-          <div className="text-center">
+          <div 
+            className="text-center cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+            onClick={() => handleStatClick('messages')}
+          >
             <div className="font-bold text-lg text-purple-500">1</div>
             <div className="text-gray-500">Messages</div>
           </div>
