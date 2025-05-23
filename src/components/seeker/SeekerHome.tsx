@@ -58,7 +58,7 @@ const SeekerHome = () => {
     <div className="mobile-container p-6 pb-20">
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-2">
-          Welcome back, {currentUser?.name || 'Job Seeker'}!
+          Welcome back, Job Seeker!
         </h1>
         <p className="text-gray-600">Ready to find your next opportunity?</p>
       </div>

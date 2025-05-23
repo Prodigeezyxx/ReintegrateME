@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +21,7 @@ import HirerApplicants from "./components/hirer/HirerApplicants";
 import HirerMessages from "./components/hirer/HirerMessages";
 import HirerChatDetail from "./components/hirer/HirerChatDetail";
 import SeekerHome from "./components/seeker/SeekerHome";
+import SeekerDashboard from "./components/seeker/SeekerDashboard";
 import SeekerAIChat from "./components/seeker/SeekerAIChat";
 import MobileNavbar from "./components/MobileNavbar";
 import MainMenu from "./components/MainMenu";
