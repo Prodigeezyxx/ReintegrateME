@@ -26,9 +26,7 @@ import SeekerApplications from "./components/seeker/SeekerApplications";
 import SeekerMessages from "./components/seeker/SeekerMessages";
 import SeekerProfile from "./components/seeker/SeekerProfile";
 import SeekerSaved from "./components/seeker/SeekerSaved";
-import SeekerAISuite from "./components/seeker/SeekerAISuite";
-import SeekerAICoach from "./components/seeker/SeekerAICoach";
-import SeekerCVBuilder from "./components/seeker/SeekerCVBuilder";
+import SeekerAIChat from "./components/seeker/SeekerAIChat";
 import MobileNavbar from "./components/MobileNavbar";
 import MainMenu from "./components/MainMenu";
 import { authAPI } from "./services/api";
@@ -74,9 +72,7 @@ const App = () => {
             <Route path="/seeker-messages" element={<SeekerMessages />} />
             <Route path="/seeker-profile" element={<SeekerProfile />} />
             <Route path="/seeker-saved" element={<SeekerSaved />} />
-            <Route path="/seeker-ai-suite" element={<SeekerAISuite />} />
-            <Route path="/seeker-ai-coach" element={<SeekerAICoach />} />
-            <Route path="/seeker-cv-builder" element={<SeekerCVBuilder />} />
+            <Route path="/seeker-ai-chat" element={<SeekerAIChat />} />
             <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
             
             {/* Catch-all */}

@@ -9,7 +9,6 @@ interface NavItem {
   label: string;
   path: string;
   icon: React.ReactNode;
-  isCenter?: boolean;
 }
 
 const MobileNavbar = () => {
@@ -31,15 +30,14 @@ const MobileNavbar = () => {
       icon: <Briefcase className="h-5 w-5" />
     },
     {
-      label: 'AI Suite',
-      path: '/hirer-ai-suite',
-      icon: <Bot className="h-6 w-6" />,
-      isCenter: true
-    },
-    {
       label: 'Applicants',
       path: '/hirer-applicants',
       icon: <Users className="h-5 w-5" />
+    },
+    {
+      label: 'Discover',
+      path: '/hirer-discover',
+      icon: <Search className="h-5 w-5" />
     },
     {
       label: 'Messages',
@@ -60,10 +58,9 @@ const MobileNavbar = () => {
       icon: <Search className="h-5 w-5" />
     },
     {
-      label: 'AI Suite',
-      path: '/seeker-ai-suite',
-      icon: <Bot className="h-6 w-6" />,
-      isCenter: true
+      label: 'Saved',
+      path: '/seeker-saved',
+      icon: <Heart className="h-5 w-5" />
     },
     {
       label: 'Applications',
@@ -84,6 +81,7 @@ const MobileNavbar = () => {
       location.pathname.includes('/seeker-messages/') || 
       location.pathname === '/splash' || 
       location.pathname === '/' || 
+      location.pathname === '/role-selection' || 
       location.pathname === '/auth') {
     return null;
   }
@@ -97,19 +95,14 @@ const MobileNavbar = () => {
             to={item.path}
             className={({ isActive }) => `
               flex flex-col items-center justify-center w-full h-full px-1 py-2 rounded-lg transition-all duration-200
-              ${item.isCenter ? 'transform -translate-y-2' : ''}
               ${isActive 
-                ? item.isCenter 
-                  ? 'text-white bg-reme-orange shadow-lg' 
-                  : 'text-reme-orange bg-orange-50'
-                : item.isCenter 
-                  ? 'text-white bg-reme-orange hover:bg-orange-600' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                ? 'text-reme-orange bg-orange-50' 
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }
             `}
           >
-            <div className={`${item.isCenter ? 'mb-1' : 'mb-1'}`}>{item.icon}</div>
-            <span className={`text-xs font-medium truncate ${item.isCenter ? 'text-xs' : ''}`}>{item.label}</span>
+            <div className="mb-1">{item.icon}</div>
+            <span className="text-xs font-medium truncate">{item.label}</span>
           </NavLink>
         ))}
       </div>
