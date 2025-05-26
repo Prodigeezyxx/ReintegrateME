@@ -84,7 +84,6 @@ const MobileNavbar = () => {
       location.pathname.includes('/seeker-messages/') || 
       location.pathname === '/splash' || 
       location.pathname === '/' || 
-      location.pathname === '/role-selection' || 
       location.pathname === '/auth') {
     return null;
   }
