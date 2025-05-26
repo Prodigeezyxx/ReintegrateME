@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { UserRole } from '../models/types';
-import { LayoutDashboard, Briefcase, MessageSquare, Users, Search, Bot } from 'lucide-react';
+import { Home, Search, Heart, Bell, User, Briefcase, MessageSquare, Users, Bot } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -21,7 +22,7 @@ const MobileNavbar = () => {
     {
       label: 'Dashboard',
       path: '/hirer-dashboard',
-      icon: <LayoutDashboard className="h-5 w-5" />
+      icon: <Home className="h-5 w-5" />
     },
     {
       label: 'Jobs',
@@ -49,7 +50,7 @@ const MobileNavbar = () => {
     {
       label: 'Home',
       path: '/seeker-dashboard',
-      icon: <LayoutDashboard className="h-5 w-5" />
+      icon: <Home className="h-5 w-5" />
     },
     {
       label: 'Discover',
@@ -57,28 +58,25 @@ const MobileNavbar = () => {
       icon: <Search className="h-5 w-5" />
     },
     {
+      label: 'Saved',
+      path: '/seeker-saved',
+      icon: <Heart className="h-5 w-5" />
+    },
+    {
       label: 'Applications',
       path: '/seeker-applications',
-      icon: <Briefcase className="h-5 w-5" />
+      icon: <Bell className="h-5 w-5" />
     },
     {
-      label: 'AI Chat',
-      path: '/seeker-ai-chat',
-      icon: <Bot className="h-5 w-5" />
-    },
-    {
-      label: 'Messages',
-      path: '/seeker-messages',
-      icon: <MessageSquare className="h-5 w-5" />
+      label: 'Profile',
+      path: '/seeker-profile',
+      icon: <User className="h-5 w-5" />
     }
   ];
   
   const navItems = userRole === 'hirer' ? getHirerNavItems() : getSeekerNavItems();
   
-  // Only show the most important items in the bottom navbar (limit to 5)
-  const bottomNavItems = navItems.slice(0, 5);
-  
-  // Don't show navbar on chat detail pages
+  // Don't show navbar on certain pages
   if (location.pathname.includes('/hirer-messages/') || 
       location.pathname.includes('/seeker-messages/') || 
       location.pathname === '/splash' || 
@@ -89,19 +87,22 @@ const MobileNavbar = () => {
   }
   
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
-      <div className="flex justify-around items-center h-16 max-w-md mx-auto">
-        {bottomNavItems.map((item, index) => (
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 shadow-lg">
+      <div className="flex justify-around items-center h-16 max-w-md mx-auto px-2">
+        {navItems.map((item, index) => (
           <NavLink
             key={index}
             to={item.path}
             className={({ isActive }) => `
-              flex flex-col items-center justify-center w-full h-full
-              ${isActive ? 'text-reme-orange' : 'text-gray-500'}
+              flex flex-col items-center justify-center w-full h-full px-1 py-2 rounded-lg transition-all duration-200
+              ${isActive 
+                ? 'text-reme-orange bg-orange-50' 
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }
             `}
           >
-            <div>{item.icon}</div>
-            <span className="text-xs mt-1">{item.label}</span>
+            <div className="mb-1">{item.icon}</div>
+            <span className="text-xs font-medium truncate">{item.label}</span>
           </NavLink>
         ))}
       </div>

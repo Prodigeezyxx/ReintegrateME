@@ -22,6 +22,10 @@ import HirerMessages from "./components/hirer/HirerMessages";
 import HirerChatDetail from "./components/hirer/HirerChatDetail";
 import SeekerHome from "./components/seeker/SeekerHome";
 import SeekerDashboard from "./components/seeker/SeekerDashboard";
+import SeekerApplications from "./components/seeker/SeekerApplications";
+import SeekerMessages from "./components/seeker/SeekerMessages";
+import SeekerProfile from "./components/seeker/SeekerProfile";
+import SeekerSaved from "./components/seeker/SeekerSaved";
 import SeekerAIChat from "./components/seeker/SeekerAIChat";
 import MobileNavbar from "./components/MobileNavbar";
 import MainMenu from "./components/MainMenu";
@@ -64,12 +68,12 @@ const App = () => {
             <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
             <Route path="/seeker-dashboard" element={<SeekerHome />} />
             <Route path="/seeker-discover" element={<SeekerDashboard />} />
+            <Route path="/seeker-applications" element={<SeekerApplications />} />
+            <Route path="/seeker-messages" element={<SeekerMessages />} />
+            <Route path="/seeker-profile" element={<SeekerProfile />} />
+            <Route path="/seeker-saved" element={<SeekerSaved />} />
             <Route path="/seeker-ai-chat" element={<SeekerAIChat />} />
             <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
-            <Route path="/seeker-applications" element={<Navigate to="/seeker-dashboard" replace />} />
-            <Route path="/seeker-messages" element={<Navigate to="/seeker-dashboard" replace />} />
-            <Route path="/seeker-profile" element={<Navigate to="/seeker-dashboard" replace />} />
-            <Route path="/seeker-saved" element={<Navigate to="/seeker-dashboard" replace />} />
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
