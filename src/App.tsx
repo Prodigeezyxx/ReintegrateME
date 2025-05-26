@@ -74,7 +74,9 @@ const App = () => {
             <Route path="/seeker-messages" element={<SeekerMessages />} />
             <Route path="/seeker-profile" element={<SeekerProfile />} />
             <Route path="/seeker-saved" element={<SeekerSaved />} />
-            <Route path="/seeker-ai-chat" element={<SeekerAIChat />} />
+            <Route path="/seeker-ai-suite" element={<SeekerAISuite />} />
+            <Route path="/seeker-ai-coach" element={<SeekerAICoach />} />
+            <Route path="/seeker-cv-builder" element={<SeekerCVBuilder />} />
             <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
             
             {/* Catch-all */}
