@@ -58,7 +58,7 @@ export const authService = {
       provider,
       options: {
         redirectTo: redirectUrl,
-        data: {
+        queryParams: {
           role: role || 'seeker',
           provider
         }

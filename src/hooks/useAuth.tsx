@@ -1,6 +1,5 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { authService, AuthUser, AuthSession } from '../services/authService';
 
@@ -35,14 +34,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+        
         if (session?.user) {
           // Defer the profile fetch to avoid blocking the auth state change
           setTimeout(async () => {
-            await refreshUser();
-            setIsLoading(false);
+            if (mounted) {
+              await refreshUser();
+              setIsLoading(false);
+            }
           }, 0);
         } else {
           setUser(null);
@@ -55,19 +60,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initializeAuth = async () => {
       try {
         const session = await authService.getSession();
-        if (session?.user) {
+        if (session?.user && mounted) {
           await refreshUser();
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     initializeAuth();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const value = {

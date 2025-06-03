@@ -21,7 +21,7 @@ const SocialAuthButton = ({ provider, role, children, className }: SocialAuthBut
         provider,
         options: {
           redirectTo: redirectUrl,
-          data: {
+          queryParams: {
             role: role || 'seeker',
             provider: provider
           }
