@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { authAPI } from '../services/api';
+import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../models/types';
-import { Home, Search, Heart, Bell, User, Briefcase, MessageSquare, Users, Bot } from 'lucide-react';
+import { Home, Search, Heart, Bell, User, Briefcase, MessageSquare, Users } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -13,8 +13,8 @@ interface NavItem {
 
 const MobileNavbar = () => {
   const location = useLocation();
-  const currentUser = authAPI.getCurrentUser();
-  const userRole = currentUser?.role as UserRole;
+  const { user } = useAuth();
+  const userRole = user?.role as UserRole;
   
   if (!userRole) return null;
   

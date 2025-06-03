@@ -1,32 +1,33 @@
 
 import React, { useEffect, useState } from 'react';
-import { authAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const SplashScreen = () => {
   const navigate = useNavigate();
+  const { user, isLoading } = useAuth();
   const [isAnimating, setIsAnimating] = useState(true);
 
   useEffect(() => {
     // Show splash screen for 2 seconds, then check auth status
     const timer = setTimeout(() => {
       setIsAnimating(false);
-      const isAuthenticated = authAPI.isAuthenticated();
       
-      if (isAuthenticated) {
-        const user = authAPI.getCurrentUser();
-        if (user?.role === 'hirer') {
-          navigate('/hirer-dashboard');
+      if (!isLoading) {
+        if (user) {
+          if (user.role === 'hirer') {
+            navigate('/hirer-dashboard');
+          } else {
+            navigate('/seeker-dashboard');
+          }
         } else {
-          navigate('/seeker-dashboard');
+          navigate('/role-selection');
         }
-      } else {
-        navigate('/role-selection');
       }
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, user, isLoading]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">
