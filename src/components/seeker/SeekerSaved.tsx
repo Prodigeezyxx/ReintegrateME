@@ -110,7 +110,7 @@ const SeekerSaved = () => {
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-1" />
-                    {job.locationText || 'Location not specified'}
+                    {job.detailLine1 || 'Location not specified'}
                   </div>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-1" />

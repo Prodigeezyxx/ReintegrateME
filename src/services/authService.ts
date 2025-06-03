@@ -11,6 +11,7 @@ export interface AuthUser {
   displayName?: string;
   avatarUrl?: string;
   provider?: string;
+  isGuest?: boolean;
 }
 
 export interface AuthSession {
@@ -18,16 +19,26 @@ export interface AuthSession {
   isLoading: boolean;
 }
 
+// Guest user for testing purposes
+const GUEST_USER: AuthUser = {
+  id: 'guest-user',
+  email: 'guest@test.com',
+  role: 'seeker',
+  firstName: 'Guest',
+  lastName: 'User',
+  displayName: 'Guest User',
+  isGuest: true,
+  provider: 'guest'
+};
+
 export const authService = {
-  // Sign up with email and password
+  // Sign up with email and password (skip email confirmation)
   signUpWithEmail: async (role: UserRole, email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/auth`;
-    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl,
+        emailRedirectTo: `${window.location.origin}/auth`,
         data: {
           role,
           provider: 'email'
@@ -48,6 +59,14 @@ export const authService = {
 
     if (error) throw error;
     return data;
+  },
+
+  // Continue as guest (for testing)
+  continueAsGuest: async (role: UserRole = 'seeker') => {
+    // Store guest user in localStorage for persistence
+    const guestUser = { ...GUEST_USER, role };
+    localStorage.setItem('guestUser', JSON.stringify(guestUser));
+    return { user: guestUser };
   },
 
   // Sign in with OAuth provider
@@ -71,6 +90,16 @@ export const authService = {
 
   // Get current user with profile data
   getCurrentUser: async (): Promise<AuthUser | null> => {
+    // Check for guest user first
+    const guestUserStr = localStorage.getItem('guestUser');
+    if (guestUserStr) {
+      try {
+        return JSON.parse(guestUserStr);
+      } catch (error) {
+        localStorage.removeItem('guestUser');
+      }
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) return null;
@@ -101,12 +130,21 @@ export const authService = {
 
   // Sign out
   signOut: async () => {
+    // Clear guest user
+    localStorage.removeItem('guestUser');
+    
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   },
 
   // Get session
   getSession: async () => {
+    // Check for guest user first
+    const guestUserStr = localStorage.getItem('guestUser');
+    if (guestUserStr) {
+      return { user: JSON.parse(guestUserStr) };
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
     return session;
   }

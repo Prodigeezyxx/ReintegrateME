@@ -36,7 +36,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     let mounted = true;
 
-    // Set up auth state listener
+    // Check for guest user first
+    const checkGuestUser = () => {
+      const guestUserStr = localStorage.getItem('guestUser');
+      if (guestUserStr && mounted) {
+        try {
+          const guestUser = JSON.parse(guestUserStr);
+          setUser(guestUser);
+          setIsLoading(false);
+          return true;
+        } catch (error) {
+          localStorage.removeItem('guestUser');
+        }
+      }
+      return false;
+    };
+
+    // If we have a guest user, don't set up Supabase auth listener
+    if (checkGuestUser()) {
+      return () => {
+        mounted = false;
+      };
+    }
+
+    // Set up auth state listener for real users
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;

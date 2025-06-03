@@ -73,8 +73,11 @@ const Authentication = () => {
         
         toast({
           title: "Success",
-          description: "Account created! Please check your email to verify your account.",
+          description: "Account created successfully! You can now sign in.",
         });
+        
+        // Auto-switch to login mode after successful signup
+        setMode('login');
       } else {
         await authService.signInWithEmail(email, password);
         
@@ -91,6 +94,26 @@ const Authentication = () => {
       });
     } finally {
       setIsAuthLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    try {
+      await authService.continueAsGuest(role || 'seeker');
+      
+      toast({
+        title: "Guest Mode",
+        description: "Continuing as guest for testing purposes",
+      });
+      
+      // Trigger a page refresh to update auth state
+      window.location.reload();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to continue as guest",
+        variant: "destructive"
+      });
     }
   };
   
@@ -173,6 +196,17 @@ const Authentication = () => {
               {isAuthLoading ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Sign Up'}
             </Button>
           </form>
+          
+          {/* Guest Login Button for Testing */}
+          <div className="mt-4">
+            <Button
+              onClick={handleGuestLogin}
+              variant="outline"
+              className="w-full py-3 border-2 border-gray-300 text-gray-600 hover:bg-gray-50"
+            >
+              Continue as Guest (Testing)
+            </Button>
+          </div>
           
           <div className="mt-8 text-center">
             <p className="text-gray-600">
