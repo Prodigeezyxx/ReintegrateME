@@ -1,4 +1,3 @@
-
 import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCardData, MatchRecord } from '../models/types';
 
 // Mock data and functions to simulate API calls
@@ -69,6 +68,79 @@ export const countries = [
   'Sweden',
   'Denmark'
 ];
+
+// Initialize mock jobs for guest users
+const initializeMockJobs = () => {
+  if (jobPostings.length === 0) {
+    const mockJobs = [
+      {
+        id: generateId(),
+        hirerId: 'guest-hirer',
+        companyId: 'guest-company',
+        title: 'Senior Construction Worker',
+        description: 'We are looking for an experienced construction worker to join our team on various commercial projects in London.',
+        companyName: 'BuildPro Construction Ltd',
+        companyLogoUrl: 'https://placehold.co/100x100?text=BP',
+        category: 'Construction',
+        employmentType: 'Full-time',
+        experienceLevel: 'Mid-level',
+        locationCity: 'London',
+        locationCountry: 'United Kingdom',
+        requiredSkills: ['Construction Experience', 'Health & Safety', 'Physical Fitness'],
+        salary: {
+          min: 25000,
+          max: 32000,
+          currency: 'GBP',
+          period: 'annual'
+        },
+        createdAt: new Date(),
+        status: 'active' as const,
+      },
+      {
+        id: generateId(),
+        hirerId: 'guest-hirer',
+        companyId: 'guest-company',
+        title: 'Electrician - Residential Projects',
+        description: 'Join our electrical team working on residential installations and maintenance across Manchester.',
+        companyName: 'PowerTech Solutions',
+        companyLogoUrl: 'https://placehold.co/100x100?text=PT',
+        category: 'Construction',
+        employmentType: 'Full-time',
+        experienceLevel: 'Mid-level',
+        locationCity: 'Manchester',
+        locationCountry: 'United Kingdom',
+        requiredSkills: ['Electrical Installation', '18th Edition', 'Testing & Inspection'],
+        salary: {
+          min: 28000,
+          max: 38000,
+          currency: 'GBP',
+          period: 'annual'
+        },
+        createdAt: new Date(),
+        status: 'active' as const,
+      },
+      {
+        id: generateId(),
+        hirerId: 'guest-hirer',
+        companyId: 'guest-company',
+        title: 'Warehouse Operative',
+        description: 'Immediate start available for warehouse operative role with forklift training provided.',
+        companyName: 'LogiFlow Warehouse',
+        companyLogoUrl: 'https://placehold.co/100x100?text=LF',
+        category: 'Logistics',
+        employmentType: 'Full-time',
+        experienceLevel: 'Entry-level',
+        locationCity: 'Birmingham',
+        locationCountry: 'United Kingdom',
+        requiredSkills: ['Physical Fitness', 'Attention to Detail', 'Team Work'],
+        createdAt: new Date(),
+        status: 'draft' as const,
+      }
+    ];
+    
+    jobPostings.push(...mockJobs);
+  }
+};
 
 // Authentication API
 export const authAPI = {
@@ -329,12 +401,26 @@ export const jobAPI = {
     return newJob;
   },
   
-  // Get jobs for hirer
+  // Get jobs for hirer - Updated to handle guest users without errors
   getHirerJobs: async (): Promise<JobPosting[]> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
+    // Initialize mock jobs if needed
+    initializeMockJobs();
+    
+    // For guest users or when no current user, return mock jobs
+    if (!currentUser) {
+      return jobPostings.filter(job => job.hirerId === 'guest-hirer');
+    }
+    
+    if (currentUser.role !== 'hirer') {
       throw new Error('Only hirers can access their job postings');
     }
     
+    // For guest users (identified by isGuest property), return mock jobs
+    if ((currentUser as any).isGuest) {
+      return jobPostings.filter(job => job.hirerId === 'guest-hirer');
+    }
+    
+    // For real users, return their actual jobs
     return jobPostings.filter(job => job.hirerId === currentUser?.id);
   },
   
@@ -344,82 +430,8 @@ export const jobAPI = {
       throw new Error('Only job seekers can access job feed');
     }
 
-    // Populate with some demo jobs if empty
-    if (jobPostings.length === 0) {
-      const demoJobs = [
-        {
-          id: generateId(),
-          hirerId: 'demo',
-          companyId: 'demo',
-          title: 'Construction Worker',
-          description: 'Looking for experienced construction workers for commercial building projects in Central London.',
-          companyName: 'BuildRight Construction',
-          companyLogoUrl: 'https://placehold.co/100x100?text=BC',
-          category: 'Construction',
-          employmentType: 'Full-time',
-          experienceLevel: 'Entry-level to Mid-level',
-          locationCity: 'London',
-          locationCountry: 'United Kingdom',
-          requiredSkills: ['Physical Stamina', 'Tool Knowledge', 'Health & Safety Awareness'],
-          createdAt: new Date(),
-          status: 'active' as const,
-          salary: {
-            min: 22000,
-            max: 30000,
-            currency: 'GBP',
-            period: 'annual'
-          }
-        },
-        {
-          id: generateId(),
-          hirerId: 'demo',
-          companyId: 'demo',
-          title: 'Electrician',
-          description: 'Join our team of skilled electricians for residential and commercial projects throughout Greater Manchester.',
-          companyName: 'PowerUp Electric',
-          companyLogoUrl: 'https://placehold.co/100x100?text=PE',
-          category: 'Construction',
-          employmentType: 'Full-time',
-          experienceLevel: 'Mid-level',
-          locationCity: 'Manchester',
-          locationCountry: 'United Kingdom',
-          requiredSkills: ['Electrical Systems', 'Wiring', 'Troubleshooting'],
-          createdAt: new Date(),
-          status: 'active' as const,
-          salary: {
-            min: 25000,
-            max: 35000,
-            currency: 'GBP',
-            period: 'annual'
-          }
-        },
-        {
-          id: generateId(),
-          hirerId: 'demo',
-          companyId: 'demo',
-          title: 'Delivery Driver',
-          description: 'Local delivery routes throughout Birmingham, company vehicle provided. Must have valid UK driving license.',
-          companyName: 'Swift Logistics',
-          companyLogoUrl: 'https://placehold.co/100x100?text=SL',
-          category: 'Transportation',
-          employmentType: 'Full-time',
-          experienceLevel: 'Entry-level',
-          locationCity: 'Birmingham',
-          locationCountry: 'United Kingdom',
-          requiredSkills: ['Clean Driving Licence', 'Navigation Skills', 'Time Management'],
-          createdAt: new Date(),
-          status: 'active' as const,
-          salary: {
-            min: 21000,
-            max: 24000,
-            currency: 'GBP',
-            period: 'annual'
-          }
-        }
-      ];
-      
-      jobPostings.push(...demoJobs);
-    }
+    // Initialize mock jobs if needed
+    initializeMockJobs();
     
     // Convert job postings to swipeable card data
     return jobPostings.map(job => ({
@@ -436,11 +448,7 @@ export const jobAPI = {
   
   // Get seekers for hirer feed
   getSeekersFeed: async (): Promise<SwipeableCardData[]> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can access seeker feed');
-    }
-
-    // Populate with some demo seekers if empty
+    // Initialize mock seekers if empty
     if (seekerProfiles.length === 0) {
       const demoSeekers = [
         {
