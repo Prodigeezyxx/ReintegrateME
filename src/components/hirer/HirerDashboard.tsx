@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw } from 'lucide-react';
 import { authAPI, jobAPI } from '../../services/api';
+import { useAuth } from '@/hooks/useAuth';
 
 const HirerDashboard = () => {
   const [stats, setStats] = useState({
@@ -17,6 +18,7 @@ const HirerDashboard = () => {
   const [recentActivities, setRecentActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { user } = useAuth();
   
   useEffect(() => {
     fetchDashboardData();
@@ -25,16 +27,27 @@ const HirerDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setIsRefreshing(true);
-      // In a real app, we would fetch the dashboard data from an API
-      // For now, we'll simulate it with mock data
       
       // Get user's jobs to calculate stats
       const jobs = await jobAPI.getHirerJobs();
       
-      // Calculate mock statistics
+      // Calculate real statistics for guest users with mock applicants
       const activeOpenings = jobs.filter(job => job.status !== 'archived').length;
-      const totalApplicants = Math.floor(Math.random() * 50) + 10;
-      const newApplicants = Math.floor(Math.random() * 10);
+      
+      // For guest users, calculate based on the mock applicants we have
+      let totalApplicants = 0;
+      let newApplicants = 0;
+      
+      if (user?.isGuest) {
+        // Mock applicants data from HirerApplicants component
+        totalApplicants = 10; // Total number of mock applicants
+        newApplicants = 6; // Applicants with "new" status
+      } else {
+        // For real users, you would fetch actual applicant data from your backend
+        totalApplicants = Math.floor(Math.random() * 50) + 10;
+        newApplicants = Math.floor(Math.random() * 10);
+      }
+      
       const unreadMessages = Math.floor(Math.random() * 15);
       
       setStats({
@@ -110,6 +123,14 @@ const HirerDashboard = () => {
           </Button>
         </div>
         
+        {user?.isGuest && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-700">
+              👀 <strong>Guest Mode:</strong> These are sample stats to show you how the platform works
+            </p>
+          </div>
+        )}
+        
         <div className="grid grid-cols-2 gap-3 mb-6">
           <Card className="hover-scale">
             <CardContent className="p-4 flex flex-col items-center justify-center">
@@ -154,9 +175,9 @@ const HirerDashboard = () => {
               className="justify-start"
               asChild
             >
-              <Link to="/hirer-jobs">
-                <Briefcase className="h-4 w-4 mr-2" />
-                Manage Jobs
+              <Link to="/hirer-applicants">
+                <Users className="h-4 w-4 mr-2" />
+                View Applicants
               </Link>
             </Button>
             <Button
