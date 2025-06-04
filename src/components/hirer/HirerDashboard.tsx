@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -99,7 +98,7 @@ const HirerDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="mobile-container p-6 flex items-center justify-center min-h-screen">
+      <div className="mobile-container p-6 pb-24 flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-reme-orange mx-auto"></div>
           <p className="mt-4 text-gray-500">Loading dashboard...</p>
@@ -109,7 +108,7 @@ const HirerDashboard = () => {
   }
   
   return (
-    <div className="mobile-container p-6">
+    <div className="mobile-container p-6 pb-24">
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Dashboard</h1>
