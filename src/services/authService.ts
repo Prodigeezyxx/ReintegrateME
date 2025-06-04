@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserRole } from '../models/types';
 
@@ -50,12 +49,10 @@ export const authService = {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth`,
         data: {
           role,
           provider: 'email'
-        },
-        emailRedirectTo: undefined // Skip email confirmation
+        }
       }
     });
 
