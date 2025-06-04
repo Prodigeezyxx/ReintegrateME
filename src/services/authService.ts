@@ -31,6 +31,18 @@ const GUEST_USER: AuthUser = {
   provider: 'guest'
 };
 
+// Guest hirer for testing purposes
+const GUEST_HIRER: AuthUser = {
+  id: 'guest-hirer',
+  email: 'hirer@test.com',
+  role: 'hirer',
+  firstName: 'Guest',
+  lastName: 'Hirer',
+  displayName: 'Guest Hirer',
+  isGuest: true,
+  provider: 'guest'
+};
+
 export const authService = {
   // Sign up with email and password (skip email confirmation)
   signUpWithEmail: async (role: UserRole, email: string, password: string) => {
@@ -42,7 +54,8 @@ export const authService = {
         data: {
           role,
           provider: 'email'
-        }
+        },
+        emailRedirectTo: undefined // Skip email confirmation
       }
     });
 
@@ -64,7 +77,7 @@ export const authService = {
   // Continue as guest (for testing)
   continueAsGuest: async (role: UserRole = 'seeker') => {
     // Store guest user in localStorage for persistence
-    const guestUser = { ...GUEST_USER, role };
+    const guestUser = role === 'hirer' ? { ...GUEST_HIRER } : { ...GUEST_USER, role };
     localStorage.setItem('guestUser', JSON.stringify(guestUser));
     return { user: guestUser };
   },
