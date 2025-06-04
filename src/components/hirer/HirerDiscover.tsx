@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
@@ -99,7 +98,7 @@ const HirerDiscover = () => {
         {
           id: '6',
           type: 'seeker',
-          primaryImageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
+          primaryImageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h-150&fit=crop&crop=face',
           titleText: 'Robert Taylor',
           subtitleText: 'Construction Worker',
           detailLine1: 'Sheffield, UK',
@@ -312,7 +311,7 @@ const HirerDiscover = () => {
   }
   
   return (
-    <div className="mobile-container p-6">
+    <div className="mobile-container p-6 pb-24">
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Discover Talent</h1>
@@ -347,7 +346,7 @@ const HirerDiscover = () => {
         </div>
         
         {seekers.length > 0 && currentIndex < seekers.length && (
-          <div className="swipe-action-buttons">
+          <div className="swipe-action-buttons mb-20">
             <button 
               className="swipe-button pass-button"
               onClick={() => handleButtonSwipe('left')}
