@@ -16,6 +16,19 @@ const companyProfiles: CompanyProfile[] = [];
 const jobPostings: JobPosting[] = [];
 const matches: MatchRecord[] = [];
 
+// New: Track swipes for better matching logic
+interface SwipeRecord {
+  id: string;
+  swiperId: string;
+  swipedEntityId: string;
+  swipedEntityType: 'seeker' | 'job';
+  swipeType: 'like' | 'pass' | 'super_like';
+  contextJobId?: string;
+  timestamp: Date;
+}
+
+const swipeRecords: SwipeRecord[] = [];
+
 // Sample job categories
 export const jobCategories = [
   'Construction', 
@@ -433,8 +446,18 @@ export const jobAPI = {
     // Initialize mock jobs if needed
     initializeMockJobs();
     
+    // Filter out jobs the user has already swiped on
+    const userSwipes = swipeRecords.filter(record => 
+      record.swiperId === currentUser?.id && record.swipedEntityType === 'job'
+    );
+    const swipedJobIds = userSwipes.map(swipe => swipe.swipedEntityId);
+    
+    const availableJobs = jobPostings.filter(job => 
+      !swipedJobIds.includes(job.id) && job.status === 'active'
+    );
+    
     // Convert job postings to swipeable card data
-    return jobPostings.map(job => ({
+    return availableJobs.map(job => ({
       id: job.id,
       type: 'job',
       primaryImageUrl: job.companyLogoUrl,
@@ -528,8 +551,18 @@ export const jobAPI = {
       seekerProfiles.push(...demoSeekers);
     }
     
+    // Filter out seekers the current hirer has already swiped on
+    const userSwipes = swipeRecords.filter(record => 
+      record.swiperId === currentUser?.id && record.swipedEntityType === 'seeker'
+    );
+    const swipedSeekerIds = userSwipes.map(swipe => swipe.swipedEntityId);
+    
+    const availableSeekers = seekerProfiles.filter(seeker => 
+      !swipedSeekerIds.includes(seeker.id)
+    );
+    
     // Convert seeker profiles to swipeable card data
-    return seekerProfiles.map(profile => ({
+    return availableSeekers.map(profile => ({
       id: profile.id,
       type: 'seeker',
       primaryImageUrl: profile.profilePictureUrl,
@@ -543,75 +576,123 @@ export const jobAPI = {
 
 // Swipe API
 export const swipeAPI = {
-  // Process swipe
+  // Process swipe with improved matching logic
   processSwipe: async (swipedEntityId: string, swipedEntityType: 'seeker' | 'job', swipeType: 'like' | 'pass' | 'super_like', contextJobId?: string): Promise<{ isMatch: boolean, match?: MatchRecord }> => {
     if (!currentUser) {
       throw new Error('User must be authenticated to swipe');
     }
     
-    // For demonstration purposes, simulate a match on every 3rd like
-    const isLike = swipeType === 'like' || swipeType === 'super_like';
-    const randomMatch = Math.random() < 0.3 && isLike;
+    // Record the swipe
+    const swipeRecord: SwipeRecord = {
+      id: generateId(),
+      swiperId: currentUser.id,
+      swipedEntityId,
+      swipedEntityType,
+      swipeType,
+      contextJobId,
+      timestamp: new Date()
+    };
     
-    if (randomMatch) {
-      // Create a match record
-      let match: MatchRecord;
+    swipeRecords.push(swipeRecord);
+    
+    // Check for mutual match only on likes
+    if (swipeType === 'like' || swipeType === 'super_like') {
+      let isMatch = false;
+      let match: MatchRecord | undefined;
       
       if (currentUser.role === 'hirer' && swipedEntityType === 'seeker') {
-        const seeker = seekerProfiles.find(p => p.id === swipedEntityId);
+        // Check if the seeker has liked any of this hirer's jobs
+        const seekerLikes = swipeRecords.filter(record =>
+          record.swipedEntityType === 'job' &&
+          (record.swipeType === 'like' || record.swipeType === 'super_like') &&
+          jobPostings.some(job => job.id === record.swipedEntityId && job.hirerId === currentUser?.id)
+        );
         
-        if (!seeker) {
-          throw new Error('Seeker not found');
+        const seekerUserId = seekerProfiles.find(p => p.id === swipedEntityId)?.userId;
+        const mutualLike = seekerLikes.find(like => like.swiperId === seekerUserId);
+        
+        if (mutualLike) {
+          isMatch = true;
+          const seeker = seekerProfiles.find(p => p.id === swipedEntityId);
+          const company = companyProfiles.find(p => p.userId === currentUser?.id);
+          const job = jobPostings.find(j => j.id === mutualLike.swipedEntityId);
+          
+          if (seeker && company) {
+            match = {
+              id: generateId(),
+              hirerId: currentUser.id,
+              seekerId: seeker.userId,
+              hirerCompanyName: company.companyName,
+              seekerDisplayName: seeker.displayName,
+              contextJobId: mutualLike.swipedEntityId,
+              contextJobTitle: job?.title,
+              matchTimestamp: new Date(),
+            };
+            
+            matches.push(match);
+          }
         }
-        
-        const company = companyProfiles.find(p => p.userId === currentUser?.id);
-        
-        if (!company) {
-          throw new Error('Company profile not found');
-        }
-        
-        match = {
-          id: generateId(),
-          hirerId: currentUser.id,
-          seekerId: seeker.userId,
-          hirerCompanyName: company.companyName,
-          seekerDisplayName: seeker.displayName,
-          contextJobId,
-          contextJobTitle: contextJobId ? jobPostings.find(j => j.id === contextJobId)?.title : undefined,
-          matchTimestamp: new Date(),
-        };
-        
       } else if (currentUser.role === 'seeker' && swipedEntityType === 'job') {
+        // Check if the hirer has liked this seeker
         const job = jobPostings.find(j => j.id === swipedEntityId);
-        
-        if (!job) {
-          throw new Error('Job not found');
+        if (job) {
+          const hirerLikes = swipeRecords.filter(record =>
+            record.swiperId === job.hirerId &&
+            record.swipedEntityType === 'seeker' &&
+            (record.swipeType === 'like' || record.swipeType === 'super_like')
+          );
+          
+          const seekerProfile = seekerProfiles.find(p => p.userId === currentUser?.id);
+          const mutualLike = hirerLikes.find(like => like.swipedEntityId === seekerProfile?.id);
+          
+          if (mutualLike && seekerProfile) {
+            isMatch = true;
+            const company = companyProfiles.find(p => p.userId === job.hirerId);
+            
+            if (company) {
+              match = {
+                id: generateId(),
+                hirerId: job.hirerId,
+                seekerId: currentUser.id,
+                hirerCompanyName: company.companyName,
+                seekerDisplayName: seekerProfile.displayName,
+                contextJobId: job.id,
+                contextJobTitle: job.title,
+                matchTimestamp: new Date(),
+              };
+              
+              matches.push(match);
+            }
+          }
         }
-        
-        const seeker = seekerProfiles.find(p => p.userId === currentUser?.id);
-        
-        if (!seeker) {
-          throw new Error('Seeker profile not found');
-        }
-        
-        match = {
-          id: generateId(),
-          hirerId: job.hirerId,
-          seekerId: currentUser.id,
-          hirerCompanyName: job.companyName,
-          seekerDisplayName: seeker.displayName,
-          contextJobId: job.id,
-          contextJobTitle: job.title,
-          matchTimestamp: new Date(),
-        };
-        
-      } else {
-        throw new Error('Invalid swipe combination');
       }
       
-      matches.push(match);
+      // Fallback: simulate occasional matches for demo purposes (10% chance)
+      if (!isMatch && Math.random() < 0.1) {
+        isMatch = true;
+        // Create a demo match
+        if (currentUser.role === 'hirer' && swipedEntityType === 'seeker') {
+          const seeker = seekerProfiles.find(p => p.id === swipedEntityId);
+          const company = companyProfiles.find(p => p.userId === currentUser?.id);
+          
+          if (seeker && company) {
+            match = {
+              id: generateId(),
+              hirerId: currentUser.id,
+              seekerId: seeker.userId,
+              hirerCompanyName: company.companyName,
+              seekerDisplayName: seeker.displayName,
+              contextJobId,
+              contextJobTitle: contextJobId ? jobPostings.find(j => j.id === contextJobId)?.title : undefined,
+              matchTimestamp: new Date(),
+            };
+            
+            matches.push(match);
+          }
+        }
+      }
       
-      return { isMatch: true, match };
+      return { isMatch, match };
     }
     
     return { isMatch: false };
@@ -628,5 +709,14 @@ export const swipeAPI = {
     } else {
       return matches.filter(m => m.seekerId === currentUser?.id);
     }
+  },
+  
+  // Get user's swipe history
+  getSwipeHistory: async (): Promise<SwipeRecord[]> => {
+    if (!currentUser) {
+      throw new Error('User must be authenticated to get swipe history');
+    }
+    
+    return swipeRecords.filter(record => record.swiperId === currentUser?.id);
   }
 };
