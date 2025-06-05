@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
@@ -21,22 +20,8 @@ const HirerDiscover = () => {
   
   useEffect(() => {
     fetchSeekers();
-    
-    // Load favorites from localStorage
-    const savedFavorites = localStorage.getItem('hirerFavorites');
-    if (savedFavorites) {
-      try {
-        setFavorites(JSON.parse(savedFavorites));
-      } catch (error) {
-        console.error('Error parsing favorites from localStorage', error);
-      }
-    }
+    loadSavedProfiles();
   }, []);
-  
-  useEffect(() => {
-    // Save favorites to localStorage when updated
-    localStorage.setItem('hirerFavorites', JSON.stringify(favorites));
-  }, [favorites]);
   
   const fetchSeekers = async () => {
     try {
@@ -55,6 +40,15 @@ const HirerDiscover = () => {
       setIsRefreshing(false);
     }
   };
+
+  const loadSavedProfiles = async () => {
+    try {
+      const savedProfiles = await jobAPI.getSavedProfiles();
+      setFavorites(savedProfiles);
+    } catch (error) {
+      console.error('Error loading saved profiles:', error);
+    }
+  };
   
   const handleSwipe = async (direction: 'left' | 'right' | 'up') => {
     if (seekers.length === 0 || currentIndex >= seekers.length) return;
@@ -64,11 +58,6 @@ const HirerDiscover = () => {
     
     if (direction === 'right') {
       swipeType = 'like';
-      
-      // Add to favorites when swiping right
-      if (!favorites.some(fav => fav.id === currentSeeker.id)) {
-        setFavorites(prev => [...prev, currentSeeker]);
-      }
     }
     else if (direction === 'left') swipeType = 'pass';
     else swipeType = 'super_like';
@@ -84,6 +73,16 @@ const HirerDiscover = () => {
         setShowMatch(true);
         // Hide match animation after 3 seconds
         setTimeout(() => setShowMatch(false), 3000);
+        
+        toast({
+          title: "It's a Match! 🎉",
+          description: `You matched with ${currentSeeker.titleText}!`,
+        });
+      }
+
+      // Reload saved profiles if it was a like
+      if (swipeType === 'like' || swipeType === 'super_like') {
+        loadSavedProfiles();
       }
     } catch (error) {
       toast({
@@ -123,11 +122,13 @@ const HirerDiscover = () => {
     setSelectedProfile(profile);
   };
   
-  const handleRemoveFavorite = (profile: SwipeableCardData) => {
-    setFavorites(prev => prev.filter(fav => fav.id !== profile.id));
+  const handleRemoveFavorite = async (profile: SwipeableCardData) => {
+    // Note: In a real implementation, you'd want to add a remove function to the API
+    // For now, we'll just reload the saved profiles which will reflect the current state
+    loadSavedProfiles();
     toast({
-      title: "Removed from favorites",
-      description: `${profile.titleText} has been removed from your favorites.`,
+      title: "Note",
+      description: "To remove favorites, you'll need additional functionality.",
     });
   };
   
@@ -137,16 +138,14 @@ const HirerDiscover = () => {
     const isFavorited = favorites.some(fav => fav.id === selectedProfile.id);
     
     if (isFavorited) {
-      setFavorites(prev => prev.filter(fav => fav.id !== selectedProfile.id));
       toast({
-        title: "Removed from favorites",
-        description: `${selectedProfile.titleText} has been removed from your favorites.`,
+        title: "Note",
+        description: "Removing favorites requires additional functionality.",
       });
     } else {
-      setFavorites(prev => [...prev, selectedProfile]);
       toast({
-        title: "Added to favorites",
-        description: `${selectedProfile.titleText} has been added to your favorites.`,
+        title: "Note",
+        description: "This profile can be liked through the swipe interface.",
       });
     }
   };
@@ -154,6 +153,7 @@ const HirerDiscover = () => {
   const handleRefresh = () => {
     setCurrentIndex(0);
     fetchSeekers();
+    loadSavedProfiles();
   };
   
   const renderCards = () => {

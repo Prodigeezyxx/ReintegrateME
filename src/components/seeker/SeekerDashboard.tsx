@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
@@ -21,22 +20,8 @@ const SeekerDashboard = () => {
   
   useEffect(() => {
     fetchJobs();
-    
-    // Load favorites from localStorage
-    const savedFavorites = localStorage.getItem('seekerFavorites');
-    if (savedFavorites) {
-      try {
-        setFavorites(JSON.parse(savedFavorites));
-      } catch (error) {
-        console.error('Error parsing favorites from localStorage', error);
-      }
-    }
+    loadSavedJobs();
   }, []);
-  
-  useEffect(() => {
-    // Save favorites to localStorage when updated
-    localStorage.setItem('seekerFavorites', JSON.stringify(favorites));
-  }, [favorites]);
   
   const fetchJobs = async () => {
     try {
@@ -55,6 +40,15 @@ const SeekerDashboard = () => {
       setIsRefreshing(false);
     }
   };
+
+  const loadSavedJobs = async () => {
+    try {
+      const savedJobs = await jobAPI.getSavedJobs();
+      setFavorites(savedJobs);
+    } catch (error) {
+      console.error('Error loading saved jobs:', error);
+    }
+  };
   
   const handleSwipe = async (direction: 'left' | 'right' | 'up') => {
     if (jobs.length === 0 || currentIndex >= jobs.length) return;
@@ -64,11 +58,6 @@ const SeekerDashboard = () => {
     
     if (direction === 'right') {
       swipeType = 'like';
-      
-      // Add to favorites when swiping right
-      if (!favorites.some(fav => fav.id === currentJob.id)) {
-        setFavorites(prev => [...prev, currentJob]);
-      }
     }
     else if (direction === 'left') swipeType = 'pass';
     else swipeType = 'super_like';
@@ -77,13 +66,24 @@ const SeekerDashboard = () => {
       const result = await swipeAPI.processSwipe(
         currentJob.id,
         'job',
-        swipeType
+        swipeType,
+        currentJob.id // Pass job ID as context
       );
       
       if (result.isMatch) {
         setShowMatch(true);
         // Hide match animation after 3 seconds
         setTimeout(() => setShowMatch(false), 3000);
+        
+        toast({
+          title: "It's a Match! 🎉",
+          description: `You matched for ${currentJob.titleText}!`,
+        });
+      }
+
+      // Reload saved jobs if it was a like
+      if (swipeType === 'like' || swipeType === 'super_like') {
+        loadSavedJobs();
       }
     } catch (error) {
       toast({
@@ -126,10 +126,10 @@ const SeekerDashboard = () => {
   };
   
   const handleRemoveFavorite = (profile: SwipeableCardData) => {
-    setFavorites(prev => prev.filter(fav => fav.id !== profile.id));
+    loadSavedJobs();
     toast({
-      title: "Removed from favorites",
-      description: `${profile.titleText} has been removed from your favorites.`,
+      title: "Note",
+      description: "To remove favorites, you'll need additional functionality.",
     });
   };
   
@@ -139,16 +139,14 @@ const SeekerDashboard = () => {
     const isFavorited = favorites.some(fav => fav.id === selectedProfile.id);
     
     if (isFavorited) {
-      setFavorites(prev => prev.filter(fav => fav.id !== selectedProfile.id));
       toast({
-        title: "Removed from favorites",
-        description: `${selectedProfile.titleText} has been removed from your favorites.`,
+        title: "Note",
+        description: "Removing favorites requires additional functionality.",
       });
     } else {
-      setFavorites(prev => [...prev, selectedProfile]);
       toast({
-        title: "Added to favorites",
-        description: `${selectedProfile.titleText} has been added to your favorites.`,
+        title: "Note",
+        description: "This job can be liked through the swipe interface.",
       });
     }
   };
@@ -156,6 +154,7 @@ const SeekerDashboard = () => {
   const handleRefresh = () => {
     setCurrentIndex(0);
     fetchJobs();
+    loadSavedJobs();
   };
   
   const renderCards = () => {
