@@ -17,6 +17,7 @@ const HirerDiscover = () => {
   const [favorites, setFavorites] = useState<SwipeableCardData[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<SwipeableCardData | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isProcessingSwipe, setIsProcessingSwipe] = useState(false);
   
   useEffect(() => {
     fetchSeekers();
@@ -51,8 +52,9 @@ const HirerDiscover = () => {
   };
   
   const handleSwipe = async (direction: 'left' | 'right' | 'up') => {
-    if (seekers.length === 0 || currentIndex >= seekers.length) return;
+    if (seekers.length === 0 || currentIndex >= seekers.length || isProcessingSwipe) return;
     
+    setIsProcessingSwipe(true);
     const currentSeeker = seekers[currentIndex];
     let swipeType: 'like' | 'pass' | 'super_like';
     
@@ -61,6 +63,9 @@ const HirerDiscover = () => {
     }
     else if (direction === 'left') swipeType = 'pass';
     else swipeType = 'super_like';
+    
+    // Move to next card immediately for seamless animation
+    setCurrentIndex(prevIndex => prevIndex + 1);
     
     try {
       const result = await swipeAPI.processSwipe(
@@ -71,7 +76,6 @@ const HirerDiscover = () => {
       
       if (result.isMatch) {
         setShowMatch(true);
-        // Hide match animation after 3 seconds
         setTimeout(() => setShowMatch(false), 3000);
         
         toast({
@@ -80,7 +84,6 @@ const HirerDiscover = () => {
         });
       }
 
-      // Reload saved profiles if it was a like
       if (swipeType === 'like' || swipeType === 'super_like') {
         loadSavedProfiles();
       }
@@ -90,19 +93,18 @@ const HirerDiscover = () => {
         description: "Failed to process swipe",
         variant: "destructive"
       });
+    } finally {
+      setIsProcessingSwipe(false);
     }
-    
-    // Move to next card
-    setCurrentIndex(prevIndex => prevIndex + 1);
   };
   
   const handleButtonSwipe = (direction: 'left' | 'right' | 'up') => {
-    if (seekers.length === 0 || currentIndex >= seekers.length) return;
+    if (seekers.length === 0 || currentIndex >= seekers.length || isProcessingSwipe) return;
     
     const card = document.querySelector('.swipe-card') as HTMLElement;
     
     if (card) {
-      card.style.transition = 'transform 0.5s ease';
+      card.style.transition = 'transform 0.3s ease';
       
       if (direction === 'left') {
         card.style.transform = 'translateX(-1000px) rotate(-30deg)';
@@ -113,8 +115,14 @@ const HirerDiscover = () => {
       }
       
       setTimeout(() => {
+        if (card) {
+          card.style.transition = '';
+          card.style.transform = '';
+        }
         handleSwipe(direction);
-      }, 300);
+      }, 200);
+    } else {
+      handleSwipe(direction);
     }
   };
   
@@ -204,6 +212,7 @@ const HirerDiscover = () => {
     
     return (
       <SwipeableCard
+        key={seekers[currentIndex]?.id}
         card={seekers[currentIndex]}
         onSwipe={handleSwipe}
       />
