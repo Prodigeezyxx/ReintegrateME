@@ -110,45 +110,45 @@ const HirerDashboard = () => {
         </div>
         
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="hover-scale cursor-pointer" asChild>
-            <Link to="/hirer-jobs">
+          <Link to="/hirer-jobs">
+            <Card className="hover-scale cursor-pointer">
               <CardContent className="p-4 flex flex-col items-center justify-center">
                 <Briefcase className="h-6 w-6 text-reme-orange mb-2" />
                 <p className="text-2xl font-bold">{stats.activeOpenings}</p>
                 <p className="text-xs text-muted-foreground">Active Jobs</p>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
           
-          <Card className="hover-scale cursor-pointer" asChild>
-            <Link to="/hirer-applicants">
+          <Link to="/hirer-discover">
+            <Card className="hover-scale cursor-pointer">
               <CardContent className="p-4 flex flex-col items-center justify-center">
                 <Users className="h-6 w-6 text-blue-500 mb-2" />
                 <p className="text-2xl font-bold">{stats.totalApplicants}</p>
                 <p className="text-xs text-muted-foreground">Total Applicants</p>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
           
-          <Card className="hover-scale cursor-pointer" asChild>
-            <Link to="/hirer-applicants">
+          <Link to="/hirer-discover">
+            <Card className="hover-scale cursor-pointer">
               <CardContent className="p-4 flex flex-col items-center justify-center">
                 <Users className="h-6 w-6 text-green-500 mb-2" />
                 <p className="text-2xl font-bold">{stats.newApplicants}</p>
                 <p className="text-xs text-muted-foreground">New Applicants</p>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
           
-          <Card className="hover-scale cursor-pointer" asChild>
-            <Link to="/hirer-messages">
+          <Link to="/hirer-messages">
+            <Card className="hover-scale cursor-pointer">
               <CardContent className="p-4 flex flex-col items-center justify-center">
                 <MessageSquare className="h-6 w-6 text-purple-500 mb-2" />
                 <p className="text-2xl font-bold">{stats.unreadMessages}</p>
                 <p className="text-xs text-muted-foreground">Unread Messages</p>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
         </div>
         
         <Card className="mb-6">
