@@ -1,47 +1,34 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, Clock, Building2, Heart, Trash2 } from 'lucide-react';
+import { MapPin, Clock, Building2, ArrowLeft, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { SwipeableCardData } from '../../models/types';
-import { toast } from '@/hooks/use-toast';
 
 const SeekerSaved = () => {
   const navigate = useNavigate();
-  const [savedJobs, setSavedJobs] = useState<SwipeableCardData[]>([]);
 
-  useEffect(() => {
-    // Load saved jobs from localStorage
-    const saved = localStorage.getItem('seekerFavorites');
-    if (saved) {
-      try {
-        setSavedJobs(JSON.parse(saved));
-      } catch (error) {
-        console.error('Error parsing saved jobs', error);
-      }
+  const savedJobs = [
+    {
+      id: 1,
+      title: 'Frontend Developer',
+      company: 'TechCorp Inc.',
+      location: 'San Francisco, CA',
+      salary: '$80,000 - $120,000',
+      type: 'Full-time',
+      postedDate: '2 days ago'
+    },
+    {
+      id: 2,
+      title: 'React Developer',
+      company: 'StartupXYZ',
+      location: 'Remote',
+      salary: '$70,000 - $100,000',
+      type: 'Full-time',
+      postedDate: '1 week ago'
     }
-  }, []);
-
-  const handleRemoveJob = (jobId: string) => {
-    const updatedJobs = savedJobs.filter(job => job.id !== jobId);
-    setSavedJobs(updatedJobs);
-    localStorage.setItem('seekerFavorites', JSON.stringify(updatedJobs));
-    
-    toast({
-      title: "Job Removed",
-      description: "Job has been removed from your saved list.",
-    });
-  };
-
-  const handleApplyToJob = (job: SwipeableCardData) => {
-    toast({
-      title: "Application Started",
-      description: `Application process started for ${job.titleText}`,
-    });
-    // Here you would typically navigate to an application form or process
-  };
+  ];
 
   return (
     <div className="mobile-container p-6 pb-20">
@@ -62,8 +49,8 @@ const SeekerSaved = () => {
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">No Saved Jobs Yet</h3>
-          <p className="text-gray-500 mb-6">Jobs you like will appear here. Start exploring to find opportunities you love!</p>
+          <h3 className="text-lg font-semibold mb-2">No Saved Jobs</h3>
+          <p className="text-gray-500 mb-6">Jobs you like will appear here for easy access.</p>
           <Button onClick={() => navigate('/seeker-discover')}>
             Discover Jobs
           </Button>
@@ -71,59 +58,36 @@ const SeekerSaved = () => {
       ) : (
         <div className="space-y-4">
           {savedJobs.map((job) => (
-            <Card key={job.id} className="ios-card">
+            <Card key={job.id} className="ios-card cursor-pointer hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg pr-2">{job.titleText}</CardTitle>
+                  <div>
+                    <CardTitle className="text-lg">{job.title}</CardTitle>
                     <div className="flex items-center text-gray-600 text-sm mt-1">
                       <Building2 className="h-4 w-4 mr-1" />
-                      {job.subtitleText}
+                      {job.company}
                     </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={() => handleRemoveJob(job.id)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="text-red-500">
+                    <Heart className="h-5 w-5 fill-current" />
                   </Button>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                {job.tags && (
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {job.tags.slice(0, 3).map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {job.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{job.tags.length - 3} more
-                      </Badge>
-                    )}
-                  </div>
-                )}
-                
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                  <div className="flex items-center">
+                <div className="space-y-2">
+                  <div className="flex items-center text-sm text-gray-600">
                     <MapPin className="h-4 w-4 mr-1" />
-                    {job.detailLine1 || 'Location not specified'}
+                    {job.location}
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary">{job.type}</Badge>
+                    <span className="text-sm font-medium text-green-600">{job.salary}</span>
+                  </div>
+                  <div className="flex items-center text-xs text-gray-500">
                     <Clock className="h-4 w-4 mr-1" />
-                    Posted recently
+                    Posted {job.postedDate}
                   </div>
                 </div>
-
-                <Button 
-                  onClick={() => handleApplyToJob(job)}
-                  className="w-full bg-reme-orange hover:bg-orange-600"
-                >
-                  Apply Now
-                </Button>
               </CardContent>
             </Card>
           ))}

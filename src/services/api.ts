@@ -1,3 +1,4 @@
+
 import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCardData, MatchRecord } from '../models/types';
 
 // Mock data and functions to simulate API calls
@@ -15,19 +16,6 @@ const seekerProfiles: SeekerProfile[] = [];
 const companyProfiles: CompanyProfile[] = [];
 const jobPostings: JobPosting[] = [];
 const matches: MatchRecord[] = [];
-
-// New: Track swipes for better matching logic
-interface SwipeRecord {
-  id: string;
-  swiperId: string;
-  swipedEntityId: string;
-  swipedEntityType: 'seeker' | 'job';
-  swipeType: 'like' | 'pass' | 'super_like';
-  contextJobId?: string;
-  timestamp: Date;
-}
-
-const swipeRecords: SwipeRecord[] = [];
 
 // Sample job categories
 export const jobCategories = [
@@ -81,79 +69,6 @@ export const countries = [
   'Sweden',
   'Denmark'
 ];
-
-// Initialize mock jobs for guest users
-const initializeMockJobs = () => {
-  if (jobPostings.length === 0) {
-    const mockJobs = [
-      {
-        id: generateId(),
-        hirerId: 'guest-hirer',
-        companyId: 'guest-company',
-        title: 'Senior Construction Worker',
-        description: 'We are looking for an experienced construction worker to join our team on various commercial projects in London.',
-        companyName: 'BuildPro Construction Ltd',
-        companyLogoUrl: 'https://placehold.co/100x100?text=BP',
-        category: 'Construction',
-        employmentType: 'Full-time',
-        experienceLevel: 'Mid-level',
-        locationCity: 'London',
-        locationCountry: 'United Kingdom',
-        requiredSkills: ['Construction Experience', 'Health & Safety', 'Physical Fitness'],
-        salary: {
-          min: 25000,
-          max: 32000,
-          currency: 'GBP',
-          period: 'annual'
-        },
-        createdAt: new Date(),
-        status: 'active' as const,
-      },
-      {
-        id: generateId(),
-        hirerId: 'guest-hirer',
-        companyId: 'guest-company',
-        title: 'Electrician - Residential Projects',
-        description: 'Join our electrical team working on residential installations and maintenance across Manchester.',
-        companyName: 'PowerTech Solutions',
-        companyLogoUrl: 'https://placehold.co/100x100?text=PT',
-        category: 'Construction',
-        employmentType: 'Full-time',
-        experienceLevel: 'Mid-level',
-        locationCity: 'Manchester',
-        locationCountry: 'United Kingdom',
-        requiredSkills: ['Electrical Installation', '18th Edition', 'Testing & Inspection'],
-        salary: {
-          min: 28000,
-          max: 38000,
-          currency: 'GBP',
-          period: 'annual'
-        },
-        createdAt: new Date(),
-        status: 'active' as const,
-      },
-      {
-        id: generateId(),
-        hirerId: 'guest-hirer',
-        companyId: 'guest-company',
-        title: 'Warehouse Operative',
-        description: 'Immediate start available for warehouse operative role with forklift training provided.',
-        companyName: 'LogiFlow Warehouse',
-        companyLogoUrl: 'https://placehold.co/100x100?text=LF',
-        category: 'Logistics',
-        employmentType: 'Full-time',
-        experienceLevel: 'Entry-level',
-        locationCity: 'Birmingham',
-        locationCountry: 'United Kingdom',
-        requiredSkills: ['Physical Fitness', 'Attention to Detail', 'Team Work'],
-        createdAt: new Date(),
-        status: 'draft' as const,
-      }
-    ];
-    
-    jobPostings.push(...mockJobs);
-  }
-};
 
 // Authentication API
 export const authAPI = {
@@ -414,26 +329,12 @@ export const jobAPI = {
     return newJob;
   },
   
-  // Get jobs for hirer - Updated to handle guest users without errors
+  // Get jobs for hirer
   getHirerJobs: async (): Promise<JobPosting[]> => {
-    // Initialize mock jobs if needed
-    initializeMockJobs();
-    
-    // For guest users or when no current user, return mock jobs
-    if (!currentUser) {
-      return jobPostings.filter(job => job.hirerId === 'guest-hirer');
-    }
-    
-    if (currentUser.role !== 'hirer') {
+    if (!currentUser || currentUser.role !== 'hirer') {
       throw new Error('Only hirers can access their job postings');
     }
     
-    // For guest users (identified by isGuest property), return mock jobs
-    if ((currentUser as any).isGuest) {
-      return jobPostings.filter(job => job.hirerId === 'guest-hirer');
-    }
-    
-    // For real users, return their actual jobs
     return jobPostings.filter(job => job.hirerId === currentUser?.id);
   },
   
@@ -443,21 +344,85 @@ export const jobAPI = {
       throw new Error('Only job seekers can access job feed');
     }
 
-    // Initialize mock jobs if needed
-    initializeMockJobs();
-    
-    // Filter out jobs the user has already swiped on
-    const userSwipes = swipeRecords.filter(record => 
-      record.swiperId === currentUser?.id && record.swipedEntityType === 'job'
-    );
-    const swipedJobIds = userSwipes.map(swipe => swipe.swipedEntityId);
-    
-    const availableJobs = jobPostings.filter(job => 
-      !swipedJobIds.includes(job.id) && job.status === 'active'
-    );
+    // Populate with some demo jobs if empty
+    if (jobPostings.length === 0) {
+      const demoJobs = [
+        {
+          id: generateId(),
+          hirerId: 'demo',
+          companyId: 'demo',
+          title: 'Construction Worker',
+          description: 'Looking for experienced construction workers for commercial building projects in Central London.',
+          companyName: 'BuildRight Construction',
+          companyLogoUrl: 'https://placehold.co/100x100?text=BC',
+          category: 'Construction',
+          employmentType: 'Full-time',
+          experienceLevel: 'Entry-level to Mid-level',
+          locationCity: 'London',
+          locationCountry: 'United Kingdom',
+          requiredSkills: ['Physical Stamina', 'Tool Knowledge', 'Health & Safety Awareness'],
+          createdAt: new Date(),
+          status: 'active' as const,
+          salary: {
+            min: 22000,
+            max: 30000,
+            currency: 'GBP',
+            period: 'annual'
+          }
+        },
+        {
+          id: generateId(),
+          hirerId: 'demo',
+          companyId: 'demo',
+          title: 'Electrician',
+          description: 'Join our team of skilled electricians for residential and commercial projects throughout Greater Manchester.',
+          companyName: 'PowerUp Electric',
+          companyLogoUrl: 'https://placehold.co/100x100?text=PE',
+          category: 'Construction',
+          employmentType: 'Full-time',
+          experienceLevel: 'Mid-level',
+          locationCity: 'Manchester',
+          locationCountry: 'United Kingdom',
+          requiredSkills: ['Electrical Systems', 'Wiring', 'Troubleshooting'],
+          createdAt: new Date(),
+          status: 'active' as const,
+          salary: {
+            min: 25000,
+            max: 35000,
+            currency: 'GBP',
+            period: 'annual'
+          }
+        },
+        {
+          id: generateId(),
+          hirerId: 'demo',
+          companyId: 'demo',
+          title: 'Delivery Driver',
+          description: 'Local delivery routes throughout Birmingham, company vehicle provided. Must have valid UK driving license.',
+          companyName: 'Swift Logistics',
+          companyLogoUrl: 'https://placehold.co/100x100?text=SL',
+          category: 'Transportation',
+          employmentType: 'Full-time',
+          experienceLevel: 'Entry-level',
+          locationCity: 'Birmingham',
+          locationCountry: 'United Kingdom',
+          requiredSkills: ['Clean Driving Licence', 'Navigation Skills', 'Time Management'],
+          createdAt: new Date(),
+          status: 'active' as const,
+          salary: {
+            min: 21000,
+            max: 24000,
+            currency: 'GBP',
+            period: 'annual'
+          }
+        }
+      ];
+      
+      jobPostings.push(...demoJobs);
+    }
     
     // Convert job postings to swipeable card data
-    return availableJobs.map(job => ({
+    return jobPostings.map(job => ({
       id: job.id,
       type: 'job',
       primaryImageUrl: job.companyLogoUrl,
@@ -471,7 +436,11 @@ export const jobAPI = {
   
   // Get seekers for hirer feed
   getSeekersFeed: async (): Promise<SwipeableCardData[]> => {
-    // Initialize mock seekers if empty
+    if (!currentUser || currentUser.role !== 'hirer') {
+      throw new Error('Only hirers can access seeker feed');
+    }
+
+    // Populate with some demo seekers if empty
     if (seekerProfiles.length === 0) {
       const demoSeekers = [
         {
@@ -551,18 +520,8 @@ export const jobAPI = {
       seekerProfiles.push(...demoSeekers);
     }
     
-    // Filter out seekers the current hirer has already swiped on
-    const userSwipes = swipeRecords.filter(record => 
-      record.swiperId === currentUser?.id && record.swipedEntityType === 'seeker'
-    );
-    const swipedSeekerIds = userSwipes.map(swipe => swipe.swipedEntityId);
-    
-    const availableSeekers = seekerProfiles.filter(seeker => 
-      !swipedSeekerIds.includes(seeker.id)
-    );
-    
     // Convert seeker profiles to swipeable card data
-    return availableSeekers.map(profile => ({
+    return seekerProfiles.map(profile => ({
       id: profile.id,
       type: 'seeker',
       primaryImageUrl: profile.profilePictureUrl,
@@ -576,123 +535,75 @@ export const jobAPI = {
 
 // Swipe API
 export const swipeAPI = {
-  // Process swipe with improved matching logic
+  // Process swipe
   processSwipe: async (swipedEntityId: string, swipedEntityType: 'seeker' | 'job', swipeType: 'like' | 'pass' | 'super_like', contextJobId?: string): Promise<{ isMatch: boolean, match?: MatchRecord }> => {
     if (!currentUser) {
       throw new Error('User must be authenticated to swipe');
     }
     
-    // Record the swipe
-    const swipeRecord: SwipeRecord = {
-      id: generateId(),
-      swiperId: currentUser.id,
-      swipedEntityId,
-      swipedEntityType,
-      swipeType,
-      contextJobId,
-      timestamp: new Date()
-    };
+    // For demonstration purposes, simulate a match on every 3rd like
+    const isLike = swipeType === 'like' || swipeType === 'super_like';
+    const randomMatch = Math.random() < 0.3 && isLike;
     
-    swipeRecords.push(swipeRecord);
-    
-    // Check for mutual match only on likes
-    if (swipeType === 'like' || swipeType === 'super_like') {
-      let isMatch = false;
-      let match: MatchRecord | undefined;
+    if (randomMatch) {
+      // Create a match record
+      let match: MatchRecord;
       
       if (currentUser.role === 'hirer' && swipedEntityType === 'seeker') {
-        // Check if the seeker has liked any of this hirer's jobs
-        const seekerLikes = swipeRecords.filter(record =>
-          record.swipedEntityType === 'job' &&
-          (record.swipeType === 'like' || record.swipeType === 'super_like') &&
-          jobPostings.some(job => job.id === record.swipedEntityId && job.hirerId === currentUser?.id)
-        );
+        const seeker = seekerProfiles.find(p => p.id === swipedEntityId);
         
-        const seekerUserId = seekerProfiles.find(p => p.id === swipedEntityId)?.userId;
-        const mutualLike = seekerLikes.find(like => like.swiperId === seekerUserId);
-        
-        if (mutualLike) {
-          isMatch = true;
-          const seeker = seekerProfiles.find(p => p.id === swipedEntityId);
-          const company = companyProfiles.find(p => p.userId === currentUser?.id);
-          const job = jobPostings.find(j => j.id === mutualLike.swipedEntityId);
-          
-          if (seeker && company) {
-            match = {
-              id: generateId(),
-              hirerId: currentUser.id,
-              seekerId: seeker.userId,
-              hirerCompanyName: company.companyName,
-              seekerDisplayName: seeker.displayName,
-              contextJobId: mutualLike.swipedEntityId,
-              contextJobTitle: job?.title,
-              matchTimestamp: new Date(),
-            };
-            
-            matches.push(match);
-          }
+        if (!seeker) {
+          throw new Error('Seeker not found');
         }
+        
+        const company = companyProfiles.find(p => p.userId === currentUser?.id);
+        
+        if (!company) {
+          throw new Error('Company profile not found');
+        }
+        
+        match = {
+          id: generateId(),
+          hirerId: currentUser.id,
+          seekerId: seeker.userId,
+          hirerCompanyName: company.companyName,
+          seekerDisplayName: seeker.displayName,
+          contextJobId,
+          contextJobTitle: contextJobId ? jobPostings.find(j => j.id === contextJobId)?.title : undefined,
+          matchTimestamp: new Date(),
+        };
+        
       } else if (currentUser.role === 'seeker' && swipedEntityType === 'job') {
-        // Check if the hirer has liked this seeker
         const job = jobPostings.find(j => j.id === swipedEntityId);
-        if (job) {
-          const hirerLikes = swipeRecords.filter(record =>
-            record.swiperId === job.hirerId &&
-            record.swipedEntityType === 'seeker' &&
-            (record.swipeType === 'like' || record.swipeType === 'super_like')
-          );
-          
-          const seekerProfile = seekerProfiles.find(p => p.userId === currentUser?.id);
-          const mutualLike = hirerLikes.find(like => like.swipedEntityId === seekerProfile?.id);
-          
-          if (mutualLike && seekerProfile) {
-            isMatch = true;
-            const company = companyProfiles.find(p => p.userId === job.hirerId);
-            
-            if (company) {
-              match = {
-                id: generateId(),
-                hirerId: job.hirerId,
-                seekerId: currentUser.id,
-                hirerCompanyName: company.companyName,
-                seekerDisplayName: seekerProfile.displayName,
-                contextJobId: job.id,
-                contextJobTitle: job.title,
-                matchTimestamp: new Date(),
-              };
-              
-              matches.push(match);
-            }
-          }
+        
+        if (!job) {
+          throw new Error('Job not found');
         }
+        
+        const seeker = seekerProfiles.find(p => p.userId === currentUser?.id);
+        
+        if (!seeker) {
+          throw new Error('Seeker profile not found');
+        }
+        
+        match = {
+          id: generateId(),
+          hirerId: job.hirerId,
+          seekerId: currentUser.id,
+          hirerCompanyName: job.companyName,
+          seekerDisplayName: seeker.displayName,
+          contextJobId: job.id,
+          contextJobTitle: job.title,
+          matchTimestamp: new Date(),
+        };
+        
+      } else {
+        throw new Error('Invalid swipe combination');
       }
       
-      // Fallback: simulate occasional matches for demo purposes (10% chance)
-      if (!isMatch && Math.random() < 0.1) {
-        isMatch = true;
-        // Create a demo match
-        if (currentUser.role === 'hirer' && swipedEntityType === 'seeker') {
-          const seeker = seekerProfiles.find(p => p.id === swipedEntityId);
-          const company = companyProfiles.find(p => p.userId === currentUser?.id);
-          
-          if (seeker && company) {
-            match = {
-              id: generateId(),
-              hirerId: currentUser.id,
-              seekerId: seeker.userId,
-              hirerCompanyName: company.companyName,
-              seekerDisplayName: seeker.displayName,
-              contextJobId,
-              contextJobTitle: contextJobId ? jobPostings.find(j => j.id === contextJobId)?.title : undefined,
-              matchTimestamp: new Date(),
-            };
-            
-            matches.push(match);
-          }
-        }
-      }
+      matches.push(match);
       
-      return { isMatch, match };
+      return { isMatch: true, match };
     }
     
     return { isMatch: false };
@@ -709,14 +620,5 @@ export const swipeAPI = {
     } else {
       return matches.filter(m => m.seekerId === currentUser?.id);
     }
-  },
-  
-  // Get user's swipe history
-  getSwipeHistory: async (): Promise<SwipeRecord[]> => {
-    if (!currentUser) {
-      throw new Error('User must be authenticated to get swipe history');
-    }
-    
-    return swipeRecords.filter(record => record.swiperId === currentUser?.id);
   }
 };

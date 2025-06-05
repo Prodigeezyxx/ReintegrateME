@@ -9,7 +9,6 @@ import MatchAnimation from '../MatchAnimation';
 import FavoritesBar from '../FavoritesBar';
 import SeekerProfileView from '../SeekerProfileView';
 import { RefreshCw } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
 
 const HirerDiscover = () => {
   const [seekers, setSeekers] = useState<SwipeableCardData[]>([]);
@@ -19,7 +18,6 @@ const HirerDiscover = () => {
   const [favorites, setFavorites] = useState<SwipeableCardData[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<SwipeableCardData | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { user } = useAuth();
   
   useEffect(() => {
     fetchSeekers();
@@ -43,95 +41,11 @@ const HirerDiscover = () => {
   const fetchSeekers = async () => {
     try {
       setIsRefreshing(true);
-      
-      // Create mock seekers data for guest users
-      const mockSeekers: SwipeableCardData[] = [
-        {
-          id: '1',
-          type: 'seeker',
-          primaryImageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-          titleText: 'Marcus Thompson',
-          subtitleText: 'Experienced Carpenter',
-          detailLine1: 'London, UK',
-          detailLine2: '5+ years experience',
-          tags: ['Carpentry', 'Framing', 'Finishing Work']
-        },
-        {
-          id: '2',
-          type: 'seeker',
-          primaryImageUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-          titleText: 'Sarah Mitchell',
-          subtitleText: 'Licensed Electrician',
-          detailLine1: 'Manchester, UK',
-          detailLine2: '3 years experience',
-          tags: ['Electrical Systems', 'Wiring', 'Troubleshooting', 'Health & Safety']
-        },
-        {
-          id: '3',
-          type: 'seeker',
-          primaryImageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-          titleText: 'David Kumar',
-          subtitleText: 'Construction Specialist',
-          detailLine1: 'Birmingham, UK',
-          detailLine2: '8 years experience',
-          tags: ['Heavy Machinery', 'Site Management', 'Quality Control']
-        },
-        {
-          id: '4',
-          type: 'seeker',
-          primaryImageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-          titleText: 'James Wilson',
-          subtitleText: 'Professional Driver',
-          detailLine1: 'Leeds, UK',
-          detailLine2: '4 years experience',
-          tags: ['HGV Licence', 'Navigation', 'Customer Service', 'Time Management']
-        },
-        {
-          id: '5',
-          type: 'seeker',
-          primaryImageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-          titleText: 'Lisa Chen',
-          subtitleText: 'Certified Electrician',
-          detailLine1: 'Glasgow, UK',
-          detailLine2: '6 years experience',
-          tags: ['Industrial Electrical', 'Motor Controls', 'PLC Programming']
-        },
-        {
-          id: '6',
-          type: 'seeker',
-          primaryImageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h-150&fit=crop&crop=face',
-          titleText: 'Robert Taylor',
-          subtitleText: 'Construction Worker',
-          detailLine1: 'Sheffield, UK',
-          detailLine2: 'Recent graduate',
-          tags: ['Basic Construction', 'Eager to Learn', 'Reliable']
-        },
-        {
-          id: '7',
-          type: 'seeker',
-          primaryImageUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
-          titleText: 'Ana Kowalski',
-          subtitleText: 'Delivery Specialist',
-          detailLine1: 'Liverpool, UK',
-          detailLine2: 'Multi-drop expert',
-          tags: ['Route Optimization', 'Customer Relations', 'Van Maintenance']
-        },
-        {
-          id: '8',
-          type: 'seeker',
-          titleText: 'Mohammed Ali',
-          subtitleText: 'Commercial Plumber',
-          detailLine1: 'Edinburgh, UK',
-          detailLine2: '7 years experience',
-          tags: ['Commercial Systems', 'Emergency Repairs', 'Team Leadership']
-        }
-      ];
-      
-      setSeekers(mockSeekers);
+      const data = await jobAPI.getSeekersFeed();
+      setSeekers(data);
       setIsLoading(false);
       setIsRefreshing(false);
     } catch (error) {
-      console.error('Error loading talent profiles:', error);
       toast({
         title: "Error",
         description: "Failed to load talent profiles",
@@ -154,30 +68,29 @@ const HirerDiscover = () => {
       // Add to favorites when swiping right
       if (!favorites.some(fav => fav.id === currentSeeker.id)) {
         setFavorites(prev => [...prev, currentSeeker]);
-        toast({
-          title: "Added to favorites",
-          description: `${currentSeeker.titleText} has been added to your favorites.`,
-        });
       }
     }
     else if (direction === 'left') swipeType = 'pass';
     else swipeType = 'super_like';
     
     try {
-      // Process the swipe using the enhanced API
-      const result = await swipeAPI.processSwipe(currentSeeker.id, 'seeker', swipeType);
+      const result = await swipeAPI.processSwipe(
+        currentSeeker.id,
+        'seeker',
+        swipeType
+      );
       
       if (result.isMatch) {
         setShowMatch(true);
-        toast({
-          title: "It's a Match!",
-          description: `You and ${currentSeeker.titleText} liked each other!`,
-        });
         // Hide match animation after 3 seconds
         setTimeout(() => setShowMatch(false), 3000);
       }
     } catch (error) {
-      console.error('Error processing swipe:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process swipe",
+        variant: "destructive"
+      });
     }
     
     // Move to next card
@@ -312,7 +225,7 @@ const HirerDiscover = () => {
   }
   
   return (
-    <div className="mobile-container p-6 pb-24">
+    <div className="mobile-container p-6">
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Discover Talent</h1>
@@ -327,14 +240,6 @@ const HirerDiscover = () => {
           </Button>
         </div>
         
-        {user?.isGuest && (
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-700">
-              👀 <strong>Guest Mode:</strong> These are sample talent profiles to show you how the platform works
-            </p>
-          </div>
-        )}
-        
         <FavoritesBar 
           favorites={favorites} 
           onFavoriteClick={handleFavoriteProfileClick}
@@ -347,7 +252,7 @@ const HirerDiscover = () => {
         </div>
         
         {seekers.length > 0 && currentIndex < seekers.length && (
-          <div className="swipe-action-buttons mb-20">
+          <div className="swipe-action-buttons">
             <button 
               className="swipe-button pass-button"
               onClick={() => handleButtonSwipe('left')}
