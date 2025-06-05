@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
+import UnifiedAuth from "./components/UnifiedAuth";
 import RoleSelection from "./components/RoleSelection";
 import Authentication from "./components/Authentication";
 import HirerProfileSetup from "./components/hirer/HirerProfileSetup";
@@ -50,6 +50,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/splash" element={<SplashScreen />} />
+            <Route path="/unified-auth" element={<UnifiedAuth />} />
             <Route path="/role-selection" element={<RoleSelection />} />
             <Route path="/auth" element={<Authentication />} />
             

@@ -17,11 +17,15 @@ const SplashScreen = () => {
         const user = authAPI.getCurrentUser();
         if (user?.role === 'hirer') {
           navigate('/hirer-dashboard');
-        } else {
+        } else if (user?.role === 'seeker') {
           navigate('/seeker-dashboard');
+        } else {
+          // User is authenticated but hasn't selected a role yet
+          navigate('/role-selection');
         }
       } else {
-        navigate('/role-selection');
+        // User not authenticated, go to unified auth
+        navigate('/unified-auth');
       }
     }, 2000);
 

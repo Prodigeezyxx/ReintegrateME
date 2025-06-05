@@ -1,4 +1,3 @@
-
 import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCardData, MatchRecord } from '../models/types';
 
 // Mock data and functions to simulate API calls
@@ -72,7 +71,7 @@ export const countries = [
 
 // Authentication API
 export const authAPI = {
-  // Sign up with email
+  // Sign up with email and role
   signupEmail: async (role: UserRole, email: string, password: string): Promise<User> => {
     // Check if user already exists
     const existingUser = users.find(u => u.email === email);
@@ -92,6 +91,46 @@ export const authAPI = {
     currentUser = newUser;
     
     return newUser;
+  },
+  
+  // New: Sign up with email without role assignment
+  signupEmailWithoutRole: async (email: string, password: string): Promise<User> => {
+    // Check if user already exists
+    const existingUser = users.find(u => u.email === email);
+    if (existingUser) {
+      throw new Error('User with this email already exists');
+    }
+    
+    // Create new user without role - they'll select it later
+    const newUser: User = {
+      id: generateId(),
+      email,
+      role: undefined as any, // Temporarily undefined until role selection
+      createdAt: new Date()
+    };
+    
+    users.push(newUser);
+    currentUser = newUser;
+    
+    return newUser;
+  },
+  
+  // Update user role
+  updateUserRole: async (role: UserRole): Promise<User> => {
+    if (!currentUser) {
+      throw new Error('No user logged in');
+    }
+    
+    // Update the user's role
+    currentUser.role = role;
+    
+    // Update in the users array
+    const userIndex = users.findIndex(u => u.id === currentUser?.id);
+    if (userIndex !== -1) {
+      users[userIndex] = { ...currentUser };
+    }
+    
+    return currentUser;
   },
   
   // Login with email and password

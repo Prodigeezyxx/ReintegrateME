@@ -3,13 +3,39 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { UserRole } from '../models/types';
+import { authAPI } from '../services/api';
+import { toast } from '@/hooks/use-toast';
 
 const RoleSelection = () => {
   const navigate = useNavigate();
   
-  const handleRoleSelection = (role: UserRole) => {
-    localStorage.setItem('selectedRole', role);
-    navigate('/auth', { state: { role, mode: 'signup' } });
+  const handleRoleSelection = async (role: UserRole) => {
+    try {
+      // Check if user is already logged in
+      const currentUser = authAPI.getCurrentUser();
+      
+      if (currentUser) {
+        // User is logged in, update their role
+        await authAPI.updateUserRole(role);
+        
+        // Navigate to appropriate setup page
+        if (role === 'hirer') {
+          navigate('/hirer-setup');
+        } else {
+          navigate('/seeker-setup-step1');
+        }
+      } else {
+        // User not logged in, store role for later and go to auth
+        localStorage.setItem('selectedRole', role);
+        navigate('/auth', { state: { role, mode: 'signup' } });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update role",
+        variant: "destructive"
+      });
+    }
   };
   
   return (
@@ -42,12 +68,12 @@ const RoleSelection = () => {
           </Button>
           
           <div className="text-center mt-8">
-            <p className="text-gray-600 mb-2">Already have an account?</p>
+            <p className="text-gray-600 mb-2">Need to sign in with a different account?</p>
             <button 
               className="text-reme-orange font-medium"
-              onClick={() => navigate('/auth', { state: { mode: 'login' } })}
+              onClick={() => navigate('/unified-auth')}
             >
-              Log in
+              Sign in with different account
             </button>
           </div>
         </div>
