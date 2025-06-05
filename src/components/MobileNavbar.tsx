@@ -20,7 +20,7 @@ const MobileNavbar = () => {
   
   const getHirerNavItems = (): NavItem[] => [
     {
-      label: 'Dashboard',
+      label: 'Home',
       path: '/hirer-dashboard',
       icon: <Home className="h-5 w-5" />
     },
