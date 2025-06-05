@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { SwipeableCardData } from '../models/types';
 
@@ -18,6 +18,25 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | 'none'>('none');
   
   const dragThreshold = 100; // Amount of pixels to trigger a swipe
+  
+  // Reset card position and animation when card changes
+  useEffect(() => {
+    if (cardRef.current) {
+      cardRef.current.style.transition = '';
+      cardRef.current.style.transform = 'translateX(0) translateY(0) rotate(0) scale(1)';
+      cardRef.current.style.opacity = '1';
+      
+      // Add entrance animation
+      cardRef.current.style.animation = 'none';
+      cardRef.current.offsetHeight; // Force reflow
+      cardRef.current.style.animation = 'fadeInScale 0.3s ease-out';
+    }
+    
+    setCurrentX(0);
+    setCurrentY(0);
+    setSwipeDirection('none');
+    setIsDragging(false);
+  }, [card.id]);
   
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setStartX(e.touches[0].clientX);
@@ -113,8 +132,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
         // Trigger the swipe action after animation
         setTimeout(() => {
           onSwipe(direction);
-          resetCard();
-        }, 500);
+        }, 300);
       }
     } else if (Math.abs(currentY) > dragThreshold && currentY < 0) {
       // Upward swipe for super like
@@ -124,8 +142,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
         
         setTimeout(() => {
           onSwipe('up');
-          resetCard();
-        }, 500);
+        }, 300);
       }
     } else {
       // Not enough to trigger, reset the card
@@ -148,6 +165,9 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={isDragging ? handleMouseUp : undefined}
+      style={{ 
+        animation: 'fadeInScale 0.3s ease-out',
+      }}
     >
       {/* Overlay indicators for swipe direction */}
       {swipeDirection === 'right' && (

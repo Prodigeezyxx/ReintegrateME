@@ -3,207 +3,152 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 39 100% 50%; /* Orange color for ReME app */
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 39 100% 50%; /* Orange ring color */
-
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 39 100% 50%; /* Orange color for ReME app */
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 39 100% 50%; /* Orange ring color */
-  }
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 
-@layer components {
-  .ios-card {
-    @apply bg-white shadow-lg rounded-xl overflow-hidden transform transition-all duration-300 ease-out;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  }
-  
-  .ios-button {
-    @apply bg-reme-orange text-white font-medium py-3 px-6 rounded-full shadow-md active:scale-95 transition-all duration-150;
-  }
-  
-  .ios-secondary-button {
-    @apply bg-gray-100 text-gray-800 font-medium py-3 px-6 rounded-full shadow-md active:scale-95 transition-all duration-150;
-  }
-
-  .ios-input {
-    @apply bg-gray-100 border-0 rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-reme-orange focus:ring-opacity-50 transition-all duration-200;
-  }
-
-  .swipe-card-container {
-    @apply relative w-full h-[480px] bg-transparent mx-auto;
-  }
-
-  .swipe-card {
-    @apply absolute inset-0 bg-white rounded-xl shadow-lg overflow-hidden;
-    will-change: transform;
-    touch-action: none;
-  }
-
-  .swipe-action-buttons {
-    @apply flex justify-center gap-4 mt-6;
-  }
-
-  .swipe-button {
-    @apply h-14 w-14 rounded-full flex items-center justify-center shadow-md transition-transform active:scale-90;
-  }
-
-  .like-button {
-    @apply bg-green-500 text-white;
-  }
-
-  .pass-button {
-    @apply bg-red-500 text-white;
-  }
-
-  .super-like-button {
-    @apply bg-blue-500 text-white;
-  }
-
-  .tab-icon {
-    @apply h-6 w-6;
-  }
-
-  .progress-bar {
-    @apply h-1 bg-gray-200 rounded-full overflow-hidden w-full;
-  }
-  
-  .progress-fill {
-    @apply h-full bg-reme-orange transition-all duration-500 ease-out;
-  }
-
-  .match-animation {
-    @apply fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center animate-fade-in;
-  }
-
-  .match-content {
-    @apply bg-white p-8 rounded-2xl text-center max-w-xs mx-auto animate-pulsate;
-  }
-
-  .match-text {
-    @apply text-3xl font-bold text-reme-orange mb-4;
-  }
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
 }
 
-/* iOS-style switch */
-.ios-switch {
-  position: relative;
-  display: inline-block;
-  width: 51px;
-  height: 31px;
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
-.ios-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.ios-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #e9e9ea;
-  transition: 0.4s;
-  border-radius: 34px;
-}
-
-.ios-slider:before {
-  position: absolute;
-  content: "";
-  height: 27px;
-  width: 27px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-}
-
-input:checked + .ios-slider {
-  background-color: #FFA500;
-}
-
-input:checked + .ios-slider:before {
-  transform: translateX(20px);
-}
-
-/* Mobile app container */
+/* Mobile container */
 .mobile-container {
-  max-width: 414px;
+  max-width: 430px;
   margin: 0 auto;
   min-height: 100vh;
-  position: relative;
+  background: white;
+}
+
+/* Card animations */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Swipe card styling */
+.swipe-card {
+  width: 100%;
+  height: 500px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  background-color: white;
+  position: relative;
+  user-select: none;
+}
+
+.swipe-card-container {
+  position: relative;
+  height: 500px;
+  margin: 0 auto;
+}
+
+/* iOS-style card */
+.ios-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Swipe action buttons */
+.swipe-action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.swipe-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.swipe-button:hover {
+  transform: scale(1.1);
+}
+
+.swipe-button:active {
+  transform: scale(0.95);
+}
+
+.pass-button {
+  background: #ff4458;
+  color: white;
+}
+
+.like-button {
+  background: #42c767;
+  color: white;
+}
+
+.super-like-button {
+  background: #498afe;
+  color: white;
+  width: 50px;
+  height: 50px;
+}
+
+/* Custom brand color */
+.text-reme-orange {
+  color: #ff6b35;
+}
+
+.bg-reme-orange {
+  background-color: #ff6b35;
+}
+
+.border-reme-orange {
+  border-color: #ff6b35;
+}
+
+/* Profile image styling */
+.profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Gradient overlays */
+.gradient-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeInScale 0.3s ease-out;
+  }
 }
