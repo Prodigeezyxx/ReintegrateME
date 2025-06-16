@@ -3,31 +3,34 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { UserRole } from '../models/types';
-import { authAPI } from '../services/api';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import HelpButton from './HelpButton';
 
 const RoleSelection = () => {
   const navigate = useNavigate();
+  const { updateUserRole } = useAuth();
   
   const handleRoleSelection = async (role: UserRole) => {
     try {
-      // Check if user is already logged in
-      const currentUser = authAPI.getCurrentUser();
+      const { user, error } = await updateUserRole(role);
       
-      if (currentUser) {
-        // User is logged in, update their role
-        await authAPI.updateUserRole(role);
-        
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (user) {
         // Navigate to appropriate setup page
         if (role === 'hirer') {
           navigate('/hirer-setup');
         } else {
           navigate('/seeker-setup-step1');
         }
-      } else {
-        // User not logged in, store role for later and go to auth
-        localStorage.setItem('selectedRole', role);
-        navigate('/auth', { state: { role, mode: 'signup' } });
       }
     } catch (error) {
       toast({
@@ -39,7 +42,7 @@ const RoleSelection = () => {
   };
   
   return (
-    <div className="mobile-container p-6">
+    <div className="mobile-container p-6 bg-white min-h-screen">
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="h-20 w-20 rounded-2xl overflow-hidden mb-10">
           <img 
@@ -61,7 +64,7 @@ const RoleSelection = () => {
           </Button>
           
           <Button
-            className="w-full py-6 text-lg bg-reme-purple hover:bg-purple-700 transition-colors"
+            className="w-full py-6 text-lg bg-gray-600 hover:bg-gray-700 transition-colors text-white"
             onClick={() => handleRoleSelection('seeker')}
           >
             I'm looking for a job
@@ -78,6 +81,8 @@ const RoleSelection = () => {
           </div>
         </div>
       </div>
+      
+      <HelpButton />
     </div>
   );
 };

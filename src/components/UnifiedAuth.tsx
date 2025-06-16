@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import HelpButton from './HelpButton';
 
 const UnifiedAuth = () => {
   const navigate = useNavigate();
@@ -98,7 +99,7 @@ const UnifiedAuth = () => {
   };
   
   return (
-    <div className="mobile-container p-6">
+    <div className="mobile-container p-6 bg-white min-h-screen">
       <div className="flex flex-col items-center justify-center min-h-screen">
         <button 
           onClick={() => navigate(-1)}
@@ -222,6 +223,8 @@ const UnifiedAuth = () => {
           </div>
         </div>
       </div>
+      
+      <HelpButton />
     </div>
   );
 };

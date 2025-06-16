@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -56,7 +55,6 @@ const AppContent = () => {
         <Route path="/splash" element={<SplashScreen />} />
         <Route path="/unified-auth" element={<UnifiedAuth />} />
         <Route path="/role-selection" element={<RoleSelection />} />
-        <Route path="/auth" element={<Authentication />} />
         
         {/* Hirer Routes */}
         <Route path="/hirer-setup" element={<HirerProfileSetup />} />
@@ -84,6 +82,9 @@ const AppContent = () => {
         <Route path="/seeker-ai-chat" element={<SeekerAIChat />} />
         <Route path="/seeker-cv-builder" element={<SeekerCVBuilder />} />
         <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
+        
+        {/* Redirect old auth route to new unified auth */}
+        <Route path="/auth" element={<Navigate to="/unified-auth" replace />} />
         
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />
