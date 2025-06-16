@@ -533,48 +533,153 @@ export type Database = {
       seeker_profiles: {
         Row: {
           availability_status: string | null
+          barred_from_regulated_work: boolean | null
           bio: string | null
+          conviction_other_details: string | null
+          conviction_status:
+            | Database["public"]["Enums"]["conviction_status"]
+            | null
+          conviction_types:
+            | Database["public"]["Enums"]["conviction_type"][]
+            | null
           created_at: string | null
+          current_legal_supervision:
+            | Database["public"]["Enums"]["legal_supervision_type"]
+            | null
+          disability_other_details: string | null
+          disability_types:
+            | Database["public"]["Enums"]["disability_type"][]
+            | null
+          email: string | null
+          first_name: string | null
+          has_disability: boolean | null
+          has_driving_licence: boolean | null
           headline: string | null
           id: string
+          job_title: string | null
           key_skills: string[] | null
+          last_name: string | null
           location_city: string | null
           location_country: string | null
+          mappa_level: Database["public"]["Enums"]["mappa_level"] | null
+          on_dbs_barring_list: boolean | null
+          open_to_relocation: boolean | null
+          phone_number: string | null
           preferred_employment_types: string[] | null
           preferred_job_categories: string[] | null
           profile_completion_percentage: number | null
+          profile_image_url: string | null
+          relevant_for_safeguarding_checks: boolean | null
+          sentence_completed: boolean | null
           updated_at: string | null
           user_id: string
+          work_preferences:
+            | Database["public"]["Enums"]["work_preference"][]
+            | null
+          workplace_adjustments:
+            | Database["public"]["Enums"]["workplace_adjustment"][]
+            | null
+          workplace_adjustments_other: string | null
         }
         Insert: {
           availability_status?: string | null
+          barred_from_regulated_work?: boolean | null
           bio?: string | null
+          conviction_other_details?: string | null
+          conviction_status?:
+            | Database["public"]["Enums"]["conviction_status"]
+            | null
+          conviction_types?:
+            | Database["public"]["Enums"]["conviction_type"][]
+            | null
           created_at?: string | null
+          current_legal_supervision?:
+            | Database["public"]["Enums"]["legal_supervision_type"]
+            | null
+          disability_other_details?: string | null
+          disability_types?:
+            | Database["public"]["Enums"]["disability_type"][]
+            | null
+          email?: string | null
+          first_name?: string | null
+          has_disability?: boolean | null
+          has_driving_licence?: boolean | null
           headline?: string | null
           id?: string
+          job_title?: string | null
           key_skills?: string[] | null
+          last_name?: string | null
           location_city?: string | null
           location_country?: string | null
+          mappa_level?: Database["public"]["Enums"]["mappa_level"] | null
+          on_dbs_barring_list?: boolean | null
+          open_to_relocation?: boolean | null
+          phone_number?: string | null
           preferred_employment_types?: string[] | null
           preferred_job_categories?: string[] | null
           profile_completion_percentage?: number | null
+          profile_image_url?: string | null
+          relevant_for_safeguarding_checks?: boolean | null
+          sentence_completed?: boolean | null
           updated_at?: string | null
           user_id: string
+          work_preferences?:
+            | Database["public"]["Enums"]["work_preference"][]
+            | null
+          workplace_adjustments?:
+            | Database["public"]["Enums"]["workplace_adjustment"][]
+            | null
+          workplace_adjustments_other?: string | null
         }
         Update: {
           availability_status?: string | null
+          barred_from_regulated_work?: boolean | null
           bio?: string | null
+          conviction_other_details?: string | null
+          conviction_status?:
+            | Database["public"]["Enums"]["conviction_status"]
+            | null
+          conviction_types?:
+            | Database["public"]["Enums"]["conviction_type"][]
+            | null
           created_at?: string | null
+          current_legal_supervision?:
+            | Database["public"]["Enums"]["legal_supervision_type"]
+            | null
+          disability_other_details?: string | null
+          disability_types?:
+            | Database["public"]["Enums"]["disability_type"][]
+            | null
+          email?: string | null
+          first_name?: string | null
+          has_disability?: boolean | null
+          has_driving_licence?: boolean | null
           headline?: string | null
           id?: string
+          job_title?: string | null
           key_skills?: string[] | null
+          last_name?: string | null
           location_city?: string | null
           location_country?: string | null
+          mappa_level?: Database["public"]["Enums"]["mappa_level"] | null
+          on_dbs_barring_list?: boolean | null
+          open_to_relocation?: boolean | null
+          phone_number?: string | null
           preferred_employment_types?: string[] | null
           preferred_job_categories?: string[] | null
           profile_completion_percentage?: number | null
+          profile_image_url?: string | null
+          relevant_for_safeguarding_checks?: boolean | null
+          sentence_completed?: boolean | null
           updated_at?: string | null
           user_id?: string
+          work_preferences?:
+            | Database["public"]["Enums"]["work_preference"][]
+            | null
+          workplace_adjustments?:
+            | Database["public"]["Enums"]["workplace_adjustment"][]
+            | null
+          workplace_adjustments_other?: string | null
         }
         Relationships: [
           {
@@ -635,7 +740,57 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      conviction_status: "spent" | "unspent" | "pending"
+      conviction_type:
+        | "theft_burglary_robbery"
+        | "fraud_financial"
+        | "drug_possession"
+        | "drug_supply_production"
+        | "driving_offences"
+        | "assault_violent"
+        | "sexual_offences"
+        | "public_order"
+        | "domestic_abuse"
+        | "terrorism_related"
+        | "weapons_offences"
+        | "harassment_stalking"
+        | "arson"
+        | "breach_court_orders"
+        | "other"
+      disability_type:
+        | "mobility_physical"
+        | "sensory_hearing_vision"
+        | "long_term_medical"
+        | "neurodivergence"
+        | "learning_difficulty"
+        | "mental_health"
+        | "communication_needs"
+        | "cognitive_memory"
+        | "other"
+        | "prefer_not_to_specify"
+      legal_supervision_type:
+        | "probation"
+        | "parole"
+        | "community_sentence"
+        | "licence"
+        | "mappa_oversight"
+        | "none"
+      mappa_level: "level_1" | "level_2" | "level_3" | "not_applicable"
+      work_preference:
+        | "full_time"
+        | "part_time"
+        | "zero_hours"
+        | "weekends"
+        | "nights"
+      workplace_adjustment:
+        | "flexible_hours"
+        | "remote_work"
+        | "training_support"
+        | "assistive_technology"
+        | "modified_environment"
+        | "communication_support"
+        | "none"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -750,6 +905,63 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      conviction_status: ["spent", "unspent", "pending"],
+      conviction_type: [
+        "theft_burglary_robbery",
+        "fraud_financial",
+        "drug_possession",
+        "drug_supply_production",
+        "driving_offences",
+        "assault_violent",
+        "sexual_offences",
+        "public_order",
+        "domestic_abuse",
+        "terrorism_related",
+        "weapons_offences",
+        "harassment_stalking",
+        "arson",
+        "breach_court_orders",
+        "other",
+      ],
+      disability_type: [
+        "mobility_physical",
+        "sensory_hearing_vision",
+        "long_term_medical",
+        "neurodivergence",
+        "learning_difficulty",
+        "mental_health",
+        "communication_needs",
+        "cognitive_memory",
+        "other",
+        "prefer_not_to_specify",
+      ],
+      legal_supervision_type: [
+        "probation",
+        "parole",
+        "community_sentence",
+        "licence",
+        "mappa_oversight",
+        "none",
+      ],
+      mappa_level: ["level_1", "level_2", "level_3", "not_applicable"],
+      work_preference: [
+        "full_time",
+        "part_time",
+        "zero_hours",
+        "weekends",
+        "nights",
+      ],
+      workplace_adjustment: [
+        "flexible_hours",
+        "remote_work",
+        "training_support",
+        "assistive_technology",
+        "modified_environment",
+        "communication_support",
+        "none",
+        "other",
+      ],
+    },
   },
 } as const
