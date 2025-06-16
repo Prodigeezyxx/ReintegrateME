@@ -1,439 +1,630 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCardData, MatchRecord } from '../models/types';
+import { CompanyProfile, JobPosting } from '@/models/types';
 
-// Sample data for demo purposes
-export const jobCategories = [
-  'Construction', 
-  'Manufacturing',
-  'Transportation',
-  'Retail',
-  'Hospitality',
-  'Healthcare',
-  'Service Industry',
-  'Maintenance',
-  'Logistics',
-  'Agriculture'
-];
-
-export const employmentTypes = [
-  'Full-time',
-  'Part-time',
-  'Contract',
-  'Temporary',
-  'Apprenticeship'
-];
-
-export const skills = [
-  'Carpentry',
-  'Plumbing',
-  'Electrical',
-  'Forklift Operation',
-  'Welding',
-  'HVAC',
-  'HGV Driving',
-  'Food Service',
-  'Customer Service',
-  'Equipment Maintenance',
-  'Machinery Operation',
-  'Health & Safety Compliance'
-];
-
-export const countries = [
-  'United Kingdom',
-  'Ireland',
-  'France',
-  'Germany',
-  'Spain',
-  'Italy',
-  'Netherlands',
-  'Belgium',
-  'Sweden',
-  'Denmark'
-];
-
-// Company Profile API
 export const companyAPI = {
-  createProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+  createInitialProfile: async (profileData: Partial<CompanyProfile>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
 
-    const { data, error } = await supabase
-      .from('company_profiles')
-      .insert({
-        user_id: user.id,
-        company_name: profileData.companyName || '',
-        industry: profileData.industry,
-        company_size: profileData.companySize,
-        website_url: profileData.websiteUrl,
-        description: profileData.description,
-        location_city: profileData.locationCity,
-        location_country: profileData.locationCountry,
-        profile_completion_percentage: 30
-      })
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from('company_profiles')
+        .insert([
+          {
+            ...profileData,
+            user_id: user.id,
+          },
+        ]);
 
-    if (error) throw error;
-
-    return {
-      id: data.id,
-      userId: data.user_id,
-      companyName: data.company_name,
-      logoUrl: data.logo_url,
-      industry: data.industry,
-      companySize: data.company_size,
-      websiteUrl: data.website_url,
-      description: data.description,
-      locationCity: data.location_city,
-      locationCountry: data.location_country,
-      profileCompletionPercentage: data.profile_completion_percentage
-    };
-  },
-
-  getProfile: async (): Promise<CompanyProfile> => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { data, error } = await supabase
-      .from('company_profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
-
-    if (error) throw error;
-
-    return {
-      id: data.id,
-      userId: data.user_id,
-      companyName: data.company_name,
-      logoUrl: data.logo_url,
-      industry: data.industry,
-      companySize: data.company_size,
-      websiteUrl: data.website_url,
-      description: data.description,
-      locationCity: data.location_city,
-      locationCountry: data.location_country,
-      profileCompletionPercentage: data.profile_completion_percentage
-    };
-  },
-
-  updateProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const updateData: any = {};
-    if (profileData.companyName !== undefined) updateData.company_name = profileData.companyName;
-    if (profileData.logoUrl !== undefined) updateData.logo_url = profileData.logoUrl;
-    if (profileData.industry !== undefined) updateData.industry = profileData.industry;
-    if (profileData.companySize !== undefined) updateData.company_size = profileData.companySize;
-    if (profileData.websiteUrl !== undefined) updateData.website_url = profileData.websiteUrl;
-    if (profileData.description !== undefined) updateData.description = profileData.description;
-    if (profileData.locationCity !== undefined) updateData.location_city = profileData.locationCity;
-    if (profileData.locationCountry !== undefined) updateData.location_country = profileData.locationCountry;
-
-    const { data, error } = await supabase
-      .from('company_profiles')
-      .update(updateData)
-      .eq('user_id', user.id)
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    return {
-      id: data.id,
-      userId: data.user_id,
-      companyName: data.company_name,
-      logoUrl: data.logo_url,
-      industry: data.industry,
-      companySize: data.company_size,
-      websiteUrl: data.website_url,
-      description: data.description,
-      locationCity: data.location_city,
-      locationCountry: data.location_country,
-      profileCompletionPercentage: data.profile_completion_percentage
-    };
-  }
-};
-
-// Seeker Profile API
-export const seekerAPI = {
-  createProfile: async (profileData: Partial<SeekerProfile>): Promise<SeekerProfile> => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { data, error } = await supabase
-      .from('seeker_profiles')
-      .insert({
-        user_id: user.id,
-        headline: profileData.headline,
-        bio: profileData.bio,
-        key_skills: profileData.keySkills,
-        location_city: profileData.locationCity,
-        location_country: profileData.locationCountry,
-        preferred_job_categories: profileData.preferredJobCategories,
-        preferred_employment_types: profileData.preferredEmploymentTypes,
-        availability_status: 'actively_looking',
-        profile_completion_percentage: 30
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Also update the main profile with names
-    if (profileData.firstName || profileData.lastName) {
-      await supabase
-        .from('profiles')
-        .update({
-          first_name: profileData.firstName,
-          last_name: profileData.lastName,
-          display_name: `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim()
-        })
-        .eq('id', user.id);
-    }
-
-    return {
-      id: data.id,
-      userId: data.user_id,
-      firstName: profileData.firstName || '',
-      lastName: profileData.lastName || '',
-      displayName: `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim(),
-      headline: data.headline,
-      bio: data.bio,
-      keySkills: data.key_skills,
-      locationCity: data.location_city,
-      locationCountry: data.location_country,
-      preferredJobCategories: data.preferred_job_categories,
-      preferredEmploymentTypes: data.preferred_employment_types,
-      availabilityStatus: data.availability_status,
-      profileCompletionPercentage: data.profile_completion_percentage
-    };
-  },
-
-  getProfile: async (): Promise<SeekerProfile> => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { data: seekerData, error: seekerError } = await supabase
-      .from('seeker_profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
-
-    if (seekerError) throw seekerError;
-
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('first_name, last_name, display_name')
-      .eq('id', user.id)
-      .single();
-
-    return {
-      id: seekerData.id,
-      userId: seekerData.user_id,
-      firstName: profileData?.first_name || '',
-      lastName: profileData?.last_name || '',
-      displayName: profileData?.display_name || '',
-      headline: seekerData.headline,
-      bio: seekerData.bio,
-      keySkills: seekerData.key_skills,
-      locationCity: seekerData.location_city,
-      locationCountry: seekerData.location_country,
-      preferredJobCategories: seekerData.preferred_job_categories,
-      preferredEmploymentTypes: seekerData.preferred_employment_types,
-      availabilityStatus: seekerData.availability_status,
-      profileCompletionPercentage: seekerData.profile_completion_percentage
-    };
-  },
-
-  updateProfile: async (profileData: Partial<SeekerProfile>): Promise<SeekerProfile> => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const updateData: any = {};
-    if (profileData.headline !== undefined) updateData.headline = profileData.headline;
-    if (profileData.bio !== undefined) updateData.bio = profileData.bio;
-    if (profileData.keySkills !== undefined) updateData.key_skills = profileData.keySkills;
-    if (profileData.locationCity !== undefined) updateData.location_city = profileData.locationCity;
-    if (profileData.locationCountry !== undefined) updateData.location_country = profileData.locationCountry;
-    if (profileData.preferredJobCategories !== undefined) updateData.preferred_job_categories = profileData.preferredJobCategories;
-    if (profileData.preferredEmploymentTypes !== undefined) updateData.preferred_employment_types = profileData.preferredEmploymentTypes;
-    if (profileData.availabilityStatus !== undefined) updateData.availability_status = profileData.availabilityStatus;
-
-    const { data, error } = await supabase
-      .from('seeker_profiles')
-      .update(updateData)
-      .eq('user_id', user.id)
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Update names in main profile if provided
-    if (profileData.firstName !== undefined || profileData.lastName !== undefined) {
-      const profileUpdateData: any = {};
-      if (profileData.firstName !== undefined) profileUpdateData.first_name = profileData.firstName;
-      if (profileData.lastName !== undefined) profileUpdateData.last_name = profileData.lastName;
-      if (profileData.firstName !== undefined || profileData.lastName !== undefined) {
-        profileUpdateData.display_name = `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim();
+      if (error) {
+        console.error('Error creating company profile:', error);
+        throw new Error(error.message);
       }
 
-      await supabase
-        .from('profiles')
-        .update(profileUpdateData)
-        .eq('id', user.id);
+      return data;
+    } catch (error: any) {
+      console.error('Error in createInitialProfile:', error);
+      throw new Error(error.message || 'Failed to create company profile');
     }
+  },
 
-    const { data: profileData: updatedProfile } = await supabase
-      .from('profiles')
-      .select('first_name, last_name, display_name')
-      .eq('id', user.id)
-      .single();
+  updateProfile: async (profileData: Partial<CompanyProfile>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
 
-    return {
-      id: data.id,
-      userId: data.user_id,
-      firstName: updatedProfile?.first_name || '',
-      lastName: updatedProfile?.last_name || '',
-      displayName: updatedProfile?.display_name || '',
-      headline: data.headline,
-      bio: data.bio,
-      keySkills: data.key_skills,
-      locationCity: data.location_city,
-      locationCountry: data.location_country,
-      preferredJobCategories: data.preferred_job_categories,
-      preferredEmploymentTypes: data.preferred_employment_types,
-      availabilityStatus: data.availability_status,
-      profileCompletionPercentage: data.profile_completion_percentage
-    };
-  }
+      const { data, error } = await supabase
+        .from('company_profiles')
+        .update(profileData)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error updating company profile:', error);
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error: any) {
+      console.error('Error in updateProfile:', error);
+      throw new Error(error.message || 'Failed to update company profile');
+    }
+  },
+
+  getCompanyProfile: async (): Promise<CompanyProfile | null> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('company_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching company profile:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in getCompanyProfile:', error);
+      return null;
+    }
+  },
 };
 
-// Job API
 export const jobAPI = {
-  createJob: async (jobData: Partial<JobPosting>): Promise<JobPosting> => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+  createJob: async (jobData: Partial<JobPosting>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
 
-    // Get company profile
-    const { data: companyProfile, error: companyError } = await supabase
-      .from('company_profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
+      const companyProfile = await companyAPI.getCompanyProfile();
+      if (!companyProfile) throw new Error('No company profile found');
 
-    if (companyError) throw new Error('Company profile not found');
+      const { data, error } = await supabase
+        .from('job_postings')
+        .insert([
+          {
+            ...jobData,
+            company_id: companyProfile.id,
+            user_id: user.id,
+          },
+        ]);
 
-    const { data, error } = await supabase
-      .from('job_postings')
-      .insert({
-        hirer_id: user.id,
-        company_id: companyProfile.id,
-        title: jobData.title || '',
-        description: jobData.description || '',
-        category: jobData.category || '',
-        employment_type: jobData.employmentType || '',
-        experience_level: jobData.experienceLevel,
-        location_city: jobData.locationCity,
-        location_country: jobData.locationCountry,
-        required_skills: jobData.requiredSkills,
-        salary_min: jobData.salary?.min,
-        salary_max: jobData.salary?.max,
-        salary_currency: jobData.salary?.currency || 'GBP',
-        status: jobData.status || 'active'
-      })
-      .select()
-      .single();
+      if (error) {
+        console.error('Error creating job posting:', error);
+        throw new Error(error.message);
+      }
 
-    if (error) throw error;
-
-    return {
-      id: data.id,
-      hirerId: data.hirer_id,
-      companyId: data.company_id,
-      title: data.title,
-      description: data.description,
-      companyName: companyProfile.company_name,
-      companyLogoUrl: companyProfile.logo_url,
-      category: data.category,
-      employmentType: data.employment_type,
-      experienceLevel: data.experience_level,
-      locationCity: data.location_city,
-      locationCountry: data.location_country,
-      requiredSkills: data.required_skills,
-      salary: {
-        min: data.salary_min,
-        max: data.salary_max,
-        currency: data.salary_currency
-      },
-      status: data.status,
-      createdAt: new Date(data.created_at)
-    };
+      return data;
+    } catch (error: any) {
+      console.error('Error in createJob:', error);
+      throw new Error(error.message || 'Failed to create job posting');
+    }
   },
 
-  getHirerJobs: async (): Promise<JobPosting[]> => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+  updateJob: async (jobId: string, jobData: Partial<JobPosting>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
 
-    const { data, error } = await supabase
-      .from('job_postings')
-      .select(`
-        *,
-        company_profiles!inner(company_name, logo_url)
-      `)
-      .eq('hirer_id', user.id)
-      .order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('job_postings')
+        .update(jobData)
+        .eq('id', jobId)
+        .eq('user_id', user.id);
 
-    if (error) throw error;
+      if (error) {
+        console.error('Error updating job posting:', error);
+        throw new Error(error.message);
+      }
 
-    return data.map(job => ({
-      id: job.id,
-      hirerId: job.hirer_id,
-      companyId: job.company_id,
-      title: job.title,
-      description: job.description,
-      companyName: job.company_profiles.company_name,
-      companyLogoUrl: job.company_profiles.logo_url,
-      category: job.category,
-      employmentType: job.employment_type,
-      experienceLevel: job.experience_level,
-      locationCity: job.location_city,
-      locationCountry: job.location_country,
-      requiredSkills: job.required_skills,
-      salary: {
-        min: job.salary_min,
-        max: job.salary_max,
-        currency: job.salary_currency
-      },
-      status: job.status,
-      createdAt: new Date(job.created_at)
-    }));
+      return data;
+    } catch (error: any) {
+      console.error('Error in updateJob:', error);
+      throw new Error(error.message || 'Failed to update job posting');
+    }
   },
 
-  getJobsFeed: async (): Promise<SwipeableCardData[]> => {
-    const { data, error } = await supabase
-      .from('job_postings')
-      .select(`
-        *,
-        company_profiles!inner(company_name, logo_url)
-      `)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(50);
+  getJob: async (jobId: string): Promise<JobPosting | null> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
 
-    if (error) throw error;
+      const { data, error } = await supabase
+        .from('job_postings')
+        .select('*')
+        .eq('id', jobId)
+        .eq('user_id', user.id)
+        .single();
 
-    return data.map(job => ({
-      id: job.id,
-      type: 'job' as const,
-      primaryImageUrl: job.company_profiles.logo_url,
-      titleText: job.title,
-      subtitleText: job.company_profiles.company_name,
-      detailLine1: job.location_city && job.location_country ? `${job.location_city}, ${job.location_country}` : undefined,
-      detailLine2: job.employment_type,
-      tags: job.required_skills || []
-    }));
-  }
+      if (error) {
+        console.error('Error fetching job posting:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in getJob:', error);
+      return null;
+    }
+  },
+
+  getJobs: async (): Promise<JobPosting[]> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
+
+      const companyProfile = await companyAPI.getCompanyProfile();
+      if (!companyProfile) throw new Error('No company profile found');
+
+      const { data, error } = await supabase
+        .from('job_postings')
+        .select('*')
+        .eq('company_id', companyProfile.id)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error fetching job postings:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getJobs:', error);
+      return [];
+    }
+  },
+
+  deleteJob: async (jobId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user logged in');
+
+      const { data, error } = await supabase
+        .from('job_postings')
+        .delete()
+        .eq('id', jobId)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error deleting job posting:', error);
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error: any) {
+      console.error('Error in deleteJob:', error);
+      throw new Error(error.message || 'Failed to delete job posting');
+    }
+  },
 };
+
+export const skills = [
+  "JavaScript",
+  "React",
+  "Node.js",
+  "HTML",
+  "CSS",
+  "Python",
+  "Java",
+  "C++",
+  "C#",
+  "SQL",
+  "MongoDB",
+  "AWS",
+  "Azure",
+  "Docker",
+  "Kubernetes",
+  "Git",
+  "TypeScript",
+  "Angular",
+  "Vue.js",
+  "GraphQL",
+  "REST API",
+  "Firebase",
+  "Next.js",
+  "Tailwind CSS",
+  "Redux",
+  "Saga",
+  "Jest",
+  "Cypress",
+  "Jenkins",
+  "Terraform",
+  "Ansible",
+  "Chef",
+  "Puppet",
+  "Elasticsearch",
+  "Kafka",
+  "RabbitMQ",
+  "Redis",
+  "PostgreSQL",
+  "MySQL",
+  "NoSQL",
+  "Data Science",
+  "Machine Learning",
+  "Deep Learning",
+  "TensorFlow",
+  "PyTorch",
+  "Keras",
+  "Pandas",
+  "NumPy",
+  "Scikit-learn",
+  "Matplotlib",
+  "Seaborn",
+  "Tableau",
+  "Power BI",
+  "Data Analysis",
+  "Data Visualization",
+  "Big Data",
+  "Hadoop",
+  "Spark",
+  "Cloud Computing",
+  "DevOps",
+  "Agile",
+  "Scrum",
+  "Kanban",
+  "Project Management",
+  "Product Management",
+  "UI/UX Design",
+  "Figma",
+  "Sketch",
+  "Adobe XD",
+  "Web Design",
+  "Mobile App Development",
+  "iOS Development",
+  "Android Development",
+  "Swift",
+  "Kotlin",
+  "Flutter",
+  "React Native",
+  "Xamarin",
+  "Blockchain",
+  "Solidity",
+  "Ethereum",
+  "Smart Contracts",
+  "Cybersecurity",
+  "Ethical Hacking",
+  "Penetration Testing",
+  "Network Security",
+  "Information Security",
+  "Cryptography",
+  "Artificial Intelligence",
+  "Natural Language Processing",
+  "Computer Vision",
+  "Robotics",
+  "Automation",
+  "Internet of Things (IoT)",
+  "Embedded Systems",
+  "C",
+  "Assembly",
+  "Verilog",
+  "VHDL",
+  "FPGA",
+  "Microcontrollers",
+  "Signal Processing",
+  "Control Systems",
+  "Robotics",
+  "Game Development",
+  "Unity",
+  "Unreal Engine",
+  "Cg",
+  "HLSL",
+  "Shader Programming",
+  "3D Modeling",
+  "Animation",
+  "Virtual Reality (VR)",
+  "Augmented Reality (AR)",
+  "Mixed Reality (MR)",
+  "Spatial Computing",
+  "Quantum Computing",
+  "Bioinformatics",
+  "Genomics",
+  "Proteomics",
+  "Systems Biology",
+  "Biostatistics",
+  "Healthcare Informatics",
+  "Medical Imaging",
+  "Pharmaceuticals",
+  "Clinical Trials",
+  "Regulatory Affairs",
+  "Market Research",
+  "Business Development",
+  "Sales",
+  "Marketing",
+  "Finance",
+  "Accounting",
+  "Economics",
+  "Management",
+  "Leadership",
+  "Communication",
+  "Negotiation",
+  "Problem Solving",
+  "Critical Thinking",
+  "Creativity",
+  "Innovation",
+  "Entrepreneurship",
+  "Startups",
+  "Venture Capital",
+  "Private Equity",
+  "Mergers and Acquisitions",
+  "Investment Banking",
+  "Financial Analysis",
+  "Risk Management",
+  "Compliance",
+  "Auditing",
+  "Taxation",
+  "Real Estate",
+  "Supply Chain Management",
+  "Logistics",
+  "Operations Management",
+  "Quality Control",
+  "Process Improvement",
+  "Lean Manufacturing",
+  "Six Sigma",
+  "Project Planning",
+  "Resource Management",
+  "Stakeholder Management",
+  "Change Management",
+  "Conflict Resolution",
+  "Team Building",
+  "Motivation",
+  "Performance Management",
+  "Training and Development",
+  "Human Resources",
+  "Recruiting",
+  "Compensation and Benefits",
+  "Employee Relations",
+  "Labor Law",
+  "Organizational Development",
+  "Diversity and Inclusion",
+  "Sustainability",
+  "Environmental Management",
+  "Social Responsibility",
+  "Governance",
+  "Ethics",
+  "Compliance",
+  "Legal",
+  "Intellectual Property",
+  "Contract Law",
+  "Litigation",
+  "Arbitration",
+  "Mediation",
+  "Government Relations",
+  "Public Policy",
+  "Lobbying",
+  "Advocacy",
+  "Nonprofit Management",
+  "Fundraising",
+  "Grant Writing",
+  "Volunteer Management",
+  "Community Development",
+  "Social Work",
+  "Counseling",
+  "Psychology",
+  "Sociology",
+  "Anthropology",
+  "Education",
+  "Teaching",
+  "Curriculum Development",
+  "Educational Technology",
+  "Special Education",
+  "Higher Education",
+  "Research",
+  "Writing",
+  "Editing",
+  "Proofreading",
+  "Journalism",
+  "Public Relations",
+  "Advertising",
+  "Content Creation",
+  "Social Media Marketing",
+  "Search Engine Optimization (SEO)",
+  "Search Engine Marketing (SEM)",
+  "Email Marketing",
+  "Affiliate Marketing",
+  "Influencer Marketing",
+  "Video Marketing",
+  "Mobile Marketing",
+  "Data-Driven Marketing",
+  "Customer Relationship Management (CRM)",
+  "Salesforce",
+  "HubSpot",
+  "Marketo",
+  "Adobe Marketing Cloud",
+  "Google Analytics",
+  "Data Science",
+  "Machine Learning",
+  "Deep Learning",
+  "TensorFlow",
+  "PyTorch",
+  "Keras",
+  "Pandas",
+  "NumPy",
+  "Scikit-learn",
+  "Matplotlib",
+  "Seaborn",
+  "Tableau",
+  "Power BI",
+  "Data Analysis",
+  "Data Visualization",
+  "Big Data",
+  "Hadoop",
+  "Spark",
+  "Cloud Computing",
+  "DevOps",
+  "Agile",
+  "Scrum",
+  "Kanban",
+  "Project Management",
+  "Product Management",
+  "UI/UX Design",
+  "Figma",
+  "Sketch",
+  "Adobe XD",
+  "Web Design",
+  "Mobile App Development",
+  "iOS Development",
+  "Android Development",
+  "Swift",
+  "Kotlin",
+  "Flutter",
+  "React Native",
+  "Xamarin",
+  "Blockchain",
+  "Solidity",
+  "Ethereum",
+  "Smart Contracts",
+  "Cybersecurity",
+  "Ethical Hacking",
+  "Penetration Testing",
+  "Network Security",
+  "Information Security",
+  "Cryptography",
+  "Artificial Intelligence",
+  "Natural Language Processing",
+  "Computer Vision",
+  "Robotics",
+  "Automation",
+  "Internet of Things (IoT)",
+  "Embedded Systems",
+  "C",
+  "Assembly",
+  "Verilog",
+  "VHDL",
+  "FPGA",
+  "Microcontrollers",
+  "Signal Processing",
+  "Control Systems",
+  "Robotics",
+  "Game Development",
+  "Unity",
+  "Unreal Engine",
+  "Cg",
+  "HLSL",
+  "Shader Programming",
+  "3D Modeling",
+  "Animation",
+  "Virtual Reality (VR)",
+  "Augmented Reality (AR)",
+  "Mixed Reality (MR)",
+  "Spatial Computing",
+  "Quantum Computing",
+  "Bioinformatics",
+  "Genomics",
+  "Proteomics",
+  "Systems Biology",
+  "Biostatistics",
+  "Healthcare Informatics",
+  "Medical Imaging",
+  "Pharmaceuticals",
+  "Clinical Trials",
+  "Regulatory Affairs",
+  "Market Research",
+  "Business Development",
+  "Sales",
+  "Marketing",
+  "Finance",
+  "Accounting",
+  "Economics",
+  "Management",
+  "Leadership",
+  "Communication",
+  "Negotiation",
+  "Problem Solving",
+  "Critical Thinking",
+  "Creativity",
+  "Innovation",
+  "Entrepreneurship",
+  "Startups",
+  "Venture Capital",
+  "Private Equity",
+  "Mergers and Acquisitions",
+  "Investment Banking",
+  "Financial Analysis",
+  "Risk Management",
+  "Compliance",
+  "Auditing",
+  "Taxation",
+  "Real Estate",
+  "Supply Chain Management",
+  "Logistics",
+  "Operations Management",
+  "Quality Control",
+  "Process Improvement",
+  "Lean Manufacturing",
+  "Six Sigma",
+  "Project Planning",
+  "Resource Management",
+  "Stakeholder Management",
+  "Change Management",
+  "Conflict Resolution",
+  "Team Building",
+  "Motivation",
+  "Performance Management",
+  "Training and Development",
+  "Human Resources",
+  "Recruiting",
+  "Compensation and Benefits",
+  "Employee Relations",
+  "Labor Law",
+  "Organizational Development",
+  "Diversity and Inclusion",
+  "Sustainability",
+  "Environmental Management",
+  "Social Responsibility",
+  "Governance",
+  "Ethics",
+  "Compliance",
+  "Legal",
+  "Intellectual Property",
+  "Contract Law",
+  "Litigation",
+  "Arbitration",
+  "Mediation",
+  "Government Relations",
+  "Public Policy",
+  "Lobbying",
+  "Advocacy",
+  "Nonprofit Management",
+  "Fundraising",
+  "Grant Writing",
+  "Volunteer Management",
+  "Community Development",
+  "Social Work",
+  "Counseling",
+  "Psychology",
+  "Sociology",
+  "Anthropology",
+  "Education",
+  "Teaching",
+  "Curriculum Development",
+  "Educational Technology",
+  "Special Education",
+  "Higher Education",
+  "Research",
+  "Writing",
+  "Editing",
+  "Proofreading",
+  "Journalism",
+  "Public Relations",
+  "Advertising",
+  "Content Creation",
+  "Social Media Marketing",
+  "Search Engine Optimization (SEO)",
+  "Search Engine Marketing (SEM)",
+  "Email Marketing",
+  "Affiliate Marketing",
+  "Influencer Marketing",
+  "Video Marketing",
+  "Mobile Marketing",
+  "Data-Driven Marketing",
+  "Customer Relationship Management (CRM)",
+  "Salesforce",
+  "HubSpot",
+  "Marketo",
+  "Adobe Marketing Cloud",
+  "Google Analytics"
+];

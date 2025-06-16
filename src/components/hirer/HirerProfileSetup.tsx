@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { companyAPI } from '../../services/api';
 import { CompanyProfile } from '../../models/types';
 import { toast } from '@/hooks/use-toast';
+import OrbitalLoader from '@/components/ui/orbital-loader';
+import GlassmorphismCard from '@/components/ui/glassmorphism-card';
 
 const HirerProfileSetup = () => {
   const navigate = useNavigate();
@@ -65,12 +67,24 @@ const HirerProfileSetup = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="mobile-container min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50">
+        <OrbitalLoader 
+          size={250}
+          message="Creating your company profile..."
+          className="text-center"
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="mobile-container p-6">
+    <div className="mobile-container p-6 bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
       <div className="flex flex-col min-h-screen">
         <button 
           onClick={() => navigate(-1)}
-          className="text-gray-500 self-start mb-6"
+          className="text-gray-500 self-start mb-6 hover:scale-110 transition-transform"
           aria-label="Go back"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,33 +92,35 @@ const HirerProfileSetup = () => {
           </svg>
         </button>
         
-        <h1 className="text-2xl font-bold mb-2">Company Profile</h1>
-        <p className="text-gray-600 mb-6">Let's set up your company information</p>
-        
-        <div className="progress-bar mb-8">
-          <div className="progress-fill" style={{ width: '50%' }}></div>
-        </div>
+        <GlassmorphismCard className="p-6 mb-6">
+          <h1 className="text-2xl font-bold mb-2">Company Profile</h1>
+          <p className="text-gray-600 mb-4">Let's set up your company information</p>
+          
+          <div className="progress-bar mb-6">
+            <div className="progress-fill" style={{ width: '50%' }}></div>
+          </div>
+        </GlassmorphismCard>
         
         <form onSubmit={handleSubmit} className="space-y-6 flex-1">
-          <div className="space-y-2">
-            <label htmlFor="companyName" className="text-gray-700 font-medium">Company Name *</label>
+          <GlassmorphismCard className="p-4">
+            <label htmlFor="companyName" className="text-gray-700 font-medium mb-2 block">Company Name *</label>
             <Input
               id="companyName"
               name="companyName"
               value={companyProfile.companyName}
               onChange={handleChange}
-              className="ios-input"
+              className="ios-input bg-white/50 backdrop-blur-sm"
               required
             />
-          </div>
+          </GlassmorphismCard>
           
-          <div className="space-y-2">
-            <label htmlFor="industry" className="text-gray-700 font-medium">Industry</label>
+          <GlassmorphismCard className="p-4">
+            <label htmlFor="industry" className="text-gray-700 font-medium mb-2 block">Industry</label>
             <Select 
               value={companyProfile.industry} 
               onValueChange={(value) => handleSelectChange('industry', value)}
             >
-              <SelectTrigger className="ios-input">
+              <SelectTrigger className="ios-input bg-white/50 backdrop-blur-sm">
                 <SelectValue placeholder="Select industry" />
               </SelectTrigger>
               <SelectContent>
@@ -118,15 +134,15 @@ const HirerProfileSetup = () => {
                 <SelectItem value="professional_services">Professional Services</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </GlassmorphismCard>
           
-          <div className="space-y-2">
-            <label htmlFor="companySize" className="text-gray-700 font-medium">Company Size</label>
+          <GlassmorphismCard className="p-4">
+            <label htmlFor="companySize" className="text-gray-700 font-medium mb-2 block">Company Size</label>
             <Select 
               value={companyProfile.companySize} 
               onValueChange={(value) => handleSelectChange('companySize', value)}
             >
-              <SelectTrigger className="ios-input">
+              <SelectTrigger className="ios-input bg-white/50 backdrop-blur-sm">
                 <SelectValue placeholder="Select company size" />
               </SelectTrigger>
               <SelectContent>
@@ -138,10 +154,10 @@ const HirerProfileSetup = () => {
                 <SelectItem value="1001+">1001+ employees</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="websiteUrl" className="text-gray-700 font-medium">Website URL</label>
+          </GlassmorphismCard>
+
+          <GlassmorphismCard className="p-4">
+            <label htmlFor="websiteUrl" className="text-gray-700 font-medium mb-2 block">Website URL</label>
             <Input
               id="websiteUrl"
               name="websiteUrl"
@@ -149,60 +165,62 @@ const HirerProfileSetup = () => {
               placeholder="https://example.com"
               value={companyProfile.websiteUrl}
               onChange={handleChange}
-              className="ios-input"
+              className="ios-input bg-white/50 backdrop-blur-sm"
             />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="description" className="text-gray-700 font-medium">Company Description</label>
+          </GlassmorphismCard>
+
+          <GlassmorphismCard className="p-4">
+            <label htmlFor="description" className="text-gray-700 font-medium mb-2 block">Company Description</label>
             <Textarea
               id="description"
               name="description"
               placeholder="Tell us about your company..."
               value={companyProfile.description}
               onChange={handleChange}
-              className="ios-input min-h-[120px]"
+              className="ios-input min-h-[120px] bg-white/50 backdrop-blur-sm"
             />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="locationCity" className="text-gray-700 font-medium">City</label>
-            <Input
-              id="locationCity"
-              name="locationCity"
-              value={companyProfile.locationCity}
-              onChange={handleChange}
-              className="ios-input"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="locationCountry" className="text-gray-700 font-medium">Country</label>
-            <Select 
-              value={companyProfile.locationCountry} 
-              onValueChange={(value) => handleSelectChange('locationCountry', value)}
-            >
-              <SelectTrigger className="ios-input">
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="United States">United States</SelectItem>
-                <SelectItem value="Canada">Canada</SelectItem>
-                <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                <SelectItem value="Australia">Australia</SelectItem>
-                <SelectItem value="Germany">Germany</SelectItem>
-                <SelectItem value="France">France</SelectItem>
-                <SelectItem value="Spain">Spain</SelectItem>
-                <SelectItem value="India">India</SelectItem>
-                <SelectItem value="Singapore">Singapore</SelectItem>
-                <SelectItem value="Japan">Japan</SelectItem>
-              </SelectContent>
-            </Select>
+          </GlassmorphismCard>
+
+          <div className="grid grid-cols-2 gap-4">
+            <GlassmorphismCard className="p-4">
+              <label htmlFor="locationCity" className="text-gray-700 font-medium mb-2 block">City</label>
+              <Input
+                id="locationCity"
+                name="locationCity"
+                value={companyProfile.locationCity}
+                onChange={handleChange}
+                className="ios-input bg-white/50 backdrop-blur-sm"
+              />
+            </GlassmorphismCard>
+
+            <GlassmorphismCard className="p-4">
+              <label htmlFor="locationCountry" className="text-gray-700 font-medium mb-2 block">Country</label>
+              <Select 
+                value={companyProfile.locationCountry} 
+                onValueChange={(value) => handleSelectChange('locationCountry', value)}
+              >
+                <SelectTrigger className="ios-input bg-white/50 backdrop-blur-sm">
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="United States">United States</SelectItem>
+                  <SelectItem value="Canada">Canada</SelectItem>
+                  <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                  <SelectItem value="Australia">Australia</SelectItem>
+                  <SelectItem value="Germany">Germany</SelectItem>
+                  <SelectItem value="France">France</SelectItem>
+                  <SelectItem value="Spain">Spain</SelectItem>
+                  <SelectItem value="India">India</SelectItem>
+                  <SelectItem value="Singapore">Singapore</SelectItem>
+                  <SelectItem value="Japan">Japan</SelectItem>
+                </SelectContent>
+              </Select>
+            </GlassmorphismCard>
           </div>
           
           <Button
             type="submit"
-            className="w-full py-6 text-lg bg-reme-orange hover:bg-orange-600 transition-colors mt-8"
+            className="w-full py-6 text-lg bg-gradient-to-r from-reme-orange to-yellow-500 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
             disabled={isLoading}
           >
             {isLoading ? 'Saving...' : 'Continue to Dashboard'}
