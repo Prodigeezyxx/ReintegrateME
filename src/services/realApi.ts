@@ -1,630 +1,194 @@
+
 import { supabase } from '@/integrations/supabase/client';
-import { CompanyProfile, JobPosting } from '@/models/types';
+import { CompanyProfile, JobPosting } from '../models/types';
 
-export const companyAPI = {
-  createInitialProfile: async (profileData: Partial<CompanyProfile>) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user logged in');
-
-      const { data, error } = await supabase
-        .from('company_profiles')
-        .insert([
-          {
-            ...profileData,
-            user_id: user.id,
-          },
-        ]);
-
-      if (error) {
-        console.error('Error creating company profile:', error);
-        throw new Error(error.message);
-      }
-
-      return data;
-    } catch (error: any) {
-      console.error('Error in createInitialProfile:', error);
-      throw new Error(error.message || 'Failed to create company profile');
+export const realCompanyAPI = {
+  createInitialProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
     }
+
+    const { data, error } = await supabase
+      .from('company_profiles')
+      .insert([{
+        user_id: user.id,
+        company_name: profileData.companyName || '',
+        industry: profileData.industry,
+        company_size: profileData.companySize,
+        website_url: profileData.websiteUrl,
+        description: profileData.description,
+        location_city: profileData.locationCity,
+        location_country: profileData.locationCountry,
+        profile_completion_percentage: 30
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to create company profile: ${error.message}`);
+    }
+
+    // Transform database response to match TypeScript interface
+    const companyProfile: CompanyProfile = {
+      id: data.id,
+      userId: data.user_id,
+      companyName: data.company_name,
+      industry: data.industry,
+      companySize: data.company_size,
+      websiteUrl: data.website_url,
+      description: data.description,
+      locationCity: data.location_city,
+      locationCountry: data.location_country,
+      logoUrl: data.logo_url,
+      profileCompletionPercentage: data.profile_completion_percentage
+    };
+
+    return companyProfile;
   },
 
-  updateProfile: async (profileData: Partial<CompanyProfile>) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user logged in');
-
-      const { data, error } = await supabase
-        .from('company_profiles')
-        .update(profileData)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error updating company profile:', error);
-        throw new Error(error.message);
-      }
-
-      return data;
-    } catch (error: any) {
-      console.error('Error in updateProfile:', error);
-      throw new Error(error.message || 'Failed to update company profile');
+  getProfile: async (): Promise<CompanyProfile> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
     }
-  },
 
-  getCompanyProfile: async (): Promise<CompanyProfile | null> => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+    const { data, error } = await supabase
+      .from('company_profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
 
-      const { data, error } = await supabase
-        .from('company_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching company profile:', error);
-        return null;
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Error in getCompanyProfile:', error);
-      return null;
+    if (error) {
+      throw new Error(`Failed to get company profile: ${error.message}`);
     }
-  },
+
+    // Transform database response to match TypeScript interface
+    const companyProfile: CompanyProfile = {
+      id: data.id,
+      userId: data.user_id,
+      companyName: data.company_name,
+      industry: data.industry,
+      companySize: data.company_size,
+      websiteUrl: data.website_url,
+      description: data.description,
+      locationCity: data.location_city,
+      locationCountry: data.location_country,
+      logoUrl: data.logo_url,
+      profileCompletionPercentage: data.profile_completion_percentage
+    };
+
+    return companyProfile;
+  }
 };
 
-export const jobAPI = {
-  createJob: async (jobData: Partial<JobPosting>) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user logged in');
-
-      const companyProfile = await companyAPI.getCompanyProfile();
-      if (!companyProfile) throw new Error('No company profile found');
-
-      const { data, error } = await supabase
-        .from('job_postings')
-        .insert([
-          {
-            ...jobData,
-            company_id: companyProfile.id,
-            user_id: user.id,
-          },
-        ]);
-
-      if (error) {
-        console.error('Error creating job posting:', error);
-        throw new Error(error.message);
-      }
-
-      return data;
-    } catch (error: any) {
-      console.error('Error in createJob:', error);
-      throw new Error(error.message || 'Failed to create job posting');
+export const realJobAPI = {
+  createJob: async (jobData: Partial<JobPosting>): Promise<JobPosting> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
     }
+
+    // Get company profile first
+    const companyProfile = await realCompanyAPI.getProfile();
+
+    const { data, error } = await supabase
+      .from('job_postings')
+      .insert([{
+        hirer_id: user.id,
+        company_id: companyProfile.id,
+        title: jobData.title || '',
+        description: jobData.description || '',
+        category: jobData.category || '',
+        employment_type: jobData.employmentType || '',
+        experience_level: jobData.experienceLevel,
+        location_city: jobData.locationCity,
+        location_country: jobData.locationCountry,
+        required_skills: jobData.requiredSkills,
+        salary_min: jobData.salary?.min,
+        salary_max: jobData.salary?.max,
+        salary_currency: jobData.salary?.currency || 'GBP',
+        salary_period: jobData.salary?.period || 'annual',
+        status: jobData.status || 'active'
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to create job posting: ${error.message}`);
+    }
+
+    // Transform database response to match TypeScript interface
+    const jobPosting: JobPosting = {
+      id: data.id,
+      hirerId: data.hirer_id,
+      companyId: data.company_id,
+      title: data.title,
+      description: data.description,
+      companyName: companyProfile.companyName,
+      companyLogoUrl: companyProfile.logoUrl,
+      category: data.category,
+      employmentType: data.employment_type,
+      experienceLevel: data.experience_level,
+      locationCity: data.location_city,
+      locationCountry: data.location_country,
+      requiredSkills: data.required_skills,
+      salary: data.salary_min && data.salary_max ? {
+        min: data.salary_min,
+        max: data.salary_max,
+        currency: data.salary_currency,
+        period: data.salary_period
+      } : undefined,
+      createdAt: new Date(data.created_at),
+      status: data.status as 'active' | 'draft' | 'archived'
+    };
+
+    return jobPosting;
   },
 
-  updateJob: async (jobId: string, jobData: Partial<JobPosting>) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user logged in');
-
-      const { data, error } = await supabase
-        .from('job_postings')
-        .update(jobData)
-        .eq('id', jobId)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error updating job posting:', error);
-        throw new Error(error.message);
-      }
-
-      return data;
-    } catch (error: any) {
-      console.error('Error in updateJob:', error);
-      throw new Error(error.message || 'Failed to update job posting');
+  getHirerJobs: async (): Promise<JobPosting[]> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
     }
-  },
 
-  getJob: async (jobId: string): Promise<JobPosting | null> => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user logged in');
+    const { data, error } = await supabase
+      .from('job_postings')
+      .select(`
+        *,
+        company_profiles!inner(company_name, logo_url)
+      `)
+      .eq('hirer_id', user.id);
 
-      const { data, error } = await supabase
-        .from('job_postings')
-        .select('*')
-        .eq('id', jobId)
-        .eq('user_id', user.id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching job posting:', error);
-        return null;
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Error in getJob:', error);
-      return null;
+    if (error) {
+      throw new Error(`Failed to get job postings: ${error.message}`);
     }
-  },
 
-  getJobs: async (): Promise<JobPosting[]> => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user logged in');
+    // Transform database response to match TypeScript interface
+    const jobPostings: JobPosting[] = data.map(job => ({
+      id: job.id,
+      hirerId: job.hirer_id,
+      companyId: job.company_id,
+      title: job.title,
+      description: job.description,
+      companyName: job.company_profiles.company_name,
+      companyLogoUrl: job.company_profiles.logo_url,
+      category: job.category,
+      employmentType: job.employment_type,
+      experienceLevel: job.experience_level,
+      locationCity: job.location_city,
+      locationCountry: job.location_country,
+      requiredSkills: job.required_skills,
+      salary: job.salary_min && job.salary_max ? {
+        min: job.salary_min,
+        max: job.salary_max,
+        currency: job.salary_currency,
+        period: job.salary_period
+      } : undefined,
+      createdAt: new Date(job.created_at),
+      status: job.status as 'active' | 'draft' | 'archived'
+    }));
 
-      const companyProfile = await companyAPI.getCompanyProfile();
-      if (!companyProfile) throw new Error('No company profile found');
-
-      const { data, error } = await supabase
-        .from('job_postings')
-        .select('*')
-        .eq('company_id', companyProfile.id)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error fetching job postings:', error);
-        return [];
-      }
-
-      return data || [];
-    } catch (error) {
-      console.error('Error in getJobs:', error);
-      return [];
-    }
-  },
-
-  deleteJob: async (jobId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user logged in');
-
-      const { data, error } = await supabase
-        .from('job_postings')
-        .delete()
-        .eq('id', jobId)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error deleting job posting:', error);
-        throw new Error(error.message);
-      }
-
-      return data;
-    } catch (error: any) {
-      console.error('Error in deleteJob:', error);
-      throw new Error(error.message || 'Failed to delete job posting');
-    }
-  },
+    return jobPostings;
+  }
 };
-
-export const skills = [
-  "JavaScript",
-  "React",
-  "Node.js",
-  "HTML",
-  "CSS",
-  "Python",
-  "Java",
-  "C++",
-  "C#",
-  "SQL",
-  "MongoDB",
-  "AWS",
-  "Azure",
-  "Docker",
-  "Kubernetes",
-  "Git",
-  "TypeScript",
-  "Angular",
-  "Vue.js",
-  "GraphQL",
-  "REST API",
-  "Firebase",
-  "Next.js",
-  "Tailwind CSS",
-  "Redux",
-  "Saga",
-  "Jest",
-  "Cypress",
-  "Jenkins",
-  "Terraform",
-  "Ansible",
-  "Chef",
-  "Puppet",
-  "Elasticsearch",
-  "Kafka",
-  "RabbitMQ",
-  "Redis",
-  "PostgreSQL",
-  "MySQL",
-  "NoSQL",
-  "Data Science",
-  "Machine Learning",
-  "Deep Learning",
-  "TensorFlow",
-  "PyTorch",
-  "Keras",
-  "Pandas",
-  "NumPy",
-  "Scikit-learn",
-  "Matplotlib",
-  "Seaborn",
-  "Tableau",
-  "Power BI",
-  "Data Analysis",
-  "Data Visualization",
-  "Big Data",
-  "Hadoop",
-  "Spark",
-  "Cloud Computing",
-  "DevOps",
-  "Agile",
-  "Scrum",
-  "Kanban",
-  "Project Management",
-  "Product Management",
-  "UI/UX Design",
-  "Figma",
-  "Sketch",
-  "Adobe XD",
-  "Web Design",
-  "Mobile App Development",
-  "iOS Development",
-  "Android Development",
-  "Swift",
-  "Kotlin",
-  "Flutter",
-  "React Native",
-  "Xamarin",
-  "Blockchain",
-  "Solidity",
-  "Ethereum",
-  "Smart Contracts",
-  "Cybersecurity",
-  "Ethical Hacking",
-  "Penetration Testing",
-  "Network Security",
-  "Information Security",
-  "Cryptography",
-  "Artificial Intelligence",
-  "Natural Language Processing",
-  "Computer Vision",
-  "Robotics",
-  "Automation",
-  "Internet of Things (IoT)",
-  "Embedded Systems",
-  "C",
-  "Assembly",
-  "Verilog",
-  "VHDL",
-  "FPGA",
-  "Microcontrollers",
-  "Signal Processing",
-  "Control Systems",
-  "Robotics",
-  "Game Development",
-  "Unity",
-  "Unreal Engine",
-  "Cg",
-  "HLSL",
-  "Shader Programming",
-  "3D Modeling",
-  "Animation",
-  "Virtual Reality (VR)",
-  "Augmented Reality (AR)",
-  "Mixed Reality (MR)",
-  "Spatial Computing",
-  "Quantum Computing",
-  "Bioinformatics",
-  "Genomics",
-  "Proteomics",
-  "Systems Biology",
-  "Biostatistics",
-  "Healthcare Informatics",
-  "Medical Imaging",
-  "Pharmaceuticals",
-  "Clinical Trials",
-  "Regulatory Affairs",
-  "Market Research",
-  "Business Development",
-  "Sales",
-  "Marketing",
-  "Finance",
-  "Accounting",
-  "Economics",
-  "Management",
-  "Leadership",
-  "Communication",
-  "Negotiation",
-  "Problem Solving",
-  "Critical Thinking",
-  "Creativity",
-  "Innovation",
-  "Entrepreneurship",
-  "Startups",
-  "Venture Capital",
-  "Private Equity",
-  "Mergers and Acquisitions",
-  "Investment Banking",
-  "Financial Analysis",
-  "Risk Management",
-  "Compliance",
-  "Auditing",
-  "Taxation",
-  "Real Estate",
-  "Supply Chain Management",
-  "Logistics",
-  "Operations Management",
-  "Quality Control",
-  "Process Improvement",
-  "Lean Manufacturing",
-  "Six Sigma",
-  "Project Planning",
-  "Resource Management",
-  "Stakeholder Management",
-  "Change Management",
-  "Conflict Resolution",
-  "Team Building",
-  "Motivation",
-  "Performance Management",
-  "Training and Development",
-  "Human Resources",
-  "Recruiting",
-  "Compensation and Benefits",
-  "Employee Relations",
-  "Labor Law",
-  "Organizational Development",
-  "Diversity and Inclusion",
-  "Sustainability",
-  "Environmental Management",
-  "Social Responsibility",
-  "Governance",
-  "Ethics",
-  "Compliance",
-  "Legal",
-  "Intellectual Property",
-  "Contract Law",
-  "Litigation",
-  "Arbitration",
-  "Mediation",
-  "Government Relations",
-  "Public Policy",
-  "Lobbying",
-  "Advocacy",
-  "Nonprofit Management",
-  "Fundraising",
-  "Grant Writing",
-  "Volunteer Management",
-  "Community Development",
-  "Social Work",
-  "Counseling",
-  "Psychology",
-  "Sociology",
-  "Anthropology",
-  "Education",
-  "Teaching",
-  "Curriculum Development",
-  "Educational Technology",
-  "Special Education",
-  "Higher Education",
-  "Research",
-  "Writing",
-  "Editing",
-  "Proofreading",
-  "Journalism",
-  "Public Relations",
-  "Advertising",
-  "Content Creation",
-  "Social Media Marketing",
-  "Search Engine Optimization (SEO)",
-  "Search Engine Marketing (SEM)",
-  "Email Marketing",
-  "Affiliate Marketing",
-  "Influencer Marketing",
-  "Video Marketing",
-  "Mobile Marketing",
-  "Data-Driven Marketing",
-  "Customer Relationship Management (CRM)",
-  "Salesforce",
-  "HubSpot",
-  "Marketo",
-  "Adobe Marketing Cloud",
-  "Google Analytics",
-  "Data Science",
-  "Machine Learning",
-  "Deep Learning",
-  "TensorFlow",
-  "PyTorch",
-  "Keras",
-  "Pandas",
-  "NumPy",
-  "Scikit-learn",
-  "Matplotlib",
-  "Seaborn",
-  "Tableau",
-  "Power BI",
-  "Data Analysis",
-  "Data Visualization",
-  "Big Data",
-  "Hadoop",
-  "Spark",
-  "Cloud Computing",
-  "DevOps",
-  "Agile",
-  "Scrum",
-  "Kanban",
-  "Project Management",
-  "Product Management",
-  "UI/UX Design",
-  "Figma",
-  "Sketch",
-  "Adobe XD",
-  "Web Design",
-  "Mobile App Development",
-  "iOS Development",
-  "Android Development",
-  "Swift",
-  "Kotlin",
-  "Flutter",
-  "React Native",
-  "Xamarin",
-  "Blockchain",
-  "Solidity",
-  "Ethereum",
-  "Smart Contracts",
-  "Cybersecurity",
-  "Ethical Hacking",
-  "Penetration Testing",
-  "Network Security",
-  "Information Security",
-  "Cryptography",
-  "Artificial Intelligence",
-  "Natural Language Processing",
-  "Computer Vision",
-  "Robotics",
-  "Automation",
-  "Internet of Things (IoT)",
-  "Embedded Systems",
-  "C",
-  "Assembly",
-  "Verilog",
-  "VHDL",
-  "FPGA",
-  "Microcontrollers",
-  "Signal Processing",
-  "Control Systems",
-  "Robotics",
-  "Game Development",
-  "Unity",
-  "Unreal Engine",
-  "Cg",
-  "HLSL",
-  "Shader Programming",
-  "3D Modeling",
-  "Animation",
-  "Virtual Reality (VR)",
-  "Augmented Reality (AR)",
-  "Mixed Reality (MR)",
-  "Spatial Computing",
-  "Quantum Computing",
-  "Bioinformatics",
-  "Genomics",
-  "Proteomics",
-  "Systems Biology",
-  "Biostatistics",
-  "Healthcare Informatics",
-  "Medical Imaging",
-  "Pharmaceuticals",
-  "Clinical Trials",
-  "Regulatory Affairs",
-  "Market Research",
-  "Business Development",
-  "Sales",
-  "Marketing",
-  "Finance",
-  "Accounting",
-  "Economics",
-  "Management",
-  "Leadership",
-  "Communication",
-  "Negotiation",
-  "Problem Solving",
-  "Critical Thinking",
-  "Creativity",
-  "Innovation",
-  "Entrepreneurship",
-  "Startups",
-  "Venture Capital",
-  "Private Equity",
-  "Mergers and Acquisitions",
-  "Investment Banking",
-  "Financial Analysis",
-  "Risk Management",
-  "Compliance",
-  "Auditing",
-  "Taxation",
-  "Real Estate",
-  "Supply Chain Management",
-  "Logistics",
-  "Operations Management",
-  "Quality Control",
-  "Process Improvement",
-  "Lean Manufacturing",
-  "Six Sigma",
-  "Project Planning",
-  "Resource Management",
-  "Stakeholder Management",
-  "Change Management",
-  "Conflict Resolution",
-  "Team Building",
-  "Motivation",
-  "Performance Management",
-  "Training and Development",
-  "Human Resources",
-  "Recruiting",
-  "Compensation and Benefits",
-  "Employee Relations",
-  "Labor Law",
-  "Organizational Development",
-  "Diversity and Inclusion",
-  "Sustainability",
-  "Environmental Management",
-  "Social Responsibility",
-  "Governance",
-  "Ethics",
-  "Compliance",
-  "Legal",
-  "Intellectual Property",
-  "Contract Law",
-  "Litigation",
-  "Arbitration",
-  "Mediation",
-  "Government Relations",
-  "Public Policy",
-  "Lobbying",
-  "Advocacy",
-  "Nonprofit Management",
-  "Fundraising",
-  "Grant Writing",
-  "Volunteer Management",
-  "Community Development",
-  "Social Work",
-  "Counseling",
-  "Psychology",
-  "Sociology",
-  "Anthropology",
-  "Education",
-  "Teaching",
-  "Curriculum Development",
-  "Educational Technology",
-  "Special Education",
-  "Higher Education",
-  "Research",
-  "Writing",
-  "Editing",
-  "Proofreading",
-  "Journalism",
-  "Public Relations",
-  "Advertising",
-  "Content Creation",
-  "Social Media Marketing",
-  "Search Engine Optimization (SEO)",
-  "Search Engine Marketing (SEM)",
-  "Email Marketing",
-  "Affiliate Marketing",
-  "Influencer Marketing",
-  "Video Marketing",
-  "Mobile Marketing",
-  "Data-Driven Marketing",
-  "Customer Relationship Management (CRM)",
-  "Salesforce",
-  "HubSpot",
-  "Marketo",
-  "Adobe Marketing Cloud",
-  "Google Analytics"
-];

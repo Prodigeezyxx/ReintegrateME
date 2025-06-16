@@ -68,7 +68,7 @@ export const supabaseAuth = {
         const authUser: AuthUser = {
           id: data.user.id,
           email: data.user.email!,
-          role: profile?.role,
+          role: (profile?.role as 'hirer' | 'seeker') || undefined,
           createdAt: new Date(data.user.created_at)
         };
         return { user: authUser, error: null };
@@ -142,7 +142,7 @@ export const supabaseAuth = {
       return {
         id: user.id,
         email: user.email!,
-        role: profile?.role,
+        role: (profile?.role as 'hirer' | 'seeker') || undefined,
         createdAt: new Date(user.created_at)
       };
     } catch (err) {

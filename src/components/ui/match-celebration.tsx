@@ -4,6 +4,7 @@ import { OrbitAnimation, OrbitalElement } from './orbital-animation';
 import GlassmorphismCard from './glassmorphism-card';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Heart, Star } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface MatchCelebrationProps {
   isVisible: boolean;
