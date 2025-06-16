@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
@@ -33,62 +34,77 @@ import SeekerAIChat from "./components/seeker/SeekerAIChat";
 import SeekerCVBuilder from "./components/seeker/SeekerCVBuilder";
 import MobileNavbar from "./components/MobileNavbar";
 import MainMenu from "./components/MainMenu";
-import { authAPI } from "./services/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  const isAuthenticated = authAPI.isAuthenticated();
+const AppContent = () => {
+  const { user, loading } = useAuth();
   
+  // Show loading screen while checking auth state
+  if (loading) {
+    return <SplashScreen />;
+  }
+  
+  return (
+    <>
+      {/* Add MainMenu for hamburger navigation */}
+      <MainMenu />
+      
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/splash" element={<SplashScreen />} />
+        <Route path="/unified-auth" element={<UnifiedAuth />} />
+        <Route path="/role-selection" element={<RoleSelection />} />
+        <Route path="/auth" element={<Authentication />} />
+        
+        {/* Hirer Routes */}
+        <Route path="/hirer-setup" element={<HirerProfileSetup />} />
+        <Route path="/hirer-dashboard" element={<HirerDashboard />} />
+        <Route path="/hirer-discover" element={<HirerDiscover />} />
+        <Route path="/hirer-jobs" element={<HirerJobsList />} />
+        <Route path="/hirer-create-job" element={<HirerCreateJob />} />
+        <Route path="/hirer-applicants" element={<HirerApplicants />} />
+        <Route path="/hirer-messages" element={<HirerMessages />} />
+        <Route path="/hirer-messages/:threadId" element={<HirerChatDetail />} />
+        <Route path="/hirer-profile" element={<Navigate to="/hirer-dashboard" replace />} />
+        
+        {/* Seeker Routes */}
+        <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
+        <Route path="/seeker-setup-step2" element={<SeekerProfileSetupStep2 />} />
+        <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
+        <Route path="/seeker-dashboard" element={<SeekerHome />} />
+        <Route path="/seeker-discover" element={<SeekerDashboard />} />
+        <Route path="/seeker-applications" element={<SeekerApplications />} />
+        <Route path="/seeker-messages" element={<SeekerMessages />} />
+        <Route path="/seeker-profile" element={<SeekerProfile />} />
+        <Route path="/seeker-saved" element={<SeekerSaved />} />
+        <Route path="/seeker-ai-suite" element={<SeekerAISuite />} />
+        <Route path="/seeker-ai-coach" element={<SeekerAICoach />} />
+        <Route path="/seeker-ai-chat" element={<SeekerAIChat />} />
+        <Route path="/seeker-cv-builder" element={<SeekerCVBuilder />} />
+        <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
+        
+        {/* Catch-all */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      
+      {user && <MobileNavbar />}
+    </>
+  );
+};
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          {/* Add MainMenu for hamburger navigation */}
-          <MainMenu />
-          
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/splash" element={<SplashScreen />} />
-            <Route path="/unified-auth" element={<UnifiedAuth />} />
-            <Route path="/role-selection" element={<RoleSelection />} />
-            <Route path="/auth" element={<Authentication />} />
-            
-            {/* Hirer Routes */}
-            <Route path="/hirer-setup" element={<HirerProfileSetup />} />
-            <Route path="/hirer-dashboard" element={<HirerDashboard />} />
-            <Route path="/hirer-discover" element={<HirerDiscover />} />
-            <Route path="/hirer-jobs" element={<HirerJobsList />} />
-            <Route path="/hirer-create-job" element={<HirerCreateJob />} />
-            <Route path="/hirer-applicants" element={<HirerApplicants />} />
-            <Route path="/hirer-messages" element={<HirerMessages />} />
-            <Route path="/hirer-messages/:threadId" element={<HirerChatDetail />} />
-            <Route path="/hirer-profile" element={<Navigate to="/hirer-dashboard" replace />} />
-            
-            {/* Seeker Routes */}
-            <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
-            <Route path="/seeker-setup-step2" element={<SeekerProfileSetupStep2 />} />
-            <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
-            <Route path="/seeker-dashboard" element={<SeekerHome />} />
-            <Route path="/seeker-discover" element={<SeekerDashboard />} />
-            <Route path="/seeker-applications" element={<SeekerApplications />} />
-            <Route path="/seeker-messages" element={<SeekerMessages />} />
-            <Route path="/seeker-profile" element={<SeekerProfile />} />
-            <Route path="/seeker-saved" element={<SeekerSaved />} />
-            <Route path="/seeker-ai-suite" element={<SeekerAISuite />} />
-            <Route path="/seeker-ai-coach" element={<SeekerAICoach />} />
-            <Route path="/seeker-ai-chat" element={<SeekerAIChat />} />
-            <Route path="/seeker-cv-builder" element={<SeekerCVBuilder />} />
-            <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
-            
-            {/* Catch-all */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          
-          {isAuthenticated && <MobileNavbar />}
-        </BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

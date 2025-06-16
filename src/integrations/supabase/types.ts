@@ -47,6 +47,189 @@ export type Database = {
           },
         ]
       }
+      company_profiles: {
+        Row: {
+          company_name: string
+          company_size: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          industry: string | null
+          location_city: string | null
+          location_country: string | null
+          logo_url: string | null
+          profile_completion_percentage: number | null
+          updated_at: string | null
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          company_name: string
+          company_size?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          industry?: string | null
+          location_city?: string | null
+          location_country?: string | null
+          logo_url?: string | null
+          profile_completion_percentage?: number | null
+          updated_at?: string | null
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          company_name?: string
+          company_size?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          industry?: string | null
+          location_city?: string | null
+          location_country?: string | null
+          logo_url?: string | null
+          profile_completion_percentage?: number | null
+          updated_at?: string | null
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_postings: {
+        Row: {
+          category: string
+          company_id: string
+          created_at: string | null
+          description: string
+          employment_type: string
+          experience_level: string | null
+          hirer_id: string
+          id: string
+          location_city: string | null
+          location_country: string | null
+          required_skills: string[] | null
+          salary_currency: string | null
+          salary_max: number | null
+          salary_min: number | null
+          salary_period: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          company_id: string
+          created_at?: string | null
+          description: string
+          employment_type: string
+          experience_level?: string | null
+          hirer_id: string
+          id?: string
+          location_city?: string | null
+          location_country?: string | null
+          required_skills?: string[] | null
+          salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          company_id?: string
+          created_at?: string | null
+          description?: string
+          employment_type?: string
+          experience_level?: string | null
+          hirer_id?: string
+          id?: string
+          location_city?: string | null
+          location_country?: string | null
+          required_skills?: string[] | null
+          salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_postings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_postings_hirer_id_fkey"
+            columns: ["hirer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matches: {
+        Row: {
+          chat_thread_id: string | null
+          context_job_id: string | null
+          created_at: string | null
+          hirer_id: string
+          id: string
+          seeker_id: string
+        }
+        Insert: {
+          chat_thread_id?: string | null
+          context_job_id?: string | null
+          created_at?: string | null
+          hirer_id: string
+          id?: string
+          seeker_id: string
+        }
+        Update: {
+          chat_thread_id?: string | null
+          context_job_id?: string | null
+          created_at?: string | null
+          hirer_id?: string
+          id?: string
+          seeker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_context_job_id_fkey"
+            columns: ["context_job_id"]
+            isOneToOne: false
+            referencedRelation: "job_postings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_hirer_id_fkey"
+            columns: ["hirer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_seeker_id_fkey"
+            columns: ["seeker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       onboarding_progress: {
         Row: {
           completed: boolean | null
@@ -343,6 +526,103 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seeker_profiles: {
+        Row: {
+          availability_status: string | null
+          bio: string | null
+          created_at: string | null
+          headline: string | null
+          id: string
+          key_skills: string[] | null
+          location_city: string | null
+          location_country: string | null
+          preferred_employment_types: string[] | null
+          preferred_job_categories: string[] | null
+          profile_completion_percentage: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          availability_status?: string | null
+          bio?: string | null
+          created_at?: string | null
+          headline?: string | null
+          id?: string
+          key_skills?: string[] | null
+          location_city?: string | null
+          location_country?: string | null
+          preferred_employment_types?: string[] | null
+          preferred_job_categories?: string[] | null
+          profile_completion_percentage?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          availability_status?: string | null
+          bio?: string | null
+          created_at?: string | null
+          headline?: string | null
+          id?: string
+          key_skills?: string[] | null
+          location_city?: string | null
+          location_country?: string | null
+          preferred_employment_types?: string[] | null
+          preferred_job_categories?: string[] | null
+          profile_completion_percentage?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seeker_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      swipe_records: {
+        Row: {
+          context_job_id: string | null
+          created_at: string | null
+          hirer_company_id: string | null
+          id: string
+          swipe_type: string
+          swiped_entity_id: string
+          swiped_entity_type: string
+          swiper_id: string
+        }
+        Insert: {
+          context_job_id?: string | null
+          created_at?: string | null
+          hirer_company_id?: string | null
+          id?: string
+          swipe_type: string
+          swiped_entity_id: string
+          swiped_entity_type: string
+          swiper_id: string
+        }
+        Update: {
+          context_job_id?: string | null
+          created_at?: string | null
+          hirer_company_id?: string | null
+          id?: string
+          swipe_type?: string
+          swiped_entity_id?: string
+          swiped_entity_type?: string
+          swiper_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "swipe_records_swiper_id_fkey"
+            columns: ["swiper_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
