@@ -13,38 +13,13 @@ import { LegalInfoSection } from './profile/LegalInfoSection';
 import { EmploymentInfoSection } from './profile/EmploymentInfoSection';
 import { SkillsSection } from './profile/SkillsSection';
 import { AboutSection } from './profile/AboutSection';
+import { Database } from '@/integrations/supabase/types';
 
-interface SeekerProfileData {
-  id: string;
-  user_id: string;
-  first_name?: string;
-  last_name?: string;
-  job_title?: string;
-  profile_image_url?: string;
-  phone_number?: string;
-  email?: string;
-  location_city?: string;
-  location_country?: string;
-  bio?: string;
-  key_skills?: string[];
-  sentence_completed?: boolean;
-  current_legal_supervision?: string;
-  conviction_types?: string[];
-  conviction_status?: string;
-  conviction_other_details?: string;
-  barred_from_regulated_work?: boolean;
-  on_dbs_barring_list?: boolean;
-  mappa_level?: string;
-  relevant_for_safeguarding_checks?: boolean;
-  has_disability?: boolean;
-  disability_types?: string[];
-  disability_other_details?: string;
-  workplace_adjustments?: string[];
-  workplace_adjustments_other?: string;
-  has_driving_licence?: boolean;
-  work_preferences?: string[];
-  open_to_relocation?: boolean;
-  profile_completion_percentage?: number;
+type SeekerProfileRow = Database['public']['Tables']['seeker_profiles']['Row'];
+type SeekerProfileUpdate = Database['public']['Tables']['seeker_profiles']['Update'];
+
+interface SeekerProfileData extends SeekerProfileRow {
+  // This interface now directly extends the database row type
 }
 
 const SeekerProfile = () => {
@@ -110,7 +85,7 @@ const SeekerProfile = () => {
     }
   };
 
-  const updateProfile = async (updates: Partial<SeekerProfileData>) => {
+  const updateProfile = async (updates: SeekerProfileUpdate) => {
     try {
       const { data, error } = await supabase
         .from('seeker_profiles')
