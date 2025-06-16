@@ -7,11 +7,7 @@ import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCar
 // Generate a random ID
 const generateId = () => Math.random().toString(36).substring(2, 15);
 
-// Simulated current user
-let currentUser: User | null = null;
-
 // Mock database
-const users: User[] = [];
 const seekerProfiles: SeekerProfile[] = [];
 const companyProfiles: CompanyProfile[] = [];
 const jobPostings: JobPosting[] = [];
@@ -84,110 +80,13 @@ export const countries = [
   'Denmark'
 ];
 
-// Authentication API
-export const authAPI = {
-  // Sign up with email and role
-  signupEmail: async (role: UserRole, email: string, password: string): Promise<User> => {
-    // Check if user already exists
-    const existingUser = users.find(u => u.email === email);
-    if (existingUser) {
-      throw new Error('User with this email already exists');
-    }
-    
-    // Create new user
-    const newUser: User = {
-      id: generateId(),
-      email,
-      role,
-      createdAt: new Date()
-    };
-    
-    users.push(newUser);
-    currentUser = newUser;
-    
-    return newUser;
-  },
-  
-  // New: Sign up with email without role assignment
-  signupEmailWithoutRole: async (email: string, password: string): Promise<User> => {
-    // Check if user already exists
-    const existingUser = users.find(u => u.email === email);
-    if (existingUser) {
-      throw new Error('User with this email already exists');
-    }
-    
-    // Create new user without role - they'll select it later
-    const newUser: User = {
-      id: generateId(),
-      email,
-      role: undefined as any, // Temporarily undefined until role selection
-      createdAt: new Date()
-    };
-    
-    users.push(newUser);
-    currentUser = newUser;
-    
-    return newUser;
-  },
-  
-  // Update user role
-  updateUserRole: async (role: UserRole): Promise<User> => {
-    if (!currentUser) {
-      throw new Error('No user logged in');
-    }
-    
-    // Update the user's role
-    currentUser.role = role;
-    
-    // Update in the users array
-    const userIndex = users.findIndex(u => u.id === currentUser?.id);
-    if (userIndex !== -1) {
-      users[userIndex] = { ...currentUser };
-    }
-    
-    return currentUser;
-  },
-  
-  // Login with email and password
-  login: async (email: string, password: string): Promise<User> => {
-    // In a real app, you would verify the password
-    const user = users.find(u => u.email === email);
-    
-    if (!user) {
-      throw new Error('Invalid email or password');
-    }
-    
-    currentUser = user;
-    return user;
-  },
-  
-  // Log out
-  logout: () => {
-    currentUser = null;
-  },
-  
-  // Get current user
-  getCurrentUser: (): User | null => {
-    return currentUser;
-  },
-  
-  // Check if user is authenticated
-  isAuthenticated: (): boolean => {
-    return currentUser !== null;
-  }
-};
-
 // Company Profile API
 export const companyAPI = {
   // Create initial company profile
   createInitialProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can create a company profile');
-    }
-    
     const newProfile: CompanyProfile = {
       id: generateId(),
-      userId: currentUser.id,
+      userId: 'current-user-id', // This would come from auth context
       companyName: profileData.companyName || '',
       industry: profileData.industry,
       companySize: profileData.companySize,
@@ -200,18 +99,11 @@ export const companyAPI = {
     
     companyProfiles.push(newProfile);
     
-    // Update user with profile ID
-    currentUser.profileId = newProfile.id;
-    
     return newProfile;
   },
   
   getProfile: async (): Promise<CompanyProfile> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can access company profiles');
-    }
-    
-    const profile = companyProfiles.find(p => p.userId === currentUser?.id);
+    const profile = companyProfiles.find(p => p.userId === 'current-user-id');
     
     if (!profile) {
       throw new Error('Profile not found');
@@ -221,11 +113,7 @@ export const companyAPI = {
   },
   
   updateProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can update company profiles');
-    }
-    
-    const profile = companyProfiles.find(p => p.userId === currentUser?.id);
+    const profile = companyProfiles.find(p => p.userId === 'current-user-id');
     
     if (!profile) {
       throw new Error('Profile not found');
@@ -257,13 +145,9 @@ export const companyAPI = {
 export const seekerAPI = {
   // Create initial seeker profile
   createInitialProfile: async (profileData: Partial<SeekerProfile>): Promise<SeekerProfile> => {
-    if (!currentUser || currentUser.role !== 'seeker') {
-      throw new Error('Only job seekers can create a seeker profile');
-    }
-    
     const newProfile: SeekerProfile = {
       id: generateId(),
-      userId: currentUser.id,
+      userId: 'current-user-id', // This would come from auth context
       firstName: profileData.firstName || '',
       lastName: profileData.lastName || '',
       displayName: profileData.firstName ? `${profileData.firstName} ${profileData.lastName || ''}` : '',
@@ -280,18 +164,11 @@ export const seekerAPI = {
     
     seekerProfiles.push(newProfile);
     
-    // Update user with profile ID
-    currentUser.profileId = newProfile.id;
-    
     return newProfile;
   },
   
   getProfile: async (): Promise<SeekerProfile> => {
-    if (!currentUser || currentUser.role !== 'seeker') {
-      throw new Error('Only job seekers can access seeker profiles');
-    }
-    
-    const profile = seekerProfiles.find(p => p.userId === currentUser?.id);
+    const profile = seekerProfiles.find(p => p.userId === 'current-user-id');
     
     if (!profile) {
       throw new Error('Profile not found');
@@ -301,11 +178,7 @@ export const seekerAPI = {
   },
   
   updateProfile: async (profileData: Partial<SeekerProfile>): Promise<SeekerProfile> => {
-    if (!currentUser || currentUser.role !== 'seeker') {
-      throw new Error('Only job seekers can update seeker profiles');
-    }
-    
-    const profile = seekerProfiles.find(p => p.userId === currentUser?.id);
+    const profile = seekerProfiles.find(p => p.userId === 'current-user-id');
     
     if (!profile) {
       throw new Error('Profile not found');
@@ -344,12 +217,8 @@ export const seekerAPI = {
 export const jobAPI = {
   // Create job posting
   createJob: async (jobData: Partial<JobPosting>): Promise<JobPosting> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can create job postings');
-    }
-    
     // Get company profile
-    const companyProfile = companyProfiles.find(p => p.userId === currentUser?.id);
+    const companyProfile = companyProfiles.find(p => p.userId === 'current-user-id');
     
     if (!companyProfile) {
       throw new Error('Company profile not found');
@@ -357,7 +226,7 @@ export const jobAPI = {
     
     const newJob: JobPosting = {
       id: generateId(),
-      hirerId: currentUser.id,
+      hirerId: 'current-user-id',
       companyId: companyProfile.id,
       title: jobData.title || '',
       description: jobData.description || '',
@@ -380,18 +249,10 @@ export const jobAPI = {
   },
   
   getHirerJobs: async (): Promise<JobPosting[]> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can access their job postings');
-    }
-    
-    return jobPostings.filter(job => job.hirerId === currentUser?.id);
+    return jobPostings.filter(job => job.hirerId === 'current-user-id');
   },
   
   getJobsFeed: async (): Promise<SwipeableCardData[]> => {
-    if (!currentUser || currentUser.role !== 'seeker') {
-      throw new Error('Only job seekers can access job feed');
-    }
-
     // Populate with some demo jobs if empty
     if (jobPostings.length === 0) {
       const demoJobs = [
@@ -483,10 +344,6 @@ export const jobAPI = {
   },
   
   getSeekersFeed: async (): Promise<SwipeableCardData[]> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can access seeker feed');
-    }
-
     // Populate with some demo seekers if empty
     if (seekerProfiles.length === 0) {
       const demoSeekers = [
@@ -581,13 +438,9 @@ export const jobAPI = {
 
   // Get saved profiles for hirer
   getSavedProfiles: async (): Promise<SwipeableCardData[]> => {
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can access saved profiles');
-    }
-
     // Get all liked swipes by this hirer
     const likedSwipes = swipeRecords.filter(swipe => 
-      swipe.swiperId === currentUser?.id && 
+      swipe.swiperId === 'current-user-id' && 
       swipe.swipedEntityType === 'seeker' && 
       (swipe.swipeType === 'like' || swipe.swipeType === 'super_like')
     );
@@ -614,13 +467,9 @@ export const jobAPI = {
 
   // Get saved jobs for seeker
   getSavedJobs: async (): Promise<SwipeableCardData[]> => {
-    if (!currentUser || currentUser.role !== 'seeker') {
-      throw new Error('Only job seekers can access saved jobs');
-    }
-
     // Get all liked swipes by this seeker
     const likedSwipes = swipeRecords.filter(swipe => 
-      swipe.swiperId === currentUser?.id && 
+      swipe.swiperId === 'current-user-id' && 
       swipe.swipedEntityType === 'job' && 
       (swipe.swipeType === 'like' || swipe.swipeType === 'super_like')
     );
@@ -656,14 +505,10 @@ export const swipeAPI = {
     swipeType: 'like' | 'pass' | 'super_like', 
     contextJobId?: string
   ): Promise<{ isMatch: boolean, match?: MatchRecord }> => {
-    if (!currentUser) {
-      throw new Error('User must be authenticated to swipe');
-    }
-
     // Create swipe record
     const swipeRecord: SwipeRecord = {
       id: generateId(),
-      swiperId: currentUser.id,
+      swiperId: 'current-user-id',
       swipedEntityId,
       swipedEntityType,
       swipeType,
@@ -672,11 +517,9 @@ export const swipeAPI = {
     };
 
     // Add company context for hirer swipes
-    if (currentUser.role === 'hirer') {
-      const companyProfile = companyProfiles.find(p => p.userId === currentUser?.id);
-      if (companyProfile) {
-        swipeRecord.hirerCompanyId = companyProfile.id;
-      }
+    const companyProfile = companyProfiles.find(p => p.userId === 'current-user-id');
+    if (companyProfile) {
+      swipeRecord.hirerCompanyId = companyProfile.id;
     }
 
     swipeRecords.push(swipeRecord);
@@ -695,92 +538,18 @@ export const swipeAPI = {
 
   // Get matches for current user
   getMatches: async (): Promise<MatchRecord[]> => {
-    if (!currentUser) {
-      throw new Error('User must be authenticated to get matches');
-    }
-
-    if (currentUser.role === 'hirer') {
-      return matches.filter(m => m.hirerId === currentUser?.id);
-    } else {
-      return matches.filter(m => m.seekerId === currentUser?.id);
-    }
+    return matches.filter(m => m.hirerId === 'current-user-id' || m.seekerId === 'current-user-id');
   },
 
   // Get swipe history for current user
   getSwipeHistory: async (): Promise<SwipeRecord[]> => {
-    if (!currentUser) {
-      throw new Error('User must be authenticated to get swipe history');
-    }
-
-    return swipeRecords.filter(swipe => swipe.swiperId === currentUser?.id);
+    return swipeRecords.filter(swipe => swipe.swiperId === 'current-user-id');
   }
 };
 
 // Helper function to check for mutual matches
 async function checkForMutualMatch(currentSwipe: SwipeRecord): Promise<MatchRecord | null> {
-  if (!currentUser) return null;
-
-  if (currentUser.role === 'hirer' && currentSwipe.swipedEntityType === 'seeker') {
-    // Hirer liked a seeker - check if seeker liked any of this hirer's jobs
-    const seekerProfile = seekerProfiles.find(p => p.id === currentSwipe.swipedEntityId);
-    if (!seekerProfile) return null;
-
-    const hirerJobs = jobPostings.filter(job => job.hirerId === currentUser?.id);
-    
-    // Check if seeker has liked any of the hirer's jobs
-    const mutualSwipe = swipeRecords.find(swipe => 
-      swipe.swiperId === seekerProfile.userId &&
-      swipe.swipedEntityType === 'job' &&
-      (swipe.swipeType === 'like' || swipe.swipeType === 'super_like') &&
-      hirerJobs.some(job => job.id === swipe.swipedEntityId)
-    );
-
-    if (mutualSwipe) {
-      const matchedJob = hirerJobs.find(job => job.id === mutualSwipe.swipedEntityId);
-      const companyProfile = companyProfiles.find(p => p.userId === currentUser?.id);
-      
-      return {
-        id: generateId(),
-        hirerId: currentUser.id,
-        seekerId: seekerProfile.userId,
-        hirerCompanyName: companyProfile?.companyName || 'Company',
-        seekerDisplayName: seekerProfile.displayName,
-        contextJobId: matchedJob?.id,
-        contextJobTitle: matchedJob?.title,
-        matchTimestamp: new Date()
-      };
-    }
-  } else if (currentUser.role === 'seeker' && currentSwipe.swipedEntityType === 'job') {
-    // Seeker liked a job - check if hirer has liked this seeker
-    const likedJob = jobPostings.find(job => job.id === currentSwipe.swipedEntityId);
-    if (!likedJob) return null;
-
-    const seekerProfile = seekerProfiles.find(p => p.userId === currentUser?.id);
-    if (!seekerProfile) return null;
-
-    // Check if hirer has liked this seeker
-    const mutualSwipe = swipeRecords.find(swipe => 
-      swipe.swiperId === likedJob.hirerId &&
-      swipe.swipedEntityType === 'seeker' &&
-      (swipe.swipeType === 'like' || swipe.swipeType === 'super_like') &&
-      swipe.swipedEntityId === seekerProfile.id
-    );
-
-    if (mutualSwipe) {
-      const companyProfile = companyProfiles.find(p => p.userId === likedJob.hirerId);
-      
-      return {
-        id: generateId(),
-        hirerId: likedJob.hirerId,
-        seekerId: currentUser.id,
-        hirerCompanyName: companyProfile?.companyName || likedJob.companyName,
-        seekerDisplayName: seekerProfile.displayName,
-        contextJobId: likedJob.id,
-        contextJobTitle: likedJob.title,
-        matchTimestamp: new Date()
-      };
-    }
-  }
-
+  // Simplified match logic for demo purposes
+  // In a real app, this would check against actual user data
   return null;
 }

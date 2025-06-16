@@ -54,7 +54,7 @@ const Index = () => {
             <p className="text-gray-500 text-center mt-4">
               Already have an account?{" "}
               <button 
-                onClick={() => navigate('/auth', { state: { mode: 'login' } })}
+                onClick={() => navigate('/unified-auth')}
                 className="text-reme-orange font-medium"
               >
                 Log in
