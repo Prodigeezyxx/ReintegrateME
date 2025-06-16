@@ -41,10 +41,7 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const { user, loading } = useAuth();
   
-  // Show loading screen while checking auth state
-  if (loading) {
-    return <SplashScreen />;
-  }
+  console.log('AppContent - loading:', loading, 'user:', user);
   
   return (
     <>

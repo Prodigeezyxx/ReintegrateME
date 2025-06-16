@@ -9,8 +9,11 @@ const Index = () => {
   const { user, loading } = useAuth();
 
   useEffect(() => {
+    console.log('Index useEffect - loading:', loading, 'user:', user);
+    
     if (!loading) {
       if (user) {
+        console.log('User found with role:', user.role);
         // User is authenticated, redirect based on role
         if (user.role === 'hirer') {
           navigate('/hirer-dashboard');
@@ -21,8 +24,9 @@ const Index = () => {
           navigate('/role-selection');
         }
       } else {
+        console.log('No user found, redirecting to auth');
         // User is not authenticated, go to auth
-        navigate('/auth');
+        navigate('/unified-auth');
       }
     }
   }, [user, loading, navigate]);
