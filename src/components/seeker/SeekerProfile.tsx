@@ -9,17 +9,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Camera, MapPin, Mail, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { authAPI } from '../../services/api';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
 const SeekerProfile = () => {
   const navigate = useNavigate();
-  const currentUser = authAPI.getCurrentUser();
+  const { user } = useAuth();
   
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
     name: 'Job Seeker',
-    email: currentUser?.email || '',
+    email: user?.email || '',
     phone: '+1 (555) 123-4567',
     location: 'San Francisco, CA',
     title: 'Frontend Developer',

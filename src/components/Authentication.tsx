@@ -3,25 +3,25 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { authAPI } from '../services/api';
-import { UserRole } from '../models/types';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
 interface AuthState {
-  role?: UserRole;
+  role?: 'hirer' | 'seeker';
   mode: 'login' | 'signup';
 }
 
 const Authentication = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { signIn, signUp, updateUserRole } = useAuth();
   const state = location.state as AuthState || { mode: 'login' };
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>(state.mode || 'login');
-  const role = state.role || localStorage.getItem('selectedRole') as UserRole || undefined;
+  const role = state.role || localStorage.getItem('selectedRole') as 'hirer' | 'seeker' || undefined;
   
   useEffect(() => {
     // Update mode if coming from navigation
@@ -56,20 +56,45 @@ const Authentication = () => {
           return;
         }
         
-        await authAPI.signupEmail(role, email, password);
+        const { user, error } = await signUp(email, password);
         
-        if (role === 'hirer') {
-          navigate('/hirer-setup');
-        } else {
-          navigate('/seeker-setup-step1');
+        if (error) {
+          toast({
+            title: "Signup Error",
+            description: error.message,
+            variant: "destructive"
+          });
+          return;
+        }
+
+        if (user) {
+          // Update user role after signup
+          await updateUserRole(role);
+          
+          if (role === 'hirer') {
+            navigate('/hirer-setup');
+          } else {
+            navigate('/seeker-setup-step1');
+          }
         }
       } else {
-        const user = await authAPI.login(email, password);
+        const { user, error } = await signIn(email, password);
         
-        if (user.role === 'hirer') {
-          navigate('/hirer-dashboard');
-        } else {
-          navigate('/seeker-dashboard');
+        if (error) {
+          toast({
+            title: "Login Error",
+            description: error.message,
+            variant: "destructive"
+          });
+          return;
+        }
+
+        if (user) {
+          if (user.role === 'hirer') {
+            navigate('/hirer-dashboard');
+          } else {
+            navigate('/seeker-dashboard');
+          }
         }
       }
     } catch (error) {
@@ -178,7 +203,6 @@ const Authentication = () => {
             <div className="grid grid-cols-3 gap-3 mt-6">
               <button className="flex justify-center items-center py-2.5 border border-gray-300 rounded-md hover:bg-gray-50">
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
-                  <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" fill="#4285F4"/>
                   <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" fill="#4285F4"/>
                 </svg>
               </button>

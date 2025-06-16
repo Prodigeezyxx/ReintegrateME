@@ -2,12 +2,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { authAPI } from '../../services/api';
+import { useAuth } from '@/contexts/AuthContext';
 import { Search, Briefcase, MessageSquare, User, Bot, Heart } from 'lucide-react';
 
 const SeekerHome = () => {
   const navigate = useNavigate();
-  const currentUser = authAPI.getCurrentUser();
+  const { user } = useAuth();
 
   const menuItems = [
     {

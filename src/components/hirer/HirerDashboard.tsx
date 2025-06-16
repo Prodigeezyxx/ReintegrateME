@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw } from 'lucide-react';
-import { authAPI, jobAPI } from '../../services/api';
+import { jobAPI } from '../../services/api';
 
 const HirerDashboard = () => {
   const [stats, setStats] = useState({
