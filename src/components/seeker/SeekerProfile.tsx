@@ -12,6 +12,7 @@ import { authAPI } from '../../services/api';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
 import SkillsManager from './SkillsManager';
+import { WorkPreferenceType } from '../../models/types';
 
 const SeekerProfile = () => {
   const navigate = useNavigate();
@@ -28,7 +29,9 @@ const SeekerProfile = () => {
     jobTitle: '',
     headline: '',
     bio: '',
-    keySkills: [] as string[]
+    keySkills: [] as string[],
+    workPreferences: [] as WorkPreferenceType[],
+    profileCompletionPercentage: 25
   });
 
   useEffect(() => {
@@ -40,7 +43,9 @@ const SeekerProfile = () => {
       lastName: savedData.lastName || '',
       jobTitle: savedData.jobTitle || '',
       headline: savedData.headline || '',
-      keySkills: savedData.keySkills || []
+      keySkills: savedData.keySkills || [],
+      workPreferences: savedData.workPreferences || [],
+      profileCompletionPercentage: savedData.workPreferences ? 75 : 25
     }));
   }, []);
 
