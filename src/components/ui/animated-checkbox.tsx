@@ -10,6 +10,7 @@ interface AnimatedCheckboxProps {
   onCheckedChange: (checked: boolean) => void;
   label: string;
   className?: string;
+  delay?: number;
 }
 
 const AnimatedCheckbox: React.FC<AnimatedCheckboxProps> = ({
@@ -17,10 +18,14 @@ const AnimatedCheckbox: React.FC<AnimatedCheckboxProps> = ({
   checked,
   onCheckedChange,
   label,
-  className
+  className,
+  delay = 0
 }) => {
   return (
-    <div className={cn("flex items-center space-x-3 group", className)}>
+    <div 
+      className={cn("flex items-center space-x-3 group animate-slide-up-stagger", className)}
+      style={{ animationDelay: `${delay}ms` }}
+    >
       <div className="relative">
         <Checkbox
           id={id}

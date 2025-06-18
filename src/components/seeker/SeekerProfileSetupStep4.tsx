@@ -37,7 +37,13 @@ const SeekerProfileSetupStep4 = () => {
     // Load saved data
     const savedData = profileSetupManager.getAllData();
     if (savedData.hasDrivingLicence !== undefined) setHasDrivingLicence(savedData.hasDrivingLicence);
-    if (savedData.workPreferences) setWorkPreferences(savedData.workPreferences);
+    if (savedData.workPreferences && Array.isArray(savedData.workPreferences)) {
+      // Ensure the saved data is properly typed
+      const validPreferences = savedData.workPreferences.filter((pref): pref is WorkPreferenceType => 
+        typeof pref === 'string' && ['full_time', 'part_time', 'zero_hours', 'weekends', 'nights'].includes(pref)
+      );
+      setWorkPreferences(validPreferences);
+    }
     if (savedData.openToRelocation !== undefined) setOpenToRelocation(savedData.openToRelocation);
     
     // Calculate completion percentage
@@ -130,6 +136,14 @@ const SeekerProfileSetupStep4 = () => {
       openToRelocation
     });
     navigate('/seeker-setup-step3');
+  };
+
+  const handleWorkPreferenceChange = (preference: WorkPreferenceType, checked: boolean) => {
+    if (checked) {
+      setWorkPreferences(prev => [...prev, preference]);
+    } else {
+      setWorkPreferences(prev => prev.filter(p => p !== preference));
+    }
   };
 
   return (
@@ -243,8 +257,8 @@ const SeekerProfileSetupStep4 = () => {
                     handleWorkPreferenceChange(option.value, checked as boolean)
                   }
                   label={`${option.icon} ${option.label}`}
-                  className={`p-3 rounded-lg hover:bg-white/10 transition-all duration-300 animate-slide-up-stagger`}
-                  style={{ animationDelay: `${300 + index * 100}ms` }}
+                  className="p-3 rounded-lg hover:bg-white/10 transition-all duration-300"
+                  delay={300 + index * 100}
                 />
               ))}
             </div>
