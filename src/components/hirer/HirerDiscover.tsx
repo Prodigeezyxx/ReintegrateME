@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
-import SwipeableCard from '../SwipeableCard';
+import CardStack from '../CardStack';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import MatchAnimation from '../MatchAnimation';
@@ -92,32 +92,34 @@ const HirerDiscover = () => {
       });
     }
     
-    // Move to next card immediately after swipe processing
+    // Move to next card after a short delay
     setTimeout(() => {
       setCurrentIndex(prevIndex => prevIndex + 1);
       setIsSwipeAnimating(false);
-    }, 100);
+    }, 200);
   };
   
   const handleButtonSwipe = (direction: 'left' | 'right' | 'up') => {
     if (seekers.length === 0 || currentIndex >= seekers.length || isSwipeAnimating) return;
     
+    // Find the current card and trigger animation
     const card = document.querySelector('.swipe-card') as HTMLElement;
     
     if (card) {
-      card.style.transition = 'transform 0.3s ease';
+      const exitDistance = window.innerWidth * 1.2;
+      card.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
       
       if (direction === 'left') {
-        card.style.transform = 'translateX(-1000px) rotate(-30deg)';
+        card.style.transform = `translateX(-${exitDistance}px) rotate(-30deg)`;
       } else if (direction === 'right') {
-        card.style.transform = 'translateX(1000px) rotate(30deg)';
+        card.style.transform = `translateX(${exitDistance}px) rotate(30deg)`;
       } else if (direction === 'up') {
-        card.style.transform = 'translateY(-1000px) scale(0.8)';
+        card.style.transform = `translateY(-${window.innerHeight}px) scale(0.8)`;
       }
       
       setTimeout(() => {
         handleSwipe(direction);
-      }, 200);
+      }, 150);
     }
   };
   
@@ -162,7 +164,7 @@ const HirerDiscover = () => {
     fetchSeekers();
   };
   
-  const renderCards = () => {
+  const renderMainContent = () => {
     if (isLoading) {
       return (
         <div className="swipe-card ios-card flex items-center justify-center">
@@ -209,10 +211,12 @@ const HirerDiscover = () => {
     }
     
     return (
-      <SwipeableCard
-        card={seekers[currentIndex]}
+      <CardStack
+        cards={seekers}
+        currentIndex={currentIndex}
         onSwipe={handleSwipe}
         onViewMore={handleViewMoreProfile}
+        isAnimating={isSwipeAnimating}
       />
     );
   };
@@ -256,17 +260,7 @@ const HirerDiscover = () => {
         />
         
         <div className="swipe-card-container mb-6 relative">
-          {renderCards()}
-          
-          {/* Show next card preview */}
-          {seekers.length > 0 && currentIndex + 1 < seekers.length && (
-            <div className="absolute inset-0 -z-10 scale-95 opacity-50">
-              <SwipeableCard
-                card={seekers[currentIndex + 1]}
-                onSwipe={() => {}}
-              />
-            </div>
-          )}
+          {renderMainContent()}
         </div>
         
         {seekers.length > 0 && currentIndex < seekers.length && (
@@ -275,6 +269,7 @@ const HirerDiscover = () => {
               className="swipe-button pass-button"
               onClick={() => handleButtonSwipe('left')}
               aria-label="Pass"
+              disabled={isSwipeAnimating}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -285,6 +280,7 @@ const HirerDiscover = () => {
               className="swipe-button super-like-button"
               onClick={() => handleButtonSwipe('up')}
               aria-label="Super like"
+              disabled={isSwipeAnimating}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -295,6 +291,7 @@ const HirerDiscover = () => {
               className="swipe-button like-button"
               onClick={() => handleButtonSwipe('right')}
               aria-label="Like"
+              disabled={isSwipeAnimating}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
