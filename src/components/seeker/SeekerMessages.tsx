@@ -13,23 +13,29 @@ const SeekerMessages = () => {
   const conversations = [
     {
       id: 1,
-      company: 'TechCorp Inc.',
+      company: 'LogiFlow Ltd',
       recruiter: 'Sarah Johnson',
-      lastMessage: 'Thanks for your application! We\'d like to schedule an interview.',
+      lastMessage: 'Perfect! I\'ll send you the interview details shortly. Looking forward to speaking with you.',
       timestamp: '2 hours ago',
       unread: true,
-      avatar: 'SJ'
+      avatar: 'SJ',
+      position: 'Warehouse Assistant'
     },
     {
       id: 2,
-      company: 'StartupXYZ',
+      company: 'Fresh Eats Restaurant',
       recruiter: 'Mike Chen',
-      lastMessage: 'Your portfolio looks impressive. Let\'s discuss the role further.',
+      lastMessage: 'Hi Mike, thank you for reaching out! I\'d be happy to discuss the role. I\'m available most days this week.',
       timestamp: '1 day ago',
       unread: false,
-      avatar: 'MC'
+      avatar: 'MC',
+      position: 'Kitchen Assistant'
     }
   ];
+
+  const handleConversationClick = (conversationId: number) => {
+    navigate(`/seeker-messages/${conversationId}`);
+  };
 
   return (
     <div className="mobile-container p-6 pb-20">
@@ -59,12 +65,18 @@ const SeekerMessages = () => {
       ) : (
         <div className="space-y-3">
           {conversations.map((conversation) => (
-            <Card key={conversation.id} className="ios-card cursor-pointer hover:shadow-md transition-shadow">
+            <Card 
+              key={conversation.id} 
+              className="ios-card cursor-pointer hover:shadow-md transition-all duration-200 active:scale-98"
+              onClick={() => handleConversationClick(conversation.id)}
+            >
               <CardContent className="p-4">
                 <div className="flex items-start space-x-3">
                   <Avatar className="h-12 w-12">
                     <AvatarImage src="" />
-                    <AvatarFallback>{conversation.avatar}</AvatarFallback>
+                    <AvatarFallback className="bg-gradient-to-br from-blue-100 to-orange-100 text-blue-600">
+                      {conversation.avatar}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -76,8 +88,12 @@ const SeekerMessages = () => {
                       </div>
                       <span className="text-xs text-gray-500">{conversation.timestamp}</span>
                     </div>
+                    <p className="text-sm text-blue-600 mb-1">{conversation.position}</p>
                     <p className="text-sm text-gray-600 mb-1">{conversation.recruiter}</p>
                     <p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
+                    <div className="mt-2 text-xs text-blue-600">
+                      Tap to open conversation →
+                    </div>
                   </div>
                 </div>
               </CardContent>

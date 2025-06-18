@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,9 +15,27 @@ const SeekerProfileSetupStep1 = () => {
     headline: ''
   });
 
+  useEffect(() => {
+    // Load existing data from localStorage if available
+    const savedProfile = localStorage.getItem('seekerProfileSetup');
+    if (savedProfile) {
+      try {
+        const parsed = JSON.parse(savedProfile);
+        setSeekerProfile(prev => ({ ...prev, ...parsed }));
+      } catch (error) {
+        console.error('Error loading saved profile data:', error);
+      }
+    }
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSeekerProfile(prev => ({ ...prev, [name]: value }));
+    setSeekerProfile(prev => {
+      const updated = { ...prev, [name]: value };
+      // Save to localStorage on every change
+      localStorage.setItem('seekerProfileSetup', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const handleNext = (e: React.FormEvent) => {
@@ -33,7 +51,12 @@ const SeekerProfileSetupStep1 = () => {
     }
     
     // Store the data in localStorage to use across setup steps
-    localStorage.setItem('seekerProfile', JSON.stringify(seekerProfile));
+    localStorage.setItem('seekerProfileSetup', JSON.stringify(seekerProfile));
+    
+    toast({
+      title: "Information Saved",
+      description: "Your personal information has been saved successfully.",
+    });
     
     navigate('/seeker-setup-step2');
   };
@@ -55,7 +78,7 @@ const SeekerProfileSetupStep1 = () => {
         <p className="text-gray-600 mb-6">Let employers know who you are</p>
         
         <div className="progress-bar mb-8">
-          <div className="progress-fill" style={{ width: '20%' }}></div>
+          <div className="progress-fill" style={{ width: '25%' }}></div>
         </div>
         
         <form onSubmit={handleNext} className="space-y-6 flex-1">
@@ -111,7 +134,7 @@ const SeekerProfileSetupStep1 = () => {
           
           <Button
             type="submit"
-            className="w-full py-6 text-lg bg-reme-orange hover:bg-orange-600 transition-colors mt-8"
+            className="w-full py-6 text-lg bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 transition-all duration-200"
           >
             Next: Legal Information
           </Button>

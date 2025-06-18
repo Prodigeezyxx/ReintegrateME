@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -74,6 +73,7 @@ const App = () => {
             <Route path="/seeker-discover" element={<SeekerDashboard />} />
             <Route path="/seeker-applications" element={<SeekerApplications />} />
             <Route path="/seeker-messages" element={<SeekerMessages />} />
+            <Route path="/seeker-messages/:conversationId" element={<SeekerChatDetail />} />
             <Route path="/seeker-profile" element={<SeekerProfile />} />
             <Route path="/seeker-saved" element={<SeekerSaved />} />
             <Route path="/seeker-ai-suite" element={<SeekerAISuite />} />
