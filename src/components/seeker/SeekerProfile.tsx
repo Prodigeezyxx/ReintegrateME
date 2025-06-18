@@ -44,7 +44,7 @@ const SeekerProfile = () => {
       jobTitle: savedData.jobTitle || '',
       headline: savedData.headline || '',
       keySkills: savedData.keySkills || [],
-      workPreferences: savedData.workPreferences || [],
+      workPreferences: (savedData.workPreferences || []) as WorkPreferenceType[],
       profileCompletionPercentage: savedData.workPreferences ? 75 : 25
     }));
   }, []);
