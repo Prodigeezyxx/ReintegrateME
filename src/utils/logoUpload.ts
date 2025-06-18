@@ -31,6 +31,6 @@ export const uploadLogo = async (file: File): Promise<string | null> => {
 };
 
 export const getLogoUrl = (): string => {
-  // Use the new REME logo
-  return "/lovable-uploads/REME NEW LOGO.png";
+  // Use URL-encoded path for the REME logo to handle spaces
+  return "/lovable-uploads/REME%20NEW%20LOGO.png";
 };

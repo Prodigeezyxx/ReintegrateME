@@ -24,18 +24,23 @@ const SplashScreen = () => {
     };
   }, [navigate]);
 
+  const logoUrl = getLogoUrl();
+
   return (
     <div className="mobile-container bg-white min-h-screen flex items-center justify-center">
       <div className="text-center">
         <div className={`transition-all duration-1000 ${showLogo ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
           <div className="h-32 w-32 mx-auto mb-6 animate-pulse-gentle">
             <img
-              src={getLogoUrl()}
+              src={logoUrl}
               alt="ReintegrateMe Logo"
               className="w-full h-full object-contain"
               onError={(e) => {
-                // Fallback to old logo if new one fails
+                console.log('Logo failed to load on splash, using fallback');
                 e.currentTarget.src = "/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png";
+              }}
+              onLoad={() => {
+                console.log('Logo loaded successfully on splash');
               }}
             />
           </div>

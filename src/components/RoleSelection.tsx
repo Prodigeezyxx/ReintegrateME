@@ -9,9 +9,23 @@ const RoleSelection = () => {
   const navigate = useNavigate();
 
   const handleRoleSelect = (role: 'seeker' | 'hirer') => {
-    localStorage.setItem('selectedRole', role);
-    navigate('/auth', { state: { role } });
+    try {
+      localStorage.setItem('selectedRole', role);
+      navigate('/auth', { state: { role } });
+    } catch (error) {
+      console.error('Error selecting role:', error);
+    }
   };
+
+  const handleBackToHome = () => {
+    try {
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Error navigating home:', error);
+    }
+  };
+
+  const logoUrl = getLogoUrl();
 
   return (
     <div className="mobile-container bg-white min-h-screen">
@@ -20,12 +34,15 @@ const RoleSelection = () => {
           <div className="text-center mb-8">
             <div className="h-20 w-20 mx-auto mb-4">
               <img
-                src={getLogoUrl()}
+                src={logoUrl}
                 alt="ReintegrateMe Logo"
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  // Fallback to old logo if new one fails
+                  console.log('Logo failed to load, using fallback');
                   e.currentTarget.src = "/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png";
+                }}
+                onLoad={() => {
+                  console.log('Logo loaded successfully');
                 }}
               />
             </div>
@@ -77,7 +94,7 @@ const RoleSelection = () => {
 
           <div className="mt-8 text-center">
             <button 
-              onClick={() => navigate('/')}
+              onClick={handleBackToHome}
               className="text-slate-500 hover:text-slate-700 transition-colors"
             >
               ← Back to Homepage
