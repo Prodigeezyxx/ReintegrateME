@@ -31,6 +31,6 @@ export const uploadLogo = async (file: File): Promise<string | null> => {
 };
 
 export const getLogoUrl = (): string => {
-  // Use your uploaded ReintegrateMe logo
-  return "/lovable-uploads/f889463a-1a57-46ae-a265-de47534c3ace.png";
+  // Use the new REME logo
+  return "/lovable-uploads/REME NEW LOGO.png";
 };

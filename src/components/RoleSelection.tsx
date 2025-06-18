@@ -18,13 +18,13 @@ const RoleSelection = () => {
       <div className="min-h-screen flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="h-16 w-16 mx-auto mb-4">
+            <div className="h-20 w-20 mx-auto mb-4">
               <img
                 src={getLogoUrl()}
                 alt="ReintegrateMe Logo"
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  // Fallback to local logo if Supabase fails
+                  // Fallback to old logo if new one fails
                   e.currentTarget.src = "/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png";
                 }}
               />
