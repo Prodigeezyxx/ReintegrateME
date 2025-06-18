@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -136,14 +135,6 @@ const SeekerProfileSetupStep4 = () => {
       openToRelocation
     });
     navigate('/seeker-setup-step3');
-  };
-
-  const handleWorkPreferenceChange = (preference: WorkPreferenceType, checked: boolean) => {
-    if (checked) {
-      setWorkPreferences(prev => [...prev, preference]);
-    } else {
-      setWorkPreferences(prev => prev.filter(p => p !== preference));
-    }
   };
 
   return (
