@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getLogoUrl } from '../utils/logoUpload';
 
 const RoleSelection = () => {
   const navigate = useNavigate();
@@ -19,9 +20,13 @@ const RoleSelection = () => {
           <div className="text-center mb-8">
             <div className="h-16 w-16 mx-auto mb-4">
               <img
-                src="/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png"
+                src={getLogoUrl()}
                 alt="ReintegrateMe Logo"
                 className="w-full h-full object-contain"
+                onError={(e) => {
+                  // Fallback to local logo if Supabase fails
+                  e.currentTarget.src = "/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png";
+                }}
               />
             </div>
             <h1 className="text-3xl font-bold text-slate-800 mb-2">
