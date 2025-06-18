@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getLogoUrl } from '../utils/logoUpload';
+import LogoUploader from './LogoUploader';
 
 const RoleSelection = () => {
   const navigate = useNavigate();
@@ -73,6 +73,15 @@ const RoleSelection = () => {
                 </Button>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Temporary Logo Uploader */}
+          <div className="mt-8 border-t pt-6">
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-semibold text-slate-700">Upload New Logo</h3>
+              <p className="text-sm text-slate-500">Upload your new logo to replace the current one</p>
+            </div>
+            <LogoUploader />
           </div>
 
           <div className="mt-8 text-center">
