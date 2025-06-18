@@ -1,7 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -9,6 +8,10 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
+import AnimatedCard from '../ui/animated-card';
+import AnimatedButton from '../ui/animated-button';
+import AnimatedProgress from '../ui/animated-progress';
+import { getLogoUrl } from '../../utils/logoUpload';
 
 const SeekerProfileSetupStep3 = () => {
   const navigate = useNavigate();
@@ -103,137 +106,192 @@ const SeekerProfileSetupStep3 = () => {
   };
 
   return (
-    <div className="mobile-container bg-gradient-to-br from-blue-50 to-orange-50 min-h-screen">
-      <div className="min-h-screen flex flex-col p-6">
-        <div className="flex items-center mb-6">
-          <Button variant="ghost" size="icon" onClick={handleBack} className="mr-2">
+    <div className="mobile-container gradient-bg-primary min-h-screen">
+      <div className="min-h-screen flex flex-col p-6 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute top-10 right-10 w-20 h-20 bg-white/10 rounded-full animate-float animate-delay-100" />
+        <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
+        <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
+
+        {/* Header with enhanced styling */}
+        <div className="flex items-center mb-8 animate-slide-up-stagger">
+          <AnimatedButton 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleBack} 
+            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full"
+            ripple={false}
+          >
             <ArrowLeft className="h-6 w-6" />
-          </Button>
+          </AnimatedButton>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">Health & Accessibility</h1>
-            <p className="text-gray-600">Step 3 of 4</p>
+            <h1 className="text-3xl font-bold text-white font-geist animate-fade-in-scale">
+              Health & Accessibility
+            </h1>
+            <p className="text-white/80 font-geist mt-1 animate-fade-in-scale animate-delay-100">
+              Optional information to help us support you - Step 3 of 4 ✨
+            </p>
+          </div>
+          <div className="ml-4">
+            <img 
+              src={getLogoUrl()} 
+              alt="ReintegrateMe"
+              className="h-12 w-12 animate-float"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
           </div>
         </div>
 
+        {/* Progress bar */}
+        <div className="mb-8 animate-slide-up-stagger animate-delay-200">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-geist text-white/80">Profile Completion</span>
+            <span className="text-sm font-bold text-white font-geist">75%</span>
+          </div>
+          <AnimatedProgress value={75} animate={true} />
+        </div>
+
         <div className="flex-1 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Disability Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup 
-                value={hasDisability?.toString() || ''} 
-                onValueChange={(value) => setHasDisability(value === 'true')}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="true" id="disability-yes" />
-                  <Label htmlFor="disability-yes">Yes, I have a disability</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="false" id="disability-no" />
-                  <Label htmlFor="disability-no">No, I do not have a disability</Label>
-                </div>
-              </RadioGroup>
-            </CardContent>
-          </Card>
+          <AnimatedCard
+            title="Disability Status"
+            delay={100}
+            className="glassmorphism-strong"
+          >
+            <RadioGroup 
+              value={hasDisability?.toString() || ''} 
+              onValueChange={(value) => setHasDisability(value === 'true')}
+            >
+              <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <RadioGroupItem 
+                  value="true" 
+                  id="disability-yes"
+                  className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
+                />
+                <Label htmlFor="disability-yes" className="text-white font-geist cursor-pointer">Yes, I have a disability</Label>
+              </div>
+              <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <RadioGroupItem 
+                  value="false" 
+                  id="disability-no"
+                  className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
+                />
+                <Label htmlFor="disability-no" className="text-white font-geist cursor-pointer">No, I do not have a disability</Label>
+              </div>
+            </RadioGroup>
+          </AnimatedCard>
 
           {hasDisability && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Type of Disability</CardTitle>
-                <p className="text-sm text-gray-600">Select all that apply (optional)</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {disabilityOptions.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option.value}
-                        checked={disabilityTypes.includes(option.value)}
-                        onCheckedChange={(checked) => 
-                          handleDisabilityTypeChange(option.value, checked as boolean)
-                        }
-                      />
-                      <Label htmlFor={option.value} className="text-sm">
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-                
-                {disabilityTypes.includes('other') && (
-                  <div className="mt-4">
-                    <Label htmlFor="disability-other">Please specify</Label>
-                    <Textarea
-                      id="disability-other"
-                      value={disabilityOtherDetails}
-                      onChange={(e) => setDisabilityOtherDetails(e.target.value)}
-                      placeholder="Please provide details..."
-                      className="mt-1"
-                    />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Workplace Adjustments</CardTitle>
-              <p className="text-sm text-gray-600">What adjustments might you need? (optional)</p>
-            </CardHeader>
-            <CardContent>
+            <AnimatedCard
+              title="Type of Disability"
+              description="Select all that apply (optional)"
+              delay={200}
+              className="glassmorphism-strong"
+            >
               <div className="space-y-3">
-                {adjustmentOptions.map((option) => (
-                  <div key={option.value} className="flex items-center space-x-2">
+                {disabilityOptions.map((option) => (
+                  <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
                     <Checkbox
                       id={option.value}
-                      checked={workplaceAdjustments.includes(option.value)}
+                      checked={disabilityTypes.includes(option.value)}
                       onCheckedChange={(checked) => 
-                        handleAdjustmentChange(option.value, checked as boolean)
+                        handleDisabilityTypeChange(option.value, checked as boolean)
                       }
+                      className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                     />
-                    <Label htmlFor={option.value} className="text-sm">
+                    <Label htmlFor={option.value} className="text-sm text-white font-geist cursor-pointer">
                       {option.label}
                     </Label>
                   </div>
                 ))}
               </div>
               
-              {workplaceAdjustments.includes('other') && (
+              {disabilityTypes.includes('other') && (
                 <div className="mt-4">
-                  <Label htmlFor="adjustments-other">Please specify</Label>
+                  <Label htmlFor="disability-other" className="text-white font-geist">Please specify</Label>
                   <Textarea
-                    id="adjustments-other"
-                    value={workplaceAdjustmentsOther}
-                    onChange={(e) => setWorkplaceAdjustmentsOther(e.target.value)}
-                    placeholder="Please describe the adjustments you might need..."
-                    className="mt-1"
+                    id="disability-other"
+                    value={disabilityOtherDetails}
+                    onChange={(e) => setDisabilityOtherDetails(e.target.value)}
+                    placeholder="Please provide details..."
+                    className="mt-2 bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
                   />
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </AnimatedCard>
+          )}
 
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <p className="text-sm text-blue-800">
-              <strong>Your privacy matters:</strong> This information helps us match you with inclusive employers. 
-              You control what you share and when.
-            </p>
-          </div>
+          <AnimatedCard
+            title="Workplace Adjustments"
+            description="What adjustments might you need? (optional)"
+            delay={300}
+            className="glassmorphism-strong"
+          >
+            <div className="space-y-3">
+              {adjustmentOptions.map((option) => (
+                <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+                  <Checkbox
+                    id={option.value}
+                    checked={workplaceAdjustments.includes(option.value)}
+                    onCheckedChange={(checked) => 
+                      handleAdjustmentChange(option.value, checked as boolean)
+                    }
+                    className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                  />
+                  <Label htmlFor={option.value} className="text-sm text-white font-geist cursor-pointer">
+                    {option.label}
+                  </Label>
+                </div>
+              ))}
+            </div>
+            
+            {workplaceAdjustments.includes('other') && (
+              <div className="mt-4">
+                <Label htmlFor="adjustments-other" className="text-white font-geist">Please specify</Label>
+                <Textarea
+                  id="adjustments-other"
+                  value={workplaceAdjustmentsOther}
+                  onChange={(e) => setWorkplaceAdjustmentsOther(e.target.value)}
+                  placeholder="Please describe the adjustments you might need..."
+                  className="mt-2 bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                />
+              </div>
+            )}
+          </AnimatedCard>
+
+          <AnimatedCard 
+            delay={400}
+            className="glassmorphism border-2 border-blue-400/30 bg-gradient-to-r from-blue-50/80 to-indigo-50/80"
+          >
+            <div className="text-center">
+              <p className="text-sm text-white font-geist">
+                <strong>Your privacy matters:</strong> This information helps us match you with inclusive employers. 
+                You control what you share and when.
+              </p>
+            </div>
+          </AnimatedCard>
         </div>
 
-        <div className="flex gap-3 mt-6">
-          <Button variant="outline" onClick={handleSkip} className="flex-1">
+        <div className="flex gap-3 mt-6 animate-slide-up-stagger animate-delay-500">
+          <AnimatedButton 
+            variant="outline" 
+            onClick={handleSkip} 
+            className="flex-1 bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white font-geist"
+          >
             Skip for Now
-          </Button>
-          <Button 
+          </AnimatedButton>
+          <AnimatedButton 
             onClick={handleNext} 
-            className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+            className="flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500
+              hover:from-blue-600 hover:via-purple-600 hover:to-orange-600
+              text-white font-geist"
+            ripple={true}
+            glow={true}
           >
             Continue
             <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          </AnimatedButton>
         </div>
       </div>
     </div>

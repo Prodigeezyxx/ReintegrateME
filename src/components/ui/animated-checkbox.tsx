@@ -47,8 +47,8 @@ const AnimatedCheckbox: React.FC<AnimatedCheckboxProps> = ({
         htmlFor={id} 
         className={cn(
           "text-sm font-geist transition-all duration-300 cursor-pointer",
-          "group-hover:text-blue-600 group-hover:translate-x-1",
-          checked && "text-blue-700 font-medium"
+          "group-hover:text-blue-300 group-hover:translate-x-1",
+          checked && "text-white font-medium"
         )}
       >
         {label}

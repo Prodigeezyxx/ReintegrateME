@@ -1,10 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ArrowRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
+import AnimatedCard from '../ui/animated-card';
+import AnimatedButton from '../ui/animated-button';
+import AnimatedProgress from '../ui/animated-progress';
+import { getLogoUrl } from '../../utils/logoUpload';
 
 const SeekerProfileSetupStep1 = () => {
   const navigate = useNavigate();
@@ -59,83 +63,145 @@ const SeekerProfileSetupStep1 = () => {
     navigate('/seeker-setup-step2');
   };
 
+  const handleBack = () => {
+    navigate('/role-selection');
+  };
+
   return (
-    <div className="mobile-container p-6">
-      <div className="flex flex-col min-h-screen">
-        <button 
-          onClick={() => navigate(-1)}
-          className="text-gray-500 self-start mb-6"
-          aria-label="Go back"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        
-        <h1 className="text-2xl font-bold mb-2">Tell us about yourself</h1>
-        <p className="text-gray-600 mb-6">Let employers know who you are</p>
-        
-        <div className="progress-bar mb-8">
-          <div className="progress-fill" style={{ width: '25%' }}></div>
-        </div>
-        
-        <form onSubmit={handleNext} className="space-y-6 flex-1">
-          <div className="space-y-2">
-            <label htmlFor="firstName" className="text-gray-700 font-medium">First Name *</label>
-            <Input
-              id="firstName"
-              name="firstName"
-              value={seekerProfile.firstName}
-              onChange={handleChange}
-              className="ios-input"
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="lastName" className="text-gray-700 font-medium">Last Name *</label>
-            <Input
-              id="lastName"
-              name="lastName"
-              value={seekerProfile.lastName}
-              onChange={handleChange}
-              className="ios-input"
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="jobTitle" className="text-gray-700 font-medium">Job Title</label>
-            <Input
-              id="jobTitle"
-              name="jobTitle"
-              placeholder="e.g., Warehouse Assistant"
-              value={seekerProfile.jobTitle}
-              onChange={handleChange}
-              className="ios-input"
-            />
-            <p className="text-sm text-gray-500">The type of role you're seeking</p>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="headline" className="text-gray-700 font-medium">Professional Headline</label>
-            <Input
-              id="headline"
-              name="headline"
-              placeholder="e.g., Reliable team player seeking new opportunities"
-              value={seekerProfile.headline}
-              onChange={handleChange}
-              className="ios-input"
-            />
-            <p className="text-sm text-gray-500">A short summary of your professional identity</p>
-          </div>
-          
-          <Button
-            type="submit"
-            className="w-full py-6 text-lg bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 transition-all duration-200"
+    <div className="mobile-container gradient-bg-primary min-h-screen">
+      <div className="min-h-screen flex flex-col p-6 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute top-10 right-10 w-20 h-20 bg-white/10 rounded-full animate-float animate-delay-100" />
+        <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
+        <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
+
+        {/* Header with enhanced styling */}
+        <div className="flex items-center mb-8 animate-slide-up-stagger">
+          <AnimatedButton 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleBack} 
+            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full"
+            ripple={false}
           >
-            Next: Legal Information
-          </Button>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </AnimatedButton>
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-white font-geist animate-fade-in-scale">
+              Tell us about yourself
+            </h1>
+            <p className="text-white/80 font-geist mt-1 animate-fade-in-scale animate-delay-100">
+              Let employers know who you are - Step 1 of 4 ✨
+            </p>
+          </div>
+          <div className="ml-4">
+            <img 
+              src={getLogoUrl()} 
+              alt="ReintegrateMe"
+              className="h-12 w-12 animate-float"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className="mb-8 animate-slide-up-stagger animate-delay-200">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-geist text-white/80">Profile Completion</span>
+            <span className="text-sm font-bold text-white font-geist">25%</span>
+          </div>
+          <AnimatedProgress value={25} animate={true} />
+        </div>
+
+        {/* Content cards with staggered animations */}
+        <form onSubmit={handleNext} className="flex-1 space-y-6">
+          <AnimatedCard
+            title="Personal Information"
+            description="Your basic details for employers"
+            delay={100}
+            className="glassmorphism-strong"
+          >
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="firstName" className="text-white font-geist font-medium">First Name *</label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={seekerProfile.firstName}
+                  onChange={handleChange}
+                  className="bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="lastName" className="text-white font-geist font-medium">Last Name *</label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  value={seekerProfile.lastName}
+                  onChange={handleChange}
+                  className="bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                  required
+                />
+              </div>
+            </div>
+          </AnimatedCard>
+
+          <AnimatedCard
+            title="Professional Details"
+            description="Help employers understand your career goals"
+            delay={200}
+            className="glassmorphism-strong"
+          >
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="jobTitle" className="text-white font-geist font-medium">Job Title</label>
+                <Input
+                  id="jobTitle"
+                  name="jobTitle"
+                  placeholder="e.g., Warehouse Assistant"
+                  value={seekerProfile.jobTitle}
+                  onChange={handleChange}
+                  className="bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                />
+                <p className="text-sm text-white/70">The type of role you're seeking</p>
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="headline" className="text-white font-geist font-medium">Professional Headline</label>
+                <Input
+                  id="headline"
+                  name="headline"
+                  placeholder="e.g., Reliable team player seeking new opportunities"
+                  value={seekerProfile.headline}
+                  onChange={handleChange}
+                  className="bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                />
+                <p className="text-sm text-white/70">A short summary of your professional identity</p>
+              </div>
+            </div>
+          </AnimatedCard>
+
+          <div className="mt-8 animate-slide-up-stagger animate-delay-400">
+            <AnimatedButton
+              type="submit"
+              className="w-full py-6 text-lg font-bold rounded-2xl
+                bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500
+                hover:from-blue-600 hover:via-purple-600 hover:to-orange-600
+                text-white shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]
+                transition-all duration-500 font-geist"
+              ripple={true}
+              glow={true}
+            >
+              Next: Legal Information
+              <ArrowRight className="ml-3 h-6 w-6" />
+            </AnimatedButton>
+          </div>
         </form>
       </div>
     </div>

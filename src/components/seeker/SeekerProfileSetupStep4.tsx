@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -215,7 +216,7 @@ const SeekerProfileSetupStep4 = () => {
                   id="licence-yes"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="licence-yes" className="text-slate-700 font-geist cursor-pointer flex-1">
+                <Label htmlFor="licence-yes" className="text-white font-geist cursor-pointer flex-1">
                   🚗 Yes, I have a valid UK driving licence
                 </Label>
               </div>
@@ -225,7 +226,7 @@ const SeekerProfileSetupStep4 = () => {
                   id="licence-no"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="licence-no" className="text-slate-700 font-geist cursor-pointer flex-1">
+                <Label htmlFor="licence-no" className="text-white font-geist cursor-pointer flex-1">
                   🚶 No, I don't have a driving licence
                 </Label>
               </div>
@@ -248,7 +249,7 @@ const SeekerProfileSetupStep4 = () => {
                     handleWorkPreferenceChange(option.value, checked as boolean)
                   }
                   label={`${option.icon} ${option.label}`}
-                  className="p-3 rounded-lg hover:bg-white/10 transition-all duration-300"
+                  className="p-3 rounded-lg hover:bg-white/10 transition-all duration-300 text-white"
                   delay={300 + index * 100}
                 />
               ))}
@@ -271,7 +272,7 @@ const SeekerProfileSetupStep4 = () => {
                   id="relocation-yes"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="relocation-yes" className="text-slate-700 font-geist cursor-pointer flex-1">
+                <Label htmlFor="relocation-yes" className="text-white font-geist cursor-pointer flex-1">
                   ✈️ Yes, I'm open to relocating for work
                 </Label>
               </div>
@@ -281,7 +282,7 @@ const SeekerProfileSetupStep4 = () => {
                   id="relocation-no"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="relocation-no" className="text-slate-700 font-geist cursor-pointer flex-1">
+                <Label htmlFor="relocation-no" className="text-white font-geist cursor-pointer flex-1">
                   🏠 No, I prefer to work locally
                 </Label>
               </div>
