@@ -24,16 +24,18 @@ const SplashScreen = () => {
   }, [navigate]);
 
   return (
-    <div className="mobile-container bg-gradient-to-br from-blue-600 to-orange-500 min-h-screen flex items-center justify-center">
+    <div className="mobile-container bg-white min-h-screen flex items-center justify-center">
       <div className="text-center">
         <div className={`transition-all duration-1000 ${showLogo ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-          <div className="h-24 w-24 mx-auto mb-6 rounded-2xl bg-white flex items-center justify-center shadow-2xl animate-pulsate">
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-              RM
-            </span>
+          <div className="h-24 w-24 mx-auto mb-6 animate-pulse-gentle">
+            <img
+              src="/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png"
+              alt="ReintegrateMe Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">ReintegrateMe</h1>
-          <p className="text-blue-100 text-lg">Building Better Futures</p>
+          <h1 className="text-4xl font-bold text-slate-800 mb-2">ReintegrateMe</h1>
+          <p className="text-slate-600 text-lg">Building Better Futures</p>
         </div>
       </div>
     </div>

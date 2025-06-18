@@ -13,17 +13,21 @@ const RoleSelection = () => {
   };
 
   return (
-    <div className="mobile-container bg-gradient-to-br from-blue-50 to-orange-50 min-h-screen">
+    <div className="mobile-container bg-white min-h-screen">
       <div className="min-h-screen flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r from-blue-600 to-orange-500 flex items-center justify-center">
-              <span className="text-xl font-bold text-white">RM</span>
+            <div className="h-16 w-16 mx-auto mb-4">
+              <img
+                src="/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png"
+                alt="ReintegrateMe Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent mb-2">
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">
               ReintegrateMe
             </h1>
-            <p className="text-gray-600">Choose how you'd like to get started</p>
+            <p className="text-slate-600">Choose how you'd like to get started</p>
           </div>
 
           <div className="space-y-4">
@@ -69,7 +73,7 @@ const RoleSelection = () => {
           <div className="mt-8 text-center">
             <button 
               onClick={() => navigate('/')}
-              className="text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-slate-500 hover:text-slate-700 transition-colors"
             >
               ← Back to Homepage
             </button>
