@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
@@ -9,7 +8,8 @@ import MatchAnimation from '../MatchAnimation';
 import FavoritesBar from '../FavoritesBar';
 import SeekerProfileView from '../SeekerProfileView';
 import SkeletonLoader from '../SkeletonLoader';
-import { RefreshCw, Heart, Sparkles } from 'lucide-react';
+import { RefreshCw, Heart } from 'lucide-react';
+import { getLogoUrl } from '../../utils/logoUpload';
 
 const SeekerDashboard = () => {
   const [jobs, setJobs] = useState<SwipeableCardData[]>([]);
@@ -173,7 +173,14 @@ const SeekerDashboard = () => {
         <div className="swipe-card ios-card flex items-center justify-center">
           <div className="text-center p-8 animate-slide-up">
             <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center">
-              <Sparkles className="h-10 w-10 text-indigo-600" />
+              <img 
+                src={getLogoUrl()} 
+                alt="ReintegrateMe"
+                className="h-10 w-10"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             </div>
             <h3 className="text-xl font-bold mb-3 text-slate-800 font-geist">No jobs found</h3>
             <p className="text-slate-600 font-geist leading-relaxed">We couldn't find any job listings matching your criteria. Try adjusting your preferences or check back later.</p>

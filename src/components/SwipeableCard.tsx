@@ -155,14 +155,32 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({
     }
   };
 
+  const getSampleTalentImages = () => {
+    // Professional headshot-style images for talent profiles
+    const talentImages = [
+      'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1494790108755-2616b667b2ef?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=300&fit=crop'
+    ];
+    
+    // Return a random image from the array
+    return talentImages[Math.floor(Math.random() * talentImages.length)];
+  };
+
   const getImageSrc = () => {
     if (card.primaryImageUrl) return card.primaryImageUrl;
     
-    // Default placeholder based on card type
-    if (card.type === 'job') {
-      return 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop';
+    // Use sample images for talent/seeker profiles
+    if (card.type === 'seeker') {
+      return getSampleTalentImages();
     } else {
-      return 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=300&fit=crop';
+      // Job posting default image
+      return 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop';
     }
   };
 

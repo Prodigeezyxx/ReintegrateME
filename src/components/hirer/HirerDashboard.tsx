@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
-import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw, Zap } from 'lucide-react';
+import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw } from 'lucide-react';
 import { authAPI, jobAPI } from '../../services/api';
+import { getLogoUrl } from '../../utils/logoUpload';
 
 const HirerDashboard = () => {
   const [stats, setStats] = useState({
@@ -141,7 +142,14 @@ const HirerDashboard = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="workspace-button">
-                <Zap className="h-4 w-4 text-indigo-600" />
+                <img 
+                  src={getLogoUrl()} 
+                  alt="ReintegrateMe"
+                  className="h-4 w-4"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
                 <span className="text-slate-800 font-semibold">ReintegrateMe</span>
               </div>
             </div>

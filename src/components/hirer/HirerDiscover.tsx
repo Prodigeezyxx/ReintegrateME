@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
@@ -9,7 +8,8 @@ import MatchAnimation from '../MatchAnimation';
 import FavoritesBar from '../FavoritesBar';
 import SeekerProfileView from '../SeekerProfileView';
 import SkeletonLoader from '../SkeletonLoader';
-import { RefreshCw, Users, Sparkles } from 'lucide-react';
+import { RefreshCw, Users } from 'lucide-react';
+import { getLogoUrl } from '../../utils/logoUpload';
 
 const HirerDiscover = () => {
   const [seekers, setSeekers] = useState<SwipeableCardData[]>([]);
@@ -180,7 +180,14 @@ const HirerDiscover = () => {
         <div className="swipe-card ios-card flex items-center justify-center">
           <div className="text-center p-8 animate-slide-up">
             <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center">
-              <Sparkles className="h-10 w-10 text-indigo-600" />
+              <img 
+                src={getLogoUrl()} 
+                alt="ReintegrateMe"
+                className="h-10 w-10"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             </div>
             <h3 className="text-xl font-bold mb-3 text-slate-800 font-geist">No talent found</h3>
             <p className="text-slate-600 font-geist leading-relaxed">We couldn't find any talent profiles matching your criteria. Try adjusting your search filters.</p>
@@ -302,7 +309,6 @@ const HirerDiscover = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-              )
               </button>
             </div>
           )}
