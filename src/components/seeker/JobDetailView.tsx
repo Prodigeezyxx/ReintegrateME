@@ -27,12 +27,18 @@ interface JobDetailViewProps {
   };
   onBackClick: () => void;
   showApplicationStatus?: boolean;
+  isFavorite?: boolean;
+  onFavoriteToggle?: () => void;
+  showApplyButton?: boolean;
 }
 
 const JobDetailView: React.FC<JobDetailViewProps> = ({ 
   job, 
   onBackClick, 
-  showApplicationStatus = false 
+  showApplicationStatus = false,
+  isFavorite = false,
+  onFavoriteToggle,
+  showApplyButton = false
 }) => {
   const navigate = useNavigate();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -87,9 +93,15 @@ Best regards`);
             </Button>
             <h1 className="text-2xl font-bold">Job Details</h1>
           </div>
-          <Button variant="ghost" size="icon">
-            <Heart className="h-6 w-6" />
-          </Button>
+          {onFavoriteToggle && (
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={onFavoriteToggle}
+            >
+              <Heart className={`h-6 w-6 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+            </Button>
+          )}
         </div>
 
         <div className="flex-1 p-6 pt-0 space-y-6">
@@ -236,12 +248,20 @@ Best regards`);
           <div className="flex gap-3">
             {!showApplicationStatus ? (
               <>
-                <Button variant="outline" className="flex-1">
-                  Save Job
-                </Button>
-                <Button className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600">
-                  Apply Now
-                </Button>
+                {onFavoriteToggle && (
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={onFavoriteToggle}
+                  >
+                    {isFavorite ? 'Remove from Saved' : 'Save Job'}
+                  </Button>
+                )}
+                {showApplyButton && (
+                  <Button className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600">
+                    Apply Now
+                  </Button>
+                )}
               </>
             ) : (
               <>
