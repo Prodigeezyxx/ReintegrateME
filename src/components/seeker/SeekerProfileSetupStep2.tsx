@@ -2,148 +2,55 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { SeekerProfile } from '../../models/types';
-import { skills, jobCategories, employmentTypes } from '../../services/api';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { SeekerProfile, LegalSupervisionType, ConvictionType, ConvictionStatusType, MappaLevelType } from '../../models/types';
 import { toast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
 
-const MultiSelectTags = ({ 
-  items,
-  selectedItems,
-  onChange,
-  placeholder
-}: { 
-  items: string[],
-  selectedItems: string[],
-  onChange: (items: string[]) => void,
-  placeholder: string
-}) => {
-  const [inputValue, setInputValue] = useState('');
-  const [filteredItems, setFilteredItems] = useState<string[]>([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const legalSupervisionOptions = [
+  { value: 'probation', label: 'Probation' },
+  { value: 'parole', label: 'Parole' },
+  { value: 'community_sentence', label: 'Community Sentence' },
+  { value: 'licence', label: 'Licence' },
+  { value: 'mappa_oversight', label: 'MAPPA Oversight' },
+  { value: 'none', label: 'None' }
+];
 
-  useEffect(() => {
-    if (inputValue) {
-      setFilteredItems(
-        items.filter(
-          item => item.toLowerCase().includes(inputValue.toLowerCase()) && 
-          !selectedItems.includes(item)
-        )
-      );
-    } else {
-      setFilteredItems([]);
-    }
-  }, [inputValue, items, selectedItems]);
-
-  const addItem = (item: string) => {
-    if (!selectedItems.includes(item)) {
-      onChange([...selectedItems, item]);
-    }
-    setInputValue('');
-    setIsDropdownOpen(false);
-  };
-
-  const removeItem = (item: string) => {
-    onChange(selectedItems.filter(i => i !== item));
-  };
-
-  return (
-    <div className="relative">
-      <div className="flex flex-wrap gap-2 p-2 bg-gray-100 rounded-lg min-h-[50px]">
-        {selectedItems.map(item => (
-          <Badge 
-            key={item} 
-            className="bg-reme-purple text-white"
-          >
-            {item}
-            <button 
-              className="ml-1 hover:text-gray-200" 
-              onClick={() => removeItem(item)}
-              aria-label="Remove tag"
-            >
-              ×
-            </button>
-          </Badge>
-        ))}
-        
-        <input
-          type="text"
-          className="flex-grow border-none bg-transparent focus:outline-none min-w-[120px]"
-          placeholder={selectedItems.length === 0 ? placeholder : ''}
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setIsDropdownOpen(true);
-          }}
-          onFocus={() => setIsDropdownOpen(true)}
-        />
-      </div>
-      
-      {isDropdownOpen && filteredItems.length > 0 && (
-        <div className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto bg-white shadow-lg rounded-md py-1">
-          {filteredItems.map(item => (
-            <button
-              key={item}
-              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-              onClick={() => addItem(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const MultiSelectGrid = ({
-  items,
-  selectedItems,
-  onChange,
-  columns = 2
-}: {
-  items: string[],
-  selectedItems: string[],
-  onChange: (items: string[]) => void,
-  columns?: number
-}) => {
-  const toggleItem = (item: string) => {
-    if (selectedItems.includes(item)) {
-      onChange(selectedItems.filter(i => i !== item));
-    } else {
-      onChange([...selectedItems, item]);
-    }
-  };
-  
-  return (
-    <div className={`grid grid-cols-${columns} gap-2`}>
-      {items.map(item => (
-        <button
-          key={item}
-          type="button"
-          onClick={() => toggleItem(item)}
-          className={`p-3 rounded-lg text-left ${
-            selectedItems.includes(item) 
-              ? 'bg-reme-orange text-white' 
-              : 'bg-gray-100 text-gray-700'
-          }`}
-        >
-          {item}
-        </button>
-      ))}
-    </div>
-  );
-};
+const convictionTypeOptions = [
+  { value: 'theft_burglary_robbery', label: 'Theft / Burglary / Robbery' },
+  { value: 'fraud_financial_offences', label: 'Fraud / Financial Offences' },
+  { value: 'drug_offences_possession', label: 'Drug Offences (possession)' },
+  { value: 'drug_offences_supply', label: 'Drug Offences (supply)' },
+  { value: 'drug_offences_production', label: 'Drug Offences (production)' },
+  { value: 'driving_offences', label: 'Driving Offences' },
+  { value: 'assault_violent_offences', label: 'Assault / Violent Offences' },
+  { value: 'sexual_offences', label: 'Sexual Offences' },
+  { value: 'public_order_offences', label: 'Public Order Offences' },
+  { value: 'domestic_abuse_related', label: 'Domestic Abuse Related Offence' },
+  { value: 'terrorism_related_offences', label: 'Terrorism-Related Offences' },
+  { value: 'weapons_offences', label: 'Weapons Offences' },
+  { value: 'harassment_stalking', label: 'Harassment / Stalking' },
+  { value: 'arson', label: 'Arson' },
+  { value: 'breach_court_orders', label: 'Breach of Court Orders' },
+  { value: 'other', label: 'Other' }
+];
 
 const SeekerProfileSetupStep2 = () => {
   const navigate = useNavigate();
   const [seekerProfile, setSeekerProfile] = useState<Partial<SeekerProfile>>({
-    keySkills: [],
-    preferredJobCategories: [],
-    preferredEmploymentTypes: []
+    sentenceCompleted: undefined,
+    currentLegalSupervision: undefined,
+    convictionTypes: [],
+    convictionStatus: undefined,
+    barredFromRegulatedWork: undefined,
+    onDbsBarringList: undefined,
+    mappaLevel: undefined,
+    relevantForSafeguardingChecks: undefined,
+    convictionOtherDetails: ''
   });
 
-  // Load data from previous step
   useEffect(() => {
     const savedProfile = localStorage.getItem('seekerProfile');
     if (savedProfile) {
@@ -154,32 +61,49 @@ const SeekerProfileSetupStep2 = () => {
     }
   }, []);
 
-  const handleSkillsChange = (newSkills: string[]) => {
-    setSeekerProfile(prev => ({ ...prev, keySkills: newSkills }));
+  const handleBooleanChange = (field: keyof SeekerProfile, value: string) => {
+    setSeekerProfile(prev => ({ 
+      ...prev, 
+      [field]: value === 'true' ? true : value === 'false' ? false : undefined 
+    }));
   };
 
-  const handleCategoriesChange = (categories: string[]) => {
-    setSeekerProfile(prev => ({ ...prev, preferredJobCategories: categories }));
+  const handleSupervisionChange = (value: string) => {
+    setSeekerProfile(prev => ({ 
+      ...prev, 
+      currentLegalSupervision: value as LegalSupervisionType 
+    }));
   };
 
-  const handleEmploymentTypesChange = (types: string[]) => {
-    setSeekerProfile(prev => ({ ...prev, preferredEmploymentTypes: types }));
+  const handleConvictionStatusChange = (value: string) => {
+    setSeekerProfile(prev => ({ 
+      ...prev, 
+      convictionStatus: value as ConvictionStatusType 
+    }));
+  };
+
+  const handleMappaChange = (value: string) => {
+    setSeekerProfile(prev => ({ 
+      ...prev, 
+      mappaLevel: value as MappaLevelType 
+    }));
+  };
+
+  const handleConvictionTypeChange = (convictionType: ConvictionType, checked: boolean) => {
+    setSeekerProfile(prev => {
+      const currentTypes = prev.convictionTypes || [];
+      if (checked) {
+        return { ...prev, convictionTypes: [...currentTypes, convictionType] };
+      } else {
+        return { ...prev, convictionTypes: currentTypes.filter(type => type !== convictionType) };
+      }
+    });
   };
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!seekerProfile.keySkills?.length) {
-      toast({
-        title: "Tip",
-        description: "Adding some skills will help employers find you",
-        variant: "default"
-      });
-    }
-    
-    // Store the updated profile in localStorage
     localStorage.setItem('seekerProfile', JSON.stringify(seekerProfile));
-    
     navigate('/seeker-setup-step3');
   };
 
@@ -196,50 +120,202 @@ const SeekerProfileSetupStep2 = () => {
           </svg>
         </button>
         
-        <h1 className="text-2xl font-bold mb-2">Your Skills & Preferences</h1>
-        <p className="text-gray-600 mb-6">Let us know what you're good at</p>
+        <h1 className="text-2xl font-bold mb-2">Legal Information</h1>
+        <p className="text-gray-600 mb-6">This information helps us match you with suitable opportunities</p>
         
         <div className="progress-bar mb-8">
-          <div className="progress-fill" style={{ width: '66%' }}></div>
+          <div className="progress-fill" style={{ width: '40%' }}></div>
         </div>
         
         <form onSubmit={handleNext} className="space-y-8 flex-1">
+          {/* Sentence Status */}
           <div className="space-y-3">
-            <label htmlFor="keySkills" className="text-gray-700 font-medium block">Key Skills</label>
-            <MultiSelectTags
-              items={skills}
-              selectedItems={seekerProfile.keySkills || []}
-              onChange={handleSkillsChange}
-              placeholder="Type to add skills..."
-            />
-            <p className="text-sm text-gray-500">Choose skills that best represent your expertise</p>
+            <Label className="text-gray-700 font-medium">Sentence Completed</Label>
+            <RadioGroup 
+              value={seekerProfile.sentenceCompleted?.toString() || ''} 
+              onValueChange={(value) => handleBooleanChange('sentenceCompleted', value)}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="true" id="sentence-yes" />
+                <Label htmlFor="sentence-yes">Yes</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="false" id="sentence-no" />
+                <Label htmlFor="sentence-no">No</Label>
+              </div>
+            </RadioGroup>
           </div>
-          
+
+          {/* Current Legal Supervision */}
           <div className="space-y-3">
-            <label className="text-gray-700 font-medium block">Preferred Job Categories</label>
-            <MultiSelectGrid
-              items={jobCategories}
-              selectedItems={seekerProfile.preferredJobCategories || []}
-              onChange={handleCategoriesChange}
-            />
-            <p className="text-sm text-gray-500">Select job categories you're interested in</p>
+            <Label className="text-gray-700 font-medium">Current Legal Supervision</Label>
+            <RadioGroup 
+              value={seekerProfile.currentLegalSupervision || ''} 
+              onValueChange={handleSupervisionChange}
+            >
+              {legalSupervisionOptions.map(option => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option.value} id={`supervision-${option.value}`} />
+                  <Label htmlFor={`supervision-${option.value}`}>{option.label}</Label>
+                </div>
+              ))}
+            </RadioGroup>
           </div>
-          
+
+          {/* Conviction Types */}
           <div className="space-y-3">
-            <label className="text-gray-700 font-medium block">Preferred Employment Types</label>
-            <MultiSelectGrid
-              items={employmentTypes}
-              selectedItems={seekerProfile.preferredEmploymentTypes || []}
-              onChange={handleEmploymentTypesChange}
-            />
-            <p className="text-sm text-gray-500">Select employment types you're looking for</p>
+            <Label className="text-gray-700 font-medium">Conviction Type (select all that apply)</Label>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {convictionTypeOptions.map(option => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`conviction-${option.value}`}
+                    checked={seekerProfile.convictionTypes?.includes(option.value as ConvictionType) || false}
+                    onCheckedChange={(checked) => 
+                      handleConvictionTypeChange(option.value as ConvictionType, checked as boolean)
+                    }
+                  />
+                  <Label htmlFor={`conviction-${option.value}`} className="text-sm">
+                    {option.label}
+                  </Label>
+                </div>
+              ))}
+            </div>
+            
+            {seekerProfile.convictionTypes?.includes('other') && (
+              <div className="mt-3">
+                <Label htmlFor="conviction-other" className="text-sm text-gray-600">Please specify:</Label>
+                <Textarea
+                  id="conviction-other"
+                  value={seekerProfile.convictionOtherDetails || ''}
+                  onChange={(e) => setSeekerProfile(prev => ({ ...prev, convictionOtherDetails: e.target.value }))}
+                  className="mt-1"
+                  placeholder="Please provide details..."
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Conviction Status */}
+          <div className="space-y-3">
+            <Label className="text-gray-700 font-medium">Conviction Status</Label>
+            <RadioGroup 
+              value={seekerProfile.convictionStatus || ''} 
+              onValueChange={handleConvictionStatusChange}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="spent" id="status-spent" />
+                <Label htmlFor="status-spent">Spent (under Rehabilitation of Offenders Act 1974)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="unspent" id="status-unspent" />
+                <Label htmlFor="status-unspent">Unspent</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="pending" id="status-pending" />
+                <Label htmlFor="status-pending">Pending</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {/* Safeguarding Flags */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-800">Safeguarding & Regulated Work</h3>
+            
+            <div className="space-y-3">
+              <Label className="text-gray-700 font-medium">Barred from regulated work with children or vulnerable adults</Label>
+              <RadioGroup 
+                value={seekerProfile.barredFromRegulatedWork?.toString() || ''} 
+                onValueChange={(value) => handleBooleanChange('barredFromRegulatedWork', value)}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="true" id="barred-yes" />
+                  <Label htmlFor="barred-yes">Yes</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="false" id="barred-no" />
+                  <Label htmlFor="barred-no">No</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="unknown" id="barred-unknown" />
+                  <Label htmlFor="barred-unknown">Unknown</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-gray-700 font-medium">Subject to DBS Barring List</Label>
+              <RadioGroup 
+                value={seekerProfile.onDbsBarringList?.toString() || ''} 
+                onValueChange={(value) => handleBooleanChange('onDbsBarringList', value)}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="true" id="dbs-yes" />
+                  <Label htmlFor="dbs-yes">Yes</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="false" id="dbs-no" />
+                  <Label htmlFor="dbs-no">No</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="unknown" id="dbs-unknown" />
+                  <Label htmlFor="dbs-unknown">Unknown</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-gray-700 font-medium">MAPPA Level</Label>
+              <RadioGroup 
+                value={seekerProfile.mappaLevel || ''} 
+                onValueChange={handleMappaChange}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="level_1" id="mappa-1" />
+                  <Label htmlFor="mappa-1">Level 1</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="level_2" id="mappa-2" />
+                  <Label htmlFor="mappa-2">Level 2</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="level_3" id="mappa-3" />
+                  <Label htmlFor="mappa-3">Level 3</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="not_applicable" id="mappa-na" />
+                  <Label htmlFor="mappa-na">N/A</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-gray-700 font-medium">Relevant for safeguarding checks</Label>
+              <RadioGroup 
+                value={seekerProfile.relevantForSafeguardingChecks?.toString() || ''} 
+                onValueChange={(value) => handleBooleanChange('relevantForSafeguardingChecks', value)}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="true" id="safeguarding-yes" />
+                  <Label htmlFor="safeguarding-yes">Yes</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="false" id="safeguarding-no" />
+                  <Label htmlFor="safeguarding-no">No</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="unknown" id="safeguarding-unknown" />
+                  <Label htmlFor="safeguarding-unknown">Unknown</Label>
+                </div>
+              </RadioGroup>
+            </div>
           </div>
           
           <Button
             type="submit"
             className="w-full py-6 text-lg bg-reme-orange hover:bg-orange-600 transition-colors mt-8"
           >
-            Next: Location & Photo
+            Next: Health & Disability Information
           </Button>
         </form>
       </div>

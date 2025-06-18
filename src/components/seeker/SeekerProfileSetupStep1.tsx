@@ -11,6 +11,7 @@ const SeekerProfileSetupStep1 = () => {
   const [seekerProfile, setSeekerProfile] = useState<Partial<SeekerProfile>>({
     firstName: '',
     lastName: '',
+    jobTitle: '',
     headline: ''
   });
 
@@ -54,7 +55,7 @@ const SeekerProfileSetupStep1 = () => {
         <p className="text-gray-600 mb-6">Let employers know who you are</p>
         
         <div className="progress-bar mb-8">
-          <div className="progress-fill" style={{ width: '33%' }}></div>
+          <div className="progress-fill" style={{ width: '20%' }}></div>
         </div>
         
         <form onSubmit={handleNext} className="space-y-6 flex-1">
@@ -83,11 +84,24 @@ const SeekerProfileSetupStep1 = () => {
           </div>
           
           <div className="space-y-2">
+            <label htmlFor="jobTitle" className="text-gray-700 font-medium">Job Title</label>
+            <Input
+              id="jobTitle"
+              name="jobTitle"
+              placeholder="e.g., Warehouse Assistant"
+              value={seekerProfile.jobTitle}
+              onChange={handleChange}
+              className="ios-input"
+            />
+            <p className="text-sm text-gray-500">The type of role you're seeking</p>
+          </div>
+          
+          <div className="space-y-2">
             <label htmlFor="headline" className="text-gray-700 font-medium">Professional Headline</label>
             <Input
               id="headline"
               name="headline"
-              placeholder="e.g., Senior Frontend Developer"
+              placeholder="e.g., Reliable team player seeking new opportunities"
               value={seekerProfile.headline}
               onChange={handleChange}
               className="ios-input"
@@ -99,7 +113,7 @@ const SeekerProfileSetupStep1 = () => {
             type="submit"
             className="w-full py-6 text-lg bg-reme-orange hover:bg-orange-600 transition-colors mt-8"
           >
-            Next: Skills & Preferences
+            Next: Legal Information
           </Button>
         </form>
       </div>
