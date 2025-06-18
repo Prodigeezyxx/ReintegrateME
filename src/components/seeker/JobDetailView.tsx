@@ -1,10 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, Clock, Building2, DollarSign, Users, Calendar, Heart } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { ArrowLeft, MapPin, Clock, Building2, DollarSign, Users, Calendar, Heart, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 interface JobDetailViewProps {
   job: {
@@ -31,6 +35,42 @@ const JobDetailView: React.FC<JobDetailViewProps> = ({
   showApplicationStatus = false 
 }) => {
   const navigate = useNavigate();
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [contactMessage, setContactMessage] = useState('');
+  const [contactSubject, setContactSubject] = useState('');
+
+  const handleContactEmployer = () => {
+    setContactSubject(`Inquiry about ${job.jobTitle} position`);
+    setContactMessage(`Dear ${job.company} Hiring Team,
+
+I am writing to express my interest in the ${job.jobTitle} position. I would like to learn more about this opportunity and discuss how my skills and experience could benefit your team.
+
+Thank you for your time and consideration.
+
+Best regards`);
+    setIsContactModalOpen(true);
+  };
+
+  const handleSendMessage = () => {
+    if (!contactSubject.trim() || !contactMessage.trim()) {
+      toast({
+        title: "Required fields missing",
+        description: "Please fill in both subject and message.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Here you would typically send the message via API
+    toast({
+      title: "Message sent",
+      description: `Your message has been sent to ${job.company}.`,
+    });
+    
+    setIsContactModalOpen(false);
+    setContactMessage('');
+    setContactSubject('');
+  };
 
   return (
     <div className="mobile-container bg-gradient-to-br from-blue-50 to-orange-50 min-h-screen">
@@ -208,7 +248,10 @@ const JobDetailView: React.FC<JobDetailViewProps> = ({
                 <Button variant="outline" className="flex-1">
                   Withdraw Application
                 </Button>
-                <Button className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600">
+                <Button 
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  onClick={handleContactEmployer}
+                >
                   Contact Employer
                 </Button>
               </>
@@ -216,6 +259,56 @@ const JobDetailView: React.FC<JobDetailViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Contact Employer Modal */}
+      <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Contact {job.company}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="subject" className="text-sm font-medium">
+                Subject
+              </label>
+              <Input
+                id="subject"
+                value={contactSubject}
+                onChange={(e) => setContactSubject(e.target.value)}
+                placeholder="Enter subject..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="message" className="text-sm font-medium">
+                Message
+              </label>
+              <Textarea
+                id="message"
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
+                placeholder="Enter your message..."
+                rows={6}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setIsContactModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="flex-1"
+                onClick={handleSendMessage}
+              >
+                <Send className="h-4 w-4 mr-2" />
+                Send Message
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

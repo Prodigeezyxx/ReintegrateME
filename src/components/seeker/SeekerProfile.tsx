@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../services/api';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
+import { calculateProfileCompletion } from '../../utils/profileCompletionCalculator';
 import SkillsManager from './SkillsManager';
 import { WorkPreferenceType } from '../../models/types';
 
@@ -31,12 +32,14 @@ const SeekerProfile = () => {
     bio: '',
     keySkills: [] as string[],
     workPreferences: [] as WorkPreferenceType[],
-    profileCompletionPercentage: 25
+    profileCompletionPercentage: 0
   });
 
   useEffect(() => {
     // Load profile data from profileSetupManager
     const savedData = profileSetupManager.getAllData();
+    const completionPercentage = calculateProfileCompletion();
+    
     setProfile(prev => ({
       ...prev,
       firstName: savedData.firstName || '',
@@ -45,14 +48,17 @@ const SeekerProfile = () => {
       headline: savedData.headline || '',
       keySkills: savedData.keySkills || [],
       workPreferences: (savedData.workPreferences || []) as WorkPreferenceType[],
-      profileCompletionPercentage: savedData.workPreferences ? 75 : 25
+      profileCompletionPercentage: completionPercentage
     }));
   }, []);
 
   const handleSave = () => {
     setIsEditing(false);
-    // Save to profileSetupManager
+    // Save to profileSetupManager and recalculate completion
     profileSetupManager.saveStepData(1, profile);
+    const newCompletionPercentage = calculateProfileCompletion();
+    setProfile(prev => ({ ...prev, profileCompletionPercentage: newCompletionPercentage }));
+    
     toast({
       title: "Profile Updated",
       description: "Your profile has been successfully updated.",
@@ -304,12 +310,12 @@ const SeekerProfile = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Profile completeness</span>
-                <span>{profile.profileCompletionPercentage || 25}%</span>
+                <span>{profile.profileCompletionPercentage}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-blue-600 to-orange-500 h-2 rounded-full transition-all duration-300" 
-                  style={{ width: `${profile.profileCompletionPercentage || 25}%` }}
+                  style={{ width: `${profile.profileCompletionPercentage}%` }}
                 ></div>
               </div>
               <p className="text-xs text-gray-500 mt-2">

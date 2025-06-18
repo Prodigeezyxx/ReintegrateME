@@ -30,7 +30,7 @@ const SeekerAICoach = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      content: "Hi there! I'm your reintegration coach. I'm here to support you with job searching, workplace skills, stress management, and building a successful future. What would you like to talk about today?",
+      content: "Hi there! I'm your REME reintegration coach. I'm here to support you with job searching, workplace skills, stress management, and building a successful future after release. What would you like to talk about today?",
       role: "coach",
       timestamp: new Date()
     }
@@ -51,7 +51,7 @@ const SeekerAICoach = () => {
     const input = userInput.toLowerCase();
     
     if (input.includes("interview") || input.includes("job")) {
-      return "Great! Interview preparation is crucial. Let's start with the basics: Can you tell me what type of position you're applying for? I can help you practice common questions, discuss how to address your background professionally, and work on presenting your strengths confidently.";
+      return "Great! Interview preparation is crucial for successful reintegration. Let's start with the basics: Can you tell me what type of position you're applying for? I can help you practice common questions, discuss how to address your background professionally, and work on presenting your strengths confidently.";
     }
     
     if (input.includes("stress") || input.includes("anxiety") || input.includes("overwhelmed")) {
@@ -59,7 +59,7 @@ const SeekerAICoach = () => {
     }
     
     if (input.includes("workplace") || input.includes("coworker") || input.includes("boss")) {
-      return "Workplace relationships are so important for success. The key is professional communication, active listening, and building trust gradually. What specific workplace situation are you concerned about? I can help you practice appropriate responses.";
+      return "Workplace relationships are so important for successful reintegration. The key is professional communication, active listening, and building trust gradually. What specific workplace situation are you concerned about? I can help you practice appropriate responses.";
     }
     
     if (input.includes("goal") || input.includes("plan") || input.includes("future")) {
@@ -122,7 +122,7 @@ const SeekerAICoach = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <Bot className="h-6 w-6 text-blue-600 mr-2" />
-        <h1 className="text-2xl font-bold">AI Coach</h1>
+        <h1 className="text-2xl font-bold">REME Coach</h1>
       </div>
 
       <div className="flex flex-col gap-6">
@@ -197,9 +197,9 @@ const SeekerAICoach = () => {
           </div>
           
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <h4 className="font-semibold text-sm mb-2 text-blue-800">💡 Coach Tip</h4>
+            <h4 className="font-semibold text-sm mb-2 text-blue-800">💡 REME Coach Tip</h4>
             <p className="text-xs text-blue-700">
-              Regular coaching conversations can help you build confidence and develop strategies for success.
+              Regular coaching conversations can help you build confidence and develop strategies for successful reintegration.
             </p>
           </div>
         </div>
