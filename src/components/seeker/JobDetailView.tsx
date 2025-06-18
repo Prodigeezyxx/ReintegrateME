@@ -79,7 +79,7 @@ Best regards`);
   };
 
   return (
-    <div className="mobile-container bg-gradient-to-br from-blue-50 to-orange-50 min-h-screen">
+    <div className="mobile-container bg-white min-h-screen">
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center mb-6 p-6 pb-0">
           <div className="flex items-center">
@@ -91,7 +91,7 @@ Best regards`);
             >
               <ArrowLeft className="h-6 w-6" />
             </Button>
-            <h1 className="text-2xl font-bold">Job Details</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Job Details</h1>
           </div>
           {onFavoriteToggle && (
             <Button 
@@ -258,7 +258,7 @@ Best regards`);
                   </Button>
                 )}
                 {showApplyButton && (
-                  <Button className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600">
+                  <Button className="flex-1 bg-reme-orange hover:bg-orange-600">
                     Apply Now
                   </Button>
                 )}
@@ -269,7 +269,7 @@ Best regards`);
                   Withdraw Application
                 </Button>
                 <Button 
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                  className="flex-1 bg-reme-orange hover:bg-orange-600"
                   onClick={handleContactEmployer}
                 >
                   Contact Employer

@@ -124,7 +124,7 @@ const HirerDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="mobile-container p-6 flex items-center justify-center min-h-screen">
+      <div className="mobile-container p-6 flex items-center justify-center min-h-screen bg-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-reme-orange mx-auto"></div>
           <p className="mt-4 text-gray-500">Loading dashboard...</p>
@@ -134,10 +134,10 @@ const HirerDashboard = () => {
   }
   
   return (
-    <div className="mobile-container p-6">
+    <div className="mobile-container p-6 bg-white min-h-screen">
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <Button 
             variant="ghost" 
             size="icon" 
@@ -148,8 +148,9 @@ const HirerDashboard = () => {
           </Button>
         </div>
         
+        {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="hover-scale cursor-pointer" onClick={() => handleStatsClick('activeJobs')}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleStatsClick('activeJobs')}>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Briefcase className="h-6 w-6 text-reme-orange mb-2" />
               <p className="text-2xl font-bold">{stats.activeOpenings}</p>
@@ -157,7 +158,7 @@ const HirerDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="hover-scale cursor-pointer" onClick={() => handleStatsClick('totalApplicants')}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleStatsClick('totalApplicants')}>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Users className="h-6 w-6 text-blue-500 mb-2" />
               <p className="text-2xl font-bold">{stats.totalApplicants}</p>
@@ -165,7 +166,7 @@ const HirerDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="hover-scale cursor-pointer" onClick={() => handleStatsClick('newApplicants')}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleStatsClick('newApplicants')}>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Users className="h-6 w-6 text-green-500 mb-2" />
               <p className="text-2xl font-bold">{stats.newApplicants}</p>
@@ -173,7 +174,7 @@ const HirerDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="hover-scale cursor-pointer" onClick={() => handleStatsClick('unreadMessages')}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleStatsClick('unreadMessages')}>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <MessageSquare className="h-6 w-6 text-purple-500 mb-2" />
               <p className="text-2xl font-bold">{stats.unreadMessages}</p>
@@ -182,6 +183,7 @@ const HirerDashboard = () => {
           </Card>
         </div>
         
+        {/* Quick Actions */}
         <Card className="mb-6">
           <CardHeader className="px-4 pt-4 pb-1">
             <CardTitle className="text-lg">Quick Actions</CardTitle>
@@ -210,6 +212,7 @@ const HirerDashboard = () => {
           </CardContent>
         </Card>
         
+        {/* Recent Activity */}
         <Card className="mb-6 flex-1">
           <CardHeader className="px-4 pt-4 pb-2">
             <CardTitle className="text-lg">Recent Activity</CardTitle>
@@ -240,6 +243,7 @@ const HirerDashboard = () => {
           </CardContent>
         </Card>
         
+        {/* Talent Discovery */}
         <div className="mb-6">
           <Card>
             <CardHeader className="px-4 pt-4 pb-2">

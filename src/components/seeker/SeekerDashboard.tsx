@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
@@ -227,10 +226,10 @@ const SeekerDashboard = () => {
   }
   
   return (
-    <div className="mobile-container p-6">
+    <div className="mobile-container p-6 bg-white min-h-screen">
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Discover Jobs</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Discover Jobs</h1>
           <Button 
             variant="ghost" 
             size="icon" 
