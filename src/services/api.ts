@@ -1,4 +1,3 @@
-
 import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCardData, MatchRecord } from '../models/types';
 
 // Mock data and functions to simulate API calls
@@ -215,13 +214,12 @@ export const seekerAPI = {
       firstName: profileData.firstName || '',
       lastName: profileData.lastName || '',
       displayName: profileData.firstName ? `${profileData.firstName} ${profileData.lastName || ''}` : '',
+      jobTitle: profileData.jobTitle,
       headline: profileData.headline,
       bio: profileData.bio,
       keySkills: profileData.keySkills,
       locationCity: profileData.locationCity,
       locationCountry: profileData.locationCountry,
-      preferredJobCategories: profileData.preferredJobCategories,
-      preferredEmploymentTypes: profileData.preferredEmploymentTypes,
       availabilityStatus: 'actively_looking',
       profileCompletionPercentage: 30, // Initial completion percentage
     };
@@ -270,19 +268,21 @@ export const seekerAPI = {
     }
     
     // Recalculate completion percentage based on filled fields
-    const totalFields = 10; // Total number of optional fields
+    const totalFields = 12; // Updated total number of fields
     let filledFields = 0;
     
     if (profile.firstName) filledFields++;
     if (profile.lastName) filledFields++;
+    if (profile.jobTitle) filledFields++;
     if (profile.headline) filledFields++;
     if (profile.bio) filledFields++;
     if (profile.keySkills && profile.keySkills.length > 0) filledFields++;
     if (profile.locationCity) filledFields++;
     if (profile.locationCountry) filledFields++;
-    if (profile.preferredJobCategories && profile.preferredJobCategories.length > 0) filledFields++;
-    if (profile.preferredEmploymentTypes && profile.preferredEmploymentTypes.length > 0) filledFields++;
     if (profile.profilePictureUrl) filledFields++;
+    if (profile.phone) filledFields++;
+    if (profile.email) filledFields++;
+    if (profile.workPreferences && profile.workPreferences.length > 0) filledFields++;
     
     profile.profileCompletionPercentage = Math.round((filledFields / totalFields) * 100);
     
