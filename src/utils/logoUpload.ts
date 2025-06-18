@@ -31,6 +31,6 @@ export const uploadLogo = async (file: File): Promise<string | null> => {
 };
 
 export const getLogoUrl = (): string => {
-  // Use your correct blue "RM" logo directly
-  return "/lovable-uploads/d6a377eb-4ee1-45a1-bf2e-dc22cc9521d0.png";
+  // Use the correct REME NEW LOGO.png file
+  return "/lovable-uploads/REME NEW LOGO.png";
 };
