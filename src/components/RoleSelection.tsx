@@ -1,31 +1,71 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getLogoUrl } from '../utils/logoUpload';
+import { getLogoUrl, getFallbackLogoUrl } from '../utils/logoUpload';
 
 const RoleSelection = () => {
   const navigate = useNavigate();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+
+  // Prevent navigation loops
+  useEffect(() => {
+    console.log('RoleSelection component mounted');
+    
+    // Set a timeout to prevent infinite loops
+    const preventLoopTimeout = setTimeout(() => {
+      console.log('RoleSelection: Preventing potential navigation loop');
+    }, 5000);
+
+    return () => clearTimeout(preventLoopTimeout);
+  }, []);
 
   const handleRoleSelect = (role: 'seeker' | 'hirer') => {
+    if (isNavigating) {
+      console.log('Navigation already in progress');
+      return;
+    }
+
     try {
+      console.log(`Role selected: ${role}`);
+      setIsNavigating(true);
       localStorage.setItem('selectedRole', role);
-      navigate('/auth', { state: { role } });
+      navigate('/auth', { state: { role }, replace: true });
     } catch (error) {
       console.error('Error selecting role:', error);
+      setIsNavigating(false);
     }
   };
 
   const handleBackToHome = () => {
+    if (isNavigating) {
+      console.log('Navigation already in progress');
+      return;
+    }
+
     try {
+      console.log('Navigating back to home');
+      setIsNavigating(true);
       navigate('/', { replace: true });
     } catch (error) {
       console.error('Error navigating home:', error);
+      setIsNavigating(false);
     }
   };
 
-  const logoUrl = getLogoUrl();
+  const handleLogoError = () => {
+    console.log('Primary logo failed to load, trying fallback');
+    setLogoError(true);
+  };
+
+  const handleLogoLoad = () => {
+    console.log('Logo loaded successfully');
+    setLogoError(false);
+  };
+
+  const logoUrl = logoError ? getFallbackLogoUrl() : getLogoUrl();
 
   return (
     <div className="mobile-container bg-white min-h-screen">
@@ -37,13 +77,10 @@ const RoleSelection = () => {
                 src={logoUrl}
                 alt="ReintegrateMe Logo"
                 className="w-full h-full object-contain"
-                onError={(e) => {
-                  console.log('Logo failed to load, using fallback');
-                  e.currentTarget.src = "/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png";
-                }}
-                onLoad={() => {
-                  console.log('Logo loaded successfully');
-                }}
+                onError={handleLogoError}
+                onLoad={handleLogoLoad}
+                loading="eager"
+                style={{ imageRendering: 'auto' }}
               />
             </div>
             <h1 className="text-3xl font-bold text-slate-800 mb-2">
@@ -66,8 +103,12 @@ const RoleSelection = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleRoleSelect('seeker')}>
-                  Get Started as Job Seeker
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700" 
+                  onClick={() => handleRoleSelect('seeker')}
+                  disabled={isNavigating}
+                >
+                  {isNavigating ? 'Loading...' : 'Get Started as Job Seeker'}
                 </Button>
               </CardContent>
             </Card>
@@ -85,8 +126,12 @@ const RoleSelection = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full bg-orange-600 hover:bg-orange-700" onClick={() => handleRoleSelect('hirer')}>
-                  Get Started as Employer
+                <Button 
+                  className="w-full bg-orange-600 hover:bg-orange-700" 
+                  onClick={() => handleRoleSelect('hirer')}
+                  disabled={isNavigating}
+                >
+                  {isNavigating ? 'Loading...' : 'Get Started as Employer'}
                 </Button>
               </CardContent>
             </Card>
@@ -95,9 +140,10 @@ const RoleSelection = () => {
           <div className="mt-8 text-center">
             <button 
               onClick={handleBackToHome}
-              className="text-slate-500 hover:text-slate-700 transition-colors"
+              className="text-slate-500 hover:text-slate-700 transition-colors disabled:opacity-50"
+              disabled={isNavigating}
             >
-              ← Back to Homepage
+              ← {isNavigating ? 'Loading...' : 'Back to Homepage'}
             </button>
           </div>
         </div>

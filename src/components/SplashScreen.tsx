@@ -1,21 +1,25 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getLogoUrl } from '../utils/logoUpload';
+import { getLogoUrl, getFallbackLogoUrl } from '../utils/logoUpload';
 
 const SplashScreen = () => {
   const navigate = useNavigate();
   const [showLogo, setShowLogo] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   useEffect(() => {
+    console.log('SplashScreen mounted');
+    
     // Animate logo appearance
     const logoTimer = setTimeout(() => {
       setShowLogo(true);
     }, 300);
 
-    // Navigate after animation
+    // Navigate after animation with safety check
     const navigationTimer = setTimeout(() => {
-      navigate('/role-selection');
+      console.log('SplashScreen: Navigating to role selection');
+      navigate('/role-selection', { replace: true });
     }, 2500);
 
     return () => {
@@ -24,7 +28,17 @@ const SplashScreen = () => {
     };
   }, [navigate]);
 
-  const logoUrl = getLogoUrl();
+  const handleLogoError = () => {
+    console.log('Primary logo failed to load on splash, trying fallback');
+    setLogoError(true);
+  };
+
+  const handleLogoLoad = () => {
+    console.log('Logo loaded successfully on splash');
+    setLogoError(false);
+  };
+
+  const logoUrl = logoError ? getFallbackLogoUrl() : getLogoUrl();
 
   return (
     <div className="mobile-container bg-white min-h-screen flex items-center justify-center">
@@ -35,13 +49,10 @@ const SplashScreen = () => {
               src={logoUrl}
               alt="ReintegrateMe Logo"
               className="w-full h-full object-contain"
-              onError={(e) => {
-                console.log('Logo failed to load on splash, using fallback');
-                e.currentTarget.src = "/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png";
-              }}
-              onLoad={() => {
-                console.log('Logo loaded successfully on splash');
-              }}
+              onError={handleLogoError}
+              onLoad={handleLogoLoad}
+              loading="eager"
+              style={{ imageRendering: 'auto' }}
             />
           </div>
           <h1 className="text-4xl font-bold text-slate-800 mb-2">ReintegrateMe</h1>

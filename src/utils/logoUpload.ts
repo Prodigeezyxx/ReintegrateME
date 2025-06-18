@@ -31,6 +31,10 @@ export const uploadLogo = async (file: File): Promise<string | null> => {
 };
 
 export const getLogoUrl = (): string => {
-  // Use URL-encoded path for the REME logo to handle spaces
-  return "/lovable-uploads/REME%20NEW%20LOGO.png";
+  // Try multiple logo paths for better mobile compatibility
+  return "/lovable-uploads/REME NEW LOGO.png";
+};
+
+export const getFallbackLogoUrl = (): string => {
+  return "/lovable-uploads/354e6306-e216-4b62-9bbc-24433bcbcc1f.png";
 };
