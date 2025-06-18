@@ -183,9 +183,14 @@ const HirerDiscover = () => {
               <img 
                 src={getLogoUrl()} 
                 alt="ReintegrateMe"
-                className="h-10 w-10"
+                className="h-10 w-10 object-contain"
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none';
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  console.log('Logo failed to load:', getLogoUrl());
+                }}
+                onLoad={() => {
+                  console.log('Logo loaded successfully:', getLogoUrl());
                 }}
               />
             </div>
@@ -250,16 +255,31 @@ const HirerDiscover = () => {
             <h1 className="text-2xl font-bold text-slate-900 font-geist">Discover Talent</h1>
             <p className="text-slate-600 text-sm font-geist mt-1">Find your ideal candidates</p>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="relative rounded-xl hover:bg-slate-100 transition-all duration-200 touch-target"
-            aria-label="Refresh talent profiles"
-          >
-            <RefreshCw className={`h-5 w-5 text-slate-600 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </Button>
+          <div className="flex items-center gap-3">
+            <img 
+              src={getLogoUrl()} 
+              alt="ReintegrateMe"
+              className="h-10 w-10 object-contain"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                console.log('Header logo failed to load:', getLogoUrl());
+              }}
+              onLoad={() => {
+                console.log('Header logo loaded successfully:', getLogoUrl());
+              }}
+            />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="relative rounded-xl hover:bg-slate-100 transition-all duration-200 touch-target"
+              aria-label="Refresh talent profiles"
+            >
+              <RefreshCw className={`h-5 w-5 text-slate-600 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </div>
         
         <div className="px-6">
@@ -272,12 +292,12 @@ const HirerDiscover = () => {
         </div>
         
         <div className="px-6 flex-1 flex flex-col">
-          <div className="swipe-card-container mb-6 relative">
+          <div className="swipe-card-container mb-4 relative">
             {renderMainContent()}
           </div>
           
           {seekers.length > 0 && currentIndex < seekers.length && (
-            <div className="swipe-action-buttons mt-auto">
+            <div className="flex justify-center items-center gap-8 pb-8 mt-4">
               <button 
                 className="swipe-button pass-button"
                 onClick={() => handleButtonSwipe('left')}
