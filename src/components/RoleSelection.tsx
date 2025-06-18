@@ -9,49 +9,54 @@ const RoleSelection = () => {
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   // Prevent navigation loops
   useEffect(() => {
     console.log('RoleSelection component mounted');
     
-    // Set a timeout to prevent infinite loops
-    const preventLoopTimeout = setTimeout(() => {
-      console.log('RoleSelection: Preventing potential navigation loop');
-    }, 5000);
+    // Reset navigation state after component mount
+    const resetTimer = setTimeout(() => {
+      setHasNavigated(false);
+    }, 1000);
 
-    return () => clearTimeout(preventLoopTimeout);
+    return () => clearTimeout(resetTimer);
   }, []);
 
   const handleRoleSelect = (role: 'seeker' | 'hirer') => {
-    if (isNavigating) {
-      console.log('Navigation already in progress');
+    if (isNavigating || hasNavigated) {
+      console.log('Navigation already in progress or completed');
       return;
     }
 
     try {
       console.log(`Role selected: ${role}`);
       setIsNavigating(true);
+      setHasNavigated(true);
       localStorage.setItem('selectedRole', role);
       navigate('/auth', { state: { role }, replace: true });
     } catch (error) {
       console.error('Error selecting role:', error);
       setIsNavigating(false);
+      setHasNavigated(false);
     }
   };
 
   const handleBackToHome = () => {
-    if (isNavigating) {
-      console.log('Navigation already in progress');
+    if (isNavigating || hasNavigated) {
+      console.log('Navigation already in progress or completed');
       return;
     }
 
     try {
-      console.log('Navigating back to home');
+      console.log('Navigating back to splash screen');
       setIsNavigating(true);
-      navigate('/', { replace: true });
+      setHasNavigated(true);
+      navigate('/splash', { replace: true });
     } catch (error) {
-      console.error('Error navigating home:', error);
+      console.error('Error navigating to splash:', error);
       setIsNavigating(false);
+      setHasNavigated(false);
     }
   };
 
@@ -143,7 +148,7 @@ const RoleSelection = () => {
               className="text-slate-500 hover:text-slate-700 transition-colors disabled:opacity-50"
               disabled={isNavigating}
             >
-              ← {isNavigating ? 'Loading...' : 'Back to Homepage'}
+              ← {isNavigating ? 'Loading...' : 'Back to Start'}
             </button>
           </div>
         </div>

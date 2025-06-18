@@ -31,8 +31,8 @@ export const uploadLogo = async (file: File): Promise<string | null> => {
 };
 
 export const getLogoUrl = (): string => {
-  // Try multiple logo paths for better mobile compatibility
-  return "/lovable-uploads/REME NEW LOGO.png";
+  // Use the correct GitHub logo path without spaces for better mobile compatibility
+  return "/lovable-uploads/REMENEWLOGO.png";
 };
 
 export const getFallbackLogoUrl = (): string => {

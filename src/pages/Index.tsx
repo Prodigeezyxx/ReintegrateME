@@ -9,11 +9,12 @@ const Index = () => {
   const [isChecking, setIsChecking] = useState(true);
   const [hasChecked, setHasChecked] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     // Prevent multiple checks
-    if (hasChecked) {
-      console.log('Index: Already checked auth, skipping');
+    if (hasChecked || hasNavigated) {
+      console.log('Index: Already checked auth or navigated, skipping');
       return;
     }
 
@@ -24,8 +25,9 @@ const Index = () => {
         
         const currentUser = authAPI.getCurrentUser();
         
-        if (currentUser) {
+        if (currentUser && !hasNavigated) {
           console.log('Index: User authenticated, role:', currentUser.role);
+          setHasNavigated(true);
           // Redirect authenticated users to their respective dashboards
           if (currentUser.role === 'hirer') {
             navigate('/hirer-dashboard', { replace: true });
@@ -35,15 +37,17 @@ const Index = () => {
             // Fallback for users without proper role
             navigate('/splash', { replace: true });
           }
-        } else {
+        } else if (!hasNavigated) {
           console.log('Index: No authenticated user, redirecting to splash');
+          setHasNavigated(true);
           // Redirect to splash screen for new users
           navigate('/splash', { replace: true });
         }
       } catch (error) {
         console.error('Index: Error checking auth:', error);
         // Fallback to splash screen
-        if (!hasChecked) {
+        if (!hasChecked && !hasNavigated) {
+          setHasNavigated(true);
           navigate('/splash', { replace: true });
         }
       } finally {
@@ -54,7 +58,7 @@ const Index = () => {
     };
 
     checkAuth();
-  }, [navigate, hasChecked]);
+  }, [navigate, hasChecked, hasNavigated]);
 
   const handleLogoError = () => {
     console.log('Primary logo failed to load on index, trying fallback');
@@ -66,7 +70,7 @@ const Index = () => {
     setLogoError(false);
   };
 
-  if (!isChecking) {
+  if (!isChecking || hasNavigated) {
     return null; // Don't render anything once redirect is happening
   }
 

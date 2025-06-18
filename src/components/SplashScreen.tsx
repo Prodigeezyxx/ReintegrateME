@@ -7,6 +7,7 @@ const SplashScreen = () => {
   const navigate = useNavigate();
   const [showLogo, setShowLogo] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     console.log('SplashScreen mounted');
@@ -18,15 +19,18 @@ const SplashScreen = () => {
 
     // Navigate after animation with safety check
     const navigationTimer = setTimeout(() => {
-      console.log('SplashScreen: Navigating to role selection');
-      navigate('/role-selection', { replace: true });
+      if (!hasNavigated) {
+        console.log('SplashScreen: Navigating to role selection');
+        setHasNavigated(true);
+        navigate('/role-selection', { replace: true });
+      }
     }, 2500);
 
     return () => {
       clearTimeout(logoTimer);
       clearTimeout(navigationTimer);
     };
-  }, [navigate]);
+  }, [navigate, hasNavigated]);
 
   const handleLogoError = () => {
     console.log('Primary logo failed to load on splash, trying fallback');
