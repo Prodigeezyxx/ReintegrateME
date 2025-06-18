@@ -13,6 +13,7 @@ import HirerProfileSetup from "./components/hirer/HirerProfileSetup";
 import SeekerProfileSetupStep1 from "./components/seeker/SeekerProfileSetupStep1";
 import SeekerProfileSetupStep2 from "./components/seeker/SeekerProfileSetupStep2";
 import SeekerProfileSetupStep3 from "./components/seeker/SeekerProfileSetupStep3";
+import SeekerProfileSetupStep4 from "./components/seeker/SeekerProfileSetupStep4";
 import HirerDashboard from "./components/hirer/HirerDashboard";
 import HirerDiscover from "./components/hirer/HirerDiscover";
 import HirerJobsList from "./components/hirer/HirerJobsList";
