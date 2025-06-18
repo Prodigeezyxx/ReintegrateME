@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
@@ -7,7 +8,8 @@ import { toast } from '@/hooks/use-toast';
 import MatchAnimation from '../MatchAnimation';
 import FavoritesBar from '../FavoritesBar';
 import SeekerProfileView from '../SeekerProfileView';
-import { RefreshCw } from 'lucide-react';
+import SkeletonLoader from '../SkeletonLoader';
+import { RefreshCw, Heart, Sparkles } from 'lucide-react';
 
 const SeekerDashboard = () => {
   const [jobs, setJobs] = useState<SwipeableCardData[]>([]);
@@ -160,11 +162,8 @@ const SeekerDashboard = () => {
   const renderCards = () => {
     if (isLoading) {
       return (
-        <div className="swipe-card ios-card flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-reme-orange mx-auto"></div>
-            <p className="mt-4 text-gray-500">Loading jobs...</p>
-          </div>
+        <div className="swipe-card-container flex items-center justify-center">
+          <SkeletonLoader variant="card" className="w-full h-full" />
         </div>
       );
     }
@@ -172,12 +171,12 @@ const SeekerDashboard = () => {
     if (jobs.length === 0) {
       return (
         <div className="swipe-card ios-card flex items-center justify-center">
-          <div className="text-center p-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-xl font-bold mb-2">No jobs found</h3>
-            <p className="text-gray-500">We couldn't find any job listings matching your criteria.</p>
+          <div className="text-center p-8 animate-slide-up">
+            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center">
+              <Sparkles className="h-10 w-10 text-indigo-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-slate-800 font-geist">No jobs found</h3>
+            <p className="text-slate-600 font-geist leading-relaxed">We couldn't find any job listings matching your criteria. Try adjusting your preferences or check back later.</p>
           </div>
         </div>
       );
@@ -186,15 +185,15 @@ const SeekerDashboard = () => {
     if (currentIndex >= jobs.length) {
       return (
         <div className="swipe-card ios-card flex items-center justify-center">
-          <div className="text-center p-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-reme-orange mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <h3 className="text-xl font-bold mb-2">You're all caught up!</h3>
-            <p className="text-gray-500 mb-4">Check back later for more job opportunities.</p>
+          <div className="text-center p-8 animate-slide-up">
+            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center">
+              <Heart className="h-10 w-10 text-emerald-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-slate-800 font-geist">You're all caught up!</h3>
+            <p className="text-slate-600 mb-6 font-geist leading-relaxed">Check back later for more job opportunities.</p>
             <Button 
               onClick={() => setCurrentIndex(0)}
-              className="bg-reme-orange hover:bg-orange-600 transition-colors"
+              className="modern-button-primary"
             >
               Start Over
             </Button>
@@ -226,64 +225,72 @@ const SeekerDashboard = () => {
   }
   
   return (
-    <div className="mobile-container p-6 bg-white min-h-screen">
+    <div className="mobile-container safe-top bg-gradient-to-b from-white to-slate-50 min-h-screen">
       <div className="flex flex-col min-h-screen">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Discover Jobs</h1>
+        <div className="flex justify-between items-center mb-6 p-6 pb-0">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 font-geist">Discover Jobs</h1>
+            <p className="text-slate-600 text-sm font-geist mt-1">Find your perfect match</p>
+          </div>
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="relative"
+            className="relative rounded-xl hover:bg-slate-100 transition-all duration-200 touch-target"
+            aria-label="Refresh job listings"
           >
-            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-5 w-5 text-slate-600 ${isRefreshing ? 'animate-spin' : ''}`} />
           </Button>
         </div>
         
-        <FavoritesBar 
-          favorites={favorites} 
-          onFavoriteClick={handleFavoriteProfileClick}
-          onRemoveFavorite={handleRemoveFavorite}
-        />
-        
-        <div className="swipe-card-container mb-6">
-          {renderCards()}
+        <div className="px-6">
+          <FavoritesBar 
+            favorites={favorites} 
+            onFavoriteClick={handleFavoriteProfileClick}
+            onRemoveFavorite={handleRemoveFavorite}
+          />
         </div>
         
-        {jobs.length > 0 && currentIndex < jobs.length && (
-          <div className="swipe-action-buttons">
-            <button 
-              className="swipe-button pass-button"
-              onClick={() => handleButtonSwipe('left')}
-              aria-label="Pass"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            
-            <button 
-              className="swipe-button super-like-button"
-              onClick={() => handleButtonSwipe('up')}
-              aria-label="Super like"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-              </svg>
-            </button>
-            
-            <button 
-              className="swipe-button like-button"
-              onClick={() => handleButtonSwipe('right')}
-              aria-label="Like"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </button>
+        <div className="px-6 flex-1 flex flex-col">
+          <div className="swipe-card-container mb-6">
+            {renderCards()}
           </div>
-        )}
+          
+          {jobs.length > 0 && currentIndex < jobs.length && (
+            <div className="swipe-action-buttons mt-auto">
+              <button 
+                className="swipe-button pass-button"
+                onClick={() => handleButtonSwipe('left')}
+                aria-label="Pass on this job"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              <button 
+                className="swipe-button super-like-button"
+                onClick={() => handleButtonSwipe('up')}
+                aria-label="Super like this job"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+              </button>
+              
+              <button 
+                className="swipe-button like-button"
+                onClick={() => handleButtonSwipe('right')}
+                aria-label="Like this job"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
         
         {showMatch && <MatchAnimation type="job" />}
       </div>
