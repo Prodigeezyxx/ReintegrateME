@@ -183,15 +183,15 @@ const HirerJobDetail = () => {
               </div>
             )}
             
-            {(job.salaryMin || job.salaryMax) && (
+            {job.salary && (job.salary.min || job.salary.max) && (
               <div>
                 <h4 className="font-medium mb-2">Salary Range</h4>
                 <p className="text-gray-700">
-                  {job.salaryMin && job.salaryMax ? 
-                    `£${job.salaryMin.toLocaleString()} - £${job.salaryMax.toLocaleString()}` :
-                    job.salaryMin ? `£${job.salaryMin.toLocaleString()}+` :
-                    `Up to £${job.salaryMax?.toLocaleString()}`
-                  } {job.salaryPeriod}
+                  {job.salary.min && job.salary.max ? 
+                    `£${job.salary.min.toLocaleString()} - £${job.salary.max.toLocaleString()}` :
+                    job.salary.min ? `£${job.salary.min.toLocaleString()}+` :
+                    `Up to £${job.salary.max?.toLocaleString()}`
+                  } annual
                 </p>
               </div>
             )}

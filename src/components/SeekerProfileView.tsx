@@ -11,13 +11,15 @@ interface SeekerProfileViewProps {
   onBackClick: () => void;
   isFavorite: boolean;
   onFavoriteToggle: () => void;
+  showContactButton?: boolean;
 }
 
 const SeekerProfileView: React.FC<SeekerProfileViewProps> = ({ 
   seeker, 
   onBackClick, 
   isFavorite, 
-  onFavoriteToggle 
+  onFavoriteToggle,
+  showContactButton = true
 }) => {
   return (
     <div className="mobile-container bg-gradient-to-br from-blue-50 to-orange-50 min-h-screen">
@@ -173,22 +175,24 @@ const SeekerProfileView: React.FC<SeekerProfileViewProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="p-6 bg-white border-t">
-          <div className="flex gap-3">
-            <Button 
-              variant="outline" 
-              className="flex-1"
-              onClick={onFavoriteToggle}
-            >
-              {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-            </Button>
-            <Button 
-              className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
-            >
-              Contact Candidate
-            </Button>
+        {showContactButton && (
+          <div className="p-6 bg-white border-t">
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={onFavoriteToggle}
+              >
+                {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+              </Button>
+              <Button 
+                className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+              >
+                Contact Candidate
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
