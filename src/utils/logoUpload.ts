@@ -31,9 +31,6 @@ export const uploadLogo = async (file: File): Promise<string | null> => {
 };
 
 export const getLogoUrl = (): string => {
-  const { data } = supabase.storage
-    .from('logos')
-    .getPublicUrl('reintegrateme-logo.png');
-  
-  return data.publicUrl;
+  // Use your new uploaded blue "RM" logo directly
+  return "/lovable-uploads/8c0cc7ea-9ba0-44bd-8baf-1606a7e2bdb8.png";
 };
