@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +25,7 @@ import SeekerHome from "./components/seeker/SeekerHome";
 import SeekerDashboard from "./components/seeker/SeekerDashboard";
 import SeekerApplications from "./components/seeker/SeekerApplications";
 import SeekerMessages from "./components/seeker/SeekerMessages";
+import SeekerChatDetail from "./components/seeker/SeekerChatDetail";
 import SeekerProfile from "./components/seeker/SeekerProfile";
 import SeekerSaved from "./components/seeker/SeekerSaved";
 import SeekerAISuite from "./components/seeker/SeekerAISuite";
