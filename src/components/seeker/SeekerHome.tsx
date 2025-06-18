@@ -165,6 +165,21 @@ const SeekerHome = () => {
     fetchJobs();
   };
   
+  // Convert SwipeableCardData to the format expected by JobDetailView
+  const convertToJobDetailFormat = (job: SwipeableCardData) => {
+    return {
+      id: parseInt(job.id),
+      jobTitle: job.titleText,
+      company: job.subtitleText || 'Company Name',
+      location: job.detailLine1 || 'Location',
+      salary: job.detailLine2 || '',
+      employmentType: job.tags?.[0] || 'Full-time',
+      description: `Job description for ${job.titleText}`,
+      requirements: job.tags || [],
+      benefits: []
+    };
+  };
+  
   const renderMainContent = () => {
     if (isLoading) {
       return (
@@ -225,10 +240,11 @@ const SeekerHome = () => {
   // If we're showing a specific job, render the job detail view
   if (selectedJob) {
     const isFavorite = favorites.some(fav => fav.id === selectedJob.id);
+    const jobDetailData = convertToJobDetailFormat(selectedJob);
     
     return (
       <JobDetailView 
-        job={selectedJob}
+        job={jobDetailData}
         onBackClick={() => setSelectedJob(null)}
         isFavorite={isFavorite}
         onFavoriteToggle={handleToggleFavorite}
