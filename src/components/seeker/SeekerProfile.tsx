@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,18 +6,19 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Camera, MapPin, Mail, Phone, Shield, AlertCircle, Briefcase } from 'lucide-react';
+import { ArrowLeft, Camera, MapPin, Mail, Phone, Shield, AlertCircle, Briefcase, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../services/api';
 import { toast } from '@/hooks/use-toast';
-import { SeekerProfile as SeekerProfileType } from '../../models/types';
+import { profileSetupManager } from '../../utils/profileSetupManager';
+import SkillsManager from './SkillsManager';
 
 const SeekerProfile = () => {
   const navigate = useNavigate();
   const currentUser = authAPI.getCurrentUser();
   
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState<Partial<SeekerProfileType>>({
+  const [profile, setProfile] = useState({
     firstName: '',
     lastName: '',
     email: currentUser?.email || '',
@@ -28,26 +28,26 @@ const SeekerProfile = () => {
     jobTitle: '',
     headline: '',
     bio: '',
-    keySkills: []
+    keySkills: [] as string[]
   });
 
   useEffect(() => {
-    // Load profile data from localStorage if available
-    const savedProfile = localStorage.getItem('seekerProfileSetup');
-    if (savedProfile) {
-      try {
-        const parsed = JSON.parse(savedProfile);
-        setProfile(prev => ({ ...prev, ...parsed }));
-      } catch (error) {
-        console.error('Error loading profile data:', error);
-      }
-    }
+    // Load profile data from profileSetupManager
+    const savedData = profileSetupManager.getAllData();
+    setProfile(prev => ({
+      ...prev,
+      firstName: savedData.firstName || '',
+      lastName: savedData.lastName || '',
+      jobTitle: savedData.jobTitle || '',
+      headline: savedData.headline || '',
+      keySkills: savedData.keySkills || []
+    }));
   }, []);
 
   const handleSave = () => {
     setIsEditing(false);
-    // Save to localStorage
-    localStorage.setItem('seekerProfileSetup', JSON.stringify(profile));
+    // Save to profileSetupManager
+    profileSetupManager.saveStepData(1, profile);
     toast({
       title: "Profile Updated",
       description: "Your profile has been successfully updated.",
@@ -59,7 +59,8 @@ const SeekerProfile = () => {
   };
 
   const getDisclosureStatus = () => {
-    if (profile.sentenceCompleted !== undefined || profile.hasDisability !== undefined) {
+    const savedData = profileSetupManager.getAllData();
+    if (savedData.sentenceCompleted !== undefined || savedData.hasDisability !== undefined) {
       return "Complete";
     }
     return "Pending";
@@ -70,6 +71,10 @@ const SeekerProfile = () => {
       return `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
     }
     return 'Job Seeker';
+  };
+
+  const handleDisclosureClick = () => {
+    navigate('/seeker-disclosure');
   };
 
   return (
@@ -149,16 +154,22 @@ const SeekerProfile = () => {
             </div>
             
             {/* Disclosure Status */}
-            <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
-              <div className="flex items-center">
-                <Shield className="h-4 w-4 text-green-600 mr-2" />
-                <span className="text-sm font-medium text-green-800">
-                  Disclosure Status: {getDisclosureStatus()}
-                </span>
+            <div 
+              className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 cursor-pointer hover:bg-green-100 transition-colors"
+              onClick={handleDisclosureClick}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Shield className="h-4 w-4 text-green-600 mr-2" />
+                  <span className="text-sm font-medium text-green-800">
+                    Disclosure Status: {getDisclosureStatus()}
+                  </span>
+                </div>
+                <ExternalLink className="h-4 w-4 text-green-600" />
               </div>
               <p className="text-xs text-green-700 mt-1">
                 {getDisclosureStatus() === "Complete" 
-                  ? "You have completed your disclosure and are ready to discuss your background openly."
+                  ? "Click to view your disclosure details and legal information."
                   : "Complete your profile setup to update your disclosure status."
                 }
               </p>
@@ -250,22 +261,11 @@ const SeekerProfile = () => {
             <CardTitle>Skills</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {profile.keySkills && profile.keySkills.length > 0 ? (
-                profile.keySkills.map((skill, index) => (
-                  <Badge key={index} variant="secondary" className="bg-blue-50 text-blue-700">
-                    {skill}
-                  </Badge>
-                ))
-              ) : (
-                <p className="text-gray-500 text-sm">No skills added yet. Complete your profile setup to add skills.</p>
-              )}
-              {isEditing && (
-                <Badge variant="outline" className="cursor-pointer">
-                  + Add Skill
-                </Badge>
-              )}
-            </div>
+            <SkillsManager 
+              skills={profile.keySkills}
+              onSkillsChange={(skills) => handleInputChange('keySkills', skills)}
+              isEditing={isEditing}
+            />
           </CardContent>
         </Card>
 

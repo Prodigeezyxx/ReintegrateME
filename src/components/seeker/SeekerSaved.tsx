@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Clock, Building2, ArrowLeft, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 const SeekerSaved = () => {
   const navigate = useNavigate();
@@ -29,6 +30,22 @@ const SeekerSaved = () => {
       postedDate: '1 week ago'
     }
   ];
+
+  const handleJobClick = (jobId: number) => {
+    // Navigate to job detail (placeholder - would need actual job detail route)
+    toast({
+      title: "Job Details",
+      description: `Opening details for job ${jobId}. This would navigate to the job detail page.`,
+    });
+  };
+
+  const handleRemoveFromSaved = (jobId: number, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent job click when removing
+    toast({
+      title: "Removed from Saved",
+      description: "Job has been removed from your saved list.",
+    });
+  };
 
   return (
     <div className="mobile-container p-6 pb-20">
@@ -58,7 +75,11 @@ const SeekerSaved = () => {
       ) : (
         <div className="space-y-4">
           {savedJobs.map((job) => (
-            <Card key={job.id} className="ios-card cursor-pointer hover:shadow-md transition-shadow">
+            <Card 
+              key={job.id} 
+              className="ios-card cursor-pointer hover:shadow-md transition-shadow active:scale-95"
+              onClick={() => handleJobClick(job.id)}
+            >
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div>
@@ -68,7 +89,12 @@ const SeekerSaved = () => {
                       {job.company}
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="text-red-500">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="text-red-500 hover:bg-red-50"
+                    onClick={(e) => handleRemoveFromSaved(job.id, e)}
+                  >
                     <Heart className="h-5 w-5 fill-current" />
                   </Button>
                 </div>

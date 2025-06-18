@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,9 +26,11 @@ import SeekerApplications from "./components/seeker/SeekerApplications";
 import SeekerMessages from "./components/seeker/SeekerMessages";
 import SeekerChatDetail from "./components/seeker/SeekerChatDetail";
 import SeekerProfile from "./components/seeker/SeekerProfile";
+import SeekerDisclosure from "./components/seeker/SeekerDisclosure";
 import SeekerSaved from "./components/seeker/SeekerSaved";
 import SeekerAISuite from "./components/seeker/SeekerAISuite";
 import SeekerAICoach from "./components/seeker/SeekerAICoach";
+import SeekerAIChat from "./components/seeker/SeekerAIChat";
 import SeekerCVBuilder from "./components/seeker/SeekerCVBuilder";
 import MobileNavbar from "./components/MobileNavbar";
 import MainMenu from "./components/MainMenu";
@@ -77,9 +78,11 @@ const App = () => {
             <Route path="/seeker-messages" element={<SeekerMessages />} />
             <Route path="/seeker-messages/:conversationId" element={<SeekerChatDetail />} />
             <Route path="/seeker-profile" element={<SeekerProfile />} />
+            <Route path="/seeker-disclosure" element={<SeekerDisclosure />} />
             <Route path="/seeker-saved" element={<SeekerSaved />} />
             <Route path="/seeker-ai-suite" element={<SeekerAISuite />} />
             <Route path="/seeker-ai-coach" element={<SeekerAICoach />} />
+            <Route path="/seeker-ai-chat" element={<SeekerAIChat />} />
             <Route path="/seeker-cv-builder" element={<SeekerCVBuilder />} />
             <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
             

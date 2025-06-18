@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,20 +7,28 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { seekerAPI } from '../../services/api';
 import { toast } from '@/hooks/use-toast';
-import { DisabilityType, WorkplaceAdjustmentType } from '../../models/types';
+import { profileSetupManager } from '../../utils/profileSetupManager';
 
 const SeekerProfileSetupStep3 = () => {
   const navigate = useNavigate();
   const [hasDisability, setHasDisability] = useState<boolean | null>(null);
-  const [disabilityTypes, setDisabilityTypes] = useState<DisabilityType[]>([]);
+  const [disabilityTypes, setDisabilityTypes] = useState<string[]>([]);
   const [disabilityOtherDetails, setDisabilityOtherDetails] = useState('');
-  const [workplaceAdjustments, setWorkplaceAdjustments] = useState<WorkplaceAdjustmentType[]>([]);
+  const [workplaceAdjustments, setWorkplaceAdjustments] = useState<string[]>([]);
   const [workplaceAdjustmentsOther, setWorkplaceAdjustmentsOther] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const disabilityOptions: { value: DisabilityType; label: string }[] = [
+  useEffect(() => {
+    // Load existing data from setup manager
+    const savedData = profileSetupManager.getAllData();
+    if (savedData.hasDisability !== undefined) setHasDisability(savedData.hasDisability);
+    if (savedData.disabilityTypes) setDisabilityTypes(savedData.disabilityTypes);
+    if (savedData.disabilityOtherDetails) setDisabilityOtherDetails(savedData.disabilityOtherDetails);
+    if (savedData.workplaceAdjustments) setWorkplaceAdjustments(savedData.workplaceAdjustments);
+    if (savedData.workplaceAdjustmentsOther) setWorkplaceAdjustmentsOther(savedData.workplaceAdjustmentsOther);
+  }, []);
+
+  const disabilityOptions: { value: string; label: string }[] = [
     { value: 'mobility_physical_access', label: 'Mobility or physical access needs' },
     { value: 'sensory_hearing_vision_processing', label: 'Sensory (hearing, vision, processing)' },
     { value: 'long_term_medical_condition', label: 'Long-term medical condition' },
@@ -34,7 +41,7 @@ const SeekerProfileSetupStep3 = () => {
     { value: 'prefer_not_to_specify', label: 'Prefer not to specify' }
   ];
 
-  const adjustmentOptions: { value: WorkplaceAdjustmentType; label: string }[] = [
+  const adjustmentOptions: { value: string; label: string }[] = [
     { value: 'flexible_working_hours', label: 'Flexible working hours' },
     { value: 'remote_work_option', label: 'Remote work options' },
     { value: 'additional_training_support', label: 'Additional training or support' },
@@ -45,7 +52,7 @@ const SeekerProfileSetupStep3 = () => {
     { value: 'other', label: 'Other' }
   ];
 
-  const handleDisabilityTypeChange = (type: DisabilityType, checked: boolean) => {
+  const handleDisabilityTypeChange = (type: string, checked: boolean) => {
     if (checked) {
       setDisabilityTypes(prev => [...prev, type]);
     } else {
@@ -53,7 +60,7 @@ const SeekerProfileSetupStep3 = () => {
     }
   };
 
-  const handleAdjustmentChange = (adjustment: WorkplaceAdjustmentType, checked: boolean) => {
+  const handleAdjustmentChange = (adjustment: string, checked: boolean) => {
     if (checked) {
       setWorkplaceAdjustments(prev => [...prev, adjustment]);
     } else {
@@ -61,36 +68,33 @@ const SeekerProfileSetupStep3 = () => {
     }
   };
 
-  const handleNext = async () => {
-    try {
-      setIsLoading(true);
-      
-      await seekerAPI.updateProfile({
-        hasDisability,
-        disabilityTypes: hasDisability ? disabilityTypes : undefined,
-        disabilityOtherDetails: disabilityTypes.includes('other') ? disabilityOtherDetails : undefined,
-        workplaceAdjustments,
-        workplaceAdjustmentsOther: workplaceAdjustments.includes('other') ? workplaceAdjustmentsOther : undefined,
-      });
+  const handleNext = () => {
+    // Save data to profile manager
+    profileSetupManager.saveStepData(3, {
+      hasDisability,
+      disabilityTypes: hasDisability ? disabilityTypes : undefined,
+      disabilityOtherDetails: disabilityTypes.includes('other') ? disabilityOtherDetails : undefined,
+      workplaceAdjustments,
+      workplaceAdjustmentsOther: workplaceAdjustments.includes('other') ? workplaceAdjustmentsOther : undefined,
+    });
 
-      toast({
-        title: "Progress saved",
-        description: "Your disability and health information has been saved.",
-      });
+    toast({
+      title: "Information Saved",
+      description: "Your health and accessibility information has been saved.",
+    });
 
-      navigate('/seeker-setup-step4');
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save your information. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    navigate('/seeker-setup-step4');
   };
 
   const handleBack = () => {
+    // Save current data before going back
+    profileSetupManager.saveStepData(3, {
+      hasDisability,
+      disabilityTypes,
+      disabilityOtherDetails,
+      workplaceAdjustments,
+      workplaceAdjustmentsOther
+    });
     navigate('/seeker-setup-step2');
   };
 
@@ -225,10 +229,9 @@ const SeekerProfileSetupStep3 = () => {
           </Button>
           <Button 
             onClick={handleNext} 
-            disabled={isLoading}
             className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
           >
-            {isLoading ? 'Saving...' : 'Continue'}
+            Continue
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>

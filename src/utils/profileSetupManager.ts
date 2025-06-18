@@ -5,6 +5,7 @@ interface SeekerSetupData {
   lastName?: string;
   jobTitle?: string;
   headline?: string;
+  keySkills?: string[];
   
   // Step 2 data
   sentenceCompleted?: boolean;

@@ -35,7 +35,7 @@ const SeekerHome = () => {
       title: 'AI Assistant',
       description: 'Get help with your job search',
       icon: <Bot className="h-8 w-8" />,
-      path: '/seeker-ai-chat',
+      path: '/seeker-ai-suite',
       color: 'bg-orange-500'
     },
     {
