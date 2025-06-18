@@ -10,6 +10,7 @@ import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { seekerAPI } from '../../services/api';
 import { toast } from '@/hooks/use-toast';
 import { WorkPreferenceType } from '../../models/types';
+import { profileSetupManager } from '../../utils/profileSetupManager';
 
 const SeekerProfileSetupStep4 = () => {
   const navigate = useNavigate();
@@ -38,12 +39,35 @@ const SeekerProfileSetupStep4 = () => {
     try {
       setIsLoading(true);
       
-      await seekerAPI.updateProfile({
+      // Get all the setup data from previous steps
+      const allSetupData = profileSetupManager.getAllData();
+      
+      // Validate required fields
+      const validation = profileSetupManager.validateRequiredFields();
+      if (!validation.isValid) {
+        toast({
+          title: "Missing Information",
+          description: `Please complete: ${validation.missingFields.join(', ')}`,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Add current step data
+      const finalData = {
+        ...allSetupData,
         hasDrivingLicence,
         workPreferences,
-        openToRelocation,
-        availabilityStatus: 'actively_looking'
-      });
+        openToRelocation
+      };
+      
+      console.log('Completing profile setup with data:', finalData);
+      
+      // Complete the profile setup with all collected data
+      await seekerAPI.completeProfileSetup(finalData);
+      
+      // Clear the setup data since profile is now complete
+      profileSetupManager.clearData();
 
       toast({
         title: "Profile completed!",
@@ -52,9 +76,10 @@ const SeekerProfileSetupStep4 = () => {
 
       navigate('/seeker-dashboard');
     } catch (error) {
+      console.error('Profile completion error:', error);
       toast({
         title: "Error",
-        description: "Failed to complete your profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to complete your profile. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -63,6 +88,12 @@ const SeekerProfileSetupStep4 = () => {
   };
 
   const handleBack = () => {
+    // Save current step data before going back
+    profileSetupManager.saveStepData(4, {
+      hasDrivingLicence,
+      workPreferences,
+      openToRelocation
+    });
     navigate('/seeker-setup-step3');
   };
 

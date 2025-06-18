@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { SeekerProfile } from '../../models/types';
 import { toast } from '@/hooks/use-toast';
+import { profileSetupManager } from '../../utils/profileSetupManager';
 
 const SeekerProfileSetupStep1 = () => {
   const navigate = useNavigate();
-  const [seekerProfile, setSeekerProfile] = useState<Partial<SeekerProfile>>({
+  const [seekerProfile, setSeekerProfile] = useState({
     firstName: '',
     lastName: '',
     jobTitle: '',
@@ -16,24 +16,22 @@ const SeekerProfileSetupStep1 = () => {
   });
 
   useEffect(() => {
-    // Load existing data from localStorage if available
-    const savedProfile = localStorage.getItem('seekerProfileSetup');
-    if (savedProfile) {
-      try {
-        const parsed = JSON.parse(savedProfile);
-        setSeekerProfile(prev => ({ ...prev, ...parsed }));
-      } catch (error) {
-        console.error('Error loading saved profile data:', error);
-      }
-    }
+    // Load existing data from setup manager
+    const savedData = profileSetupManager.getAllData();
+    setSeekerProfile(prev => ({
+      firstName: savedData.firstName || '',
+      lastName: savedData.lastName || '',
+      jobTitle: savedData.jobTitle || '',
+      headline: savedData.headline || ''
+    }));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSeekerProfile(prev => {
       const updated = { ...prev, [name]: value };
-      // Save to localStorage on every change
-      localStorage.setItem('seekerProfileSetup', JSON.stringify(updated));
+      // Save to profile manager on every change
+      profileSetupManager.saveStepData(1, updated);
       return updated;
     });
   };
@@ -50,8 +48,8 @@ const SeekerProfileSetupStep1 = () => {
       return;
     }
     
-    // Store the data in localStorage to use across setup steps
-    localStorage.setItem('seekerProfileSetup', JSON.stringify(seekerProfile));
+    // Save the data using profile manager
+    profileSetupManager.saveStepData(1, seekerProfile);
     
     toast({
       title: "Information Saved",

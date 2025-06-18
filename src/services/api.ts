@@ -232,6 +232,65 @@ export const seekerAPI = {
     return newProfile;
   },
   
+  // Complete profile setup with all collected data
+  completeProfileSetup: async (allSetupData: any): Promise<SeekerProfile> => {
+    if (!currentUser || currentUser.role !== 'seeker') {
+      throw new Error('Only job seekers can complete profile setup');
+    }
+    
+    // Check if profile already exists
+    let profile = seekerProfiles.find(p => p.userId === currentUser?.id);
+    
+    if (!profile) {
+      // Create new profile with all the setup data
+      profile = {
+        id: generateId(),
+        userId: currentUser.id,
+        firstName: allSetupData.firstName || '',
+        lastName: allSetupData.lastName || '',
+        displayName: `${allSetupData.firstName || ''} ${allSetupData.lastName || ''}`.trim(),
+        jobTitle: allSetupData.jobTitle,
+        headline: allSetupData.headline,
+        
+        // Legal information
+        sentenceCompleted: allSetupData.sentenceCompleted,
+        currentLegalSupervision: allSetupData.currentLegalSupervision,
+        convictionTypes: allSetupData.convictionTypes,
+        convictionStatus: allSetupData.convictionStatus,
+        convictionOtherDetails: allSetupData.convictionOtherDetails,
+        barredFromRegulatedWork: allSetupData.barredFromRegulatedWork,
+        onDbsBarringList: allSetupData.onDbsBarringList,
+        mappaLevel: allSetupData.mappaLevel,
+        relevantForSafeguardingChecks: allSetupData.relevantForSafeguardingChecks,
+        
+        // Disability information
+        hasDisability: allSetupData.hasDisability,
+        disabilityTypes: allSetupData.disabilityTypes,
+        disabilityOtherDetails: allSetupData.disabilityOtherDetails,
+        workplaceAdjustments: allSetupData.workplaceAdjustments,
+        workplaceAdjustmentsOther: allSetupData.workplaceAdjustmentsOther,
+        
+        // Work preferences
+        hasDrivingLicence: allSetupData.hasDrivingLicence,
+        workPreferences: allSetupData.workPreferences,
+        openToRelocation: allSetupData.openToRelocation,
+        
+        availabilityStatus: 'actively_looking',
+        profileCompletionPercentage: 85 // High completion after setup
+      };
+      
+      seekerProfiles.push(profile);
+      currentUser.profileId = profile.id;
+    } else {
+      // Update existing profile with all setup data
+      Object.assign(profile, allSetupData);
+      profile.displayName = `${profile.firstName} ${profile.lastName}`.trim();
+      profile.profileCompletionPercentage = 85;
+    }
+    
+    return profile;
+  },
+  
   // Get seeker profile
   getProfile: async (): Promise<SeekerProfile> => {
     if (!currentUser || currentUser.role !== 'seeker') {
