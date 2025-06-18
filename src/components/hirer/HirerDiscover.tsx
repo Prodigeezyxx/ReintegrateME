@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { jobAPI, swipeAPI } from '../../services/api';
 import { SwipeableCardData } from '../../models/types';
@@ -18,6 +17,7 @@ const HirerDiscover = () => {
   const [favorites, setFavorites] = useState<SwipeableCardData[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<SwipeableCardData | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSwipeAnimating, setIsSwipeAnimating] = useState(false);
   
   useEffect(() => {
     fetchSeekers();
@@ -57,15 +57,15 @@ const HirerDiscover = () => {
   };
   
   const handleSwipe = async (direction: 'left' | 'right' | 'up') => {
-    if (seekers.length === 0 || currentIndex >= seekers.length) return;
+    if (seekers.length === 0 || currentIndex >= seekers.length || isSwipeAnimating) return;
     
+    setIsSwipeAnimating(true);
     const currentSeeker = seekers[currentIndex];
     let swipeType: 'like' | 'pass' | 'super_like';
     
     if (direction === 'right') {
       swipeType = 'like';
       
-      // Add to favorites when swiping right
       if (!favorites.some(fav => fav.id === currentSeeker.id)) {
         setFavorites(prev => [...prev, currentSeeker]);
       }
@@ -82,7 +82,6 @@ const HirerDiscover = () => {
       
       if (result.isMatch) {
         setShowMatch(true);
-        // Hide match animation after 3 seconds
         setTimeout(() => setShowMatch(false), 3000);
       }
     } catch (error) {
@@ -93,17 +92,20 @@ const HirerDiscover = () => {
       });
     }
     
-    // Move to next card
-    setCurrentIndex(prevIndex => prevIndex + 1);
+    // Move to next card immediately after swipe processing
+    setTimeout(() => {
+      setCurrentIndex(prevIndex => prevIndex + 1);
+      setIsSwipeAnimating(false);
+    }, 100);
   };
   
   const handleButtonSwipe = (direction: 'left' | 'right' | 'up') => {
-    if (seekers.length === 0 || currentIndex >= seekers.length) return;
+    if (seekers.length === 0 || currentIndex >= seekers.length || isSwipeAnimating) return;
     
     const card = document.querySelector('.swipe-card') as HTMLElement;
     
     if (card) {
-      card.style.transition = 'transform 0.5s ease';
+      card.style.transition = 'transform 0.3s ease';
       
       if (direction === 'left') {
         card.style.transform = 'translateX(-1000px) rotate(-30deg)';
@@ -115,8 +117,12 @@ const HirerDiscover = () => {
       
       setTimeout(() => {
         handleSwipe(direction);
-      }, 300);
+      }, 200);
     }
+  };
+  
+  const handleViewMoreProfile = (profile: SwipeableCardData) => {
+    setSelectedProfile(profile);
   };
   
   const handleFavoriteProfileClick = (profile: SwipeableCardData) => {
@@ -206,6 +212,7 @@ const HirerDiscover = () => {
       <SwipeableCard
         card={seekers[currentIndex]}
         onSwipe={handleSwipe}
+        onViewMore={handleViewMoreProfile}
       />
     );
   };
@@ -220,6 +227,7 @@ const HirerDiscover = () => {
         onBackClick={() => setSelectedProfile(null)}
         isFavorite={isFavorite}
         onFavoriteToggle={handleToggleFavorite}
+        showContactButton={true}
       />
     );
   }
@@ -247,8 +255,18 @@ const HirerDiscover = () => {
           title="Favorite Talent"
         />
         
-        <div className="swipe-card-container mb-6">
+        <div className="swipe-card-container mb-6 relative">
           {renderCards()}
+          
+          {/* Show next card preview */}
+          {seekers.length > 0 && currentIndex + 1 < seekers.length && (
+            <div className="absolute inset-0 -z-10 scale-95 opacity-50">
+              <SwipeableCard
+                card={seekers[currentIndex + 1]}
+                onSwipe={() => {}}
+              />
+            </div>
+          )}
         </div>
         
         {seekers.length > 0 && currentIndex < seekers.length && (

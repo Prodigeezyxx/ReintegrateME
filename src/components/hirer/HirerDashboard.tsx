@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
@@ -17,6 +16,7 @@ const HirerDashboard = () => {
   const [recentActivities, setRecentActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     fetchDashboardData();
@@ -69,6 +69,44 @@ const HirerDashboard = () => {
     fetchDashboardData();
   };
   
+  const handleActivityClick = (activity) => {
+    switch (activity.type) {
+      case 'application':
+        navigate('/hirer-applicants');
+        break;
+      case 'message':
+        navigate('/hirer-messages');
+        break;
+      case 'match':
+        navigate('/hirer-discover');
+        break;
+      case 'view':
+        navigate('/hirer-jobs');
+        break;
+      default:
+        break;
+    }
+  };
+  
+  const handleStatsClick = (statType) => {
+    switch (statType) {
+      case 'activeJobs':
+        navigate('/hirer-jobs');
+        break;
+      case 'totalApplicants':
+        navigate('/hirer-applicants');
+        break;
+      case 'newApplicants':
+        navigate('/hirer-applicants?filter=new');
+        break;
+      case 'unreadMessages':
+        navigate('/hirer-messages');
+        break;
+      default:
+        break;
+    }
+  };
+  
   const renderActivityIcon = (type) => {
     switch (type) {
       case 'application':
@@ -111,7 +149,7 @@ const HirerDashboard = () => {
         </div>
         
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="hover-scale">
+          <Card className="hover-scale cursor-pointer" onClick={() => handleStatsClick('activeJobs')}>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Briefcase className="h-6 w-6 text-reme-orange mb-2" />
               <p className="text-2xl font-bold">{stats.activeOpenings}</p>
@@ -119,7 +157,7 @@ const HirerDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="hover-scale">
+          <Card className="hover-scale cursor-pointer" onClick={() => handleStatsClick('totalApplicants')}>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Users className="h-6 w-6 text-blue-500 mb-2" />
               <p className="text-2xl font-bold">{stats.totalApplicants}</p>
@@ -127,7 +165,7 @@ const HirerDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="hover-scale">
+          <Card className="hover-scale cursor-pointer" onClick={() => handleStatsClick('newApplicants')}>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Users className="h-6 w-6 text-green-500 mb-2" />
               <p className="text-2xl font-bold">{stats.newApplicants}</p>
@@ -135,7 +173,7 @@ const HirerDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="hover-scale">
+          <Card className="hover-scale cursor-pointer" onClick={() => handleStatsClick('unreadMessages')}>
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <MessageSquare className="h-6 w-6 text-purple-500 mb-2" />
               <p className="text-2xl font-bold">{stats.unreadMessages}</p>
@@ -183,7 +221,8 @@ const HirerDashboard = () => {
                 {recentActivities.map(activity => (
                   <div 
                     key={activity.id} 
-                    className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0"
+                    className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
+                    onClick={() => handleActivityClick(activity)}
                   >
                     <div className="bg-gray-100 rounded-full p-2 mt-1">
                       {renderActivityIcon(activity.type)}

@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Users, RefreshCw, ArrowLeft, Star, MessageSquare } from 'lucide-react';
 import { jobAPI } from '../../services/api';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import CandidateProfileView from './CandidateProfileView';
 
 interface Applicant {
   id: string;
@@ -23,12 +23,21 @@ const HirerApplicants = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState('all');
   const [jobs, setJobs] = useState<any[]>([]);
+  const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
   useEffect(() => {
     fetchJobs();
     fetchApplicants();
-  }, []);
+    
+    // Check for filter parameter from dashboard navigation
+    const filter = searchParams.get('filter');
+    if (filter === 'new') {
+      // Auto-filter to new applicants if coming from dashboard
+      console.log('Filtering to new applicants');
+    }
+  }, [searchParams]);
   
   const fetchJobs = async () => {
     try {
@@ -145,9 +154,20 @@ const HirerApplicants = () => {
     navigate(`/hirer-messages/${applicantId}`);
   };
   
-  const handleViewProfile = (applicantId: string) => {
-    navigate(`/hirer-view-applicant/${applicantId}`);
+  const handleViewProfile = (applicant: Applicant) => {
+    setSelectedApplicant(applicant);
   };
+  
+  const mockApplicantToCandidate = (applicant: Applicant) => ({
+    id: applicant.id,
+    type: 'seeker' as const,
+    titleText: applicant.name,
+    subtitleText: applicant.jobTitle,
+    detailLine1: 'London, UK',
+    detailLine2: 'Experienced professional with strong background in construction and safety management.',
+    primaryImageUrl: applicant.profileImageUrl,
+    tags: ['Construction', 'Safety', 'Team Leadership']
+  });
   
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
@@ -170,6 +190,16 @@ const HirerApplicants = () => {
           <p className="mt-4 text-gray-500">Loading applicants...</p>
         </div>
       </div>
+    );
+  }
+  
+  if (selectedApplicant) {
+    return (
+      <CandidateProfileView
+        candidate={mockApplicantToCandidate(selectedApplicant)}
+        onBackClick={() => setSelectedApplicant(null)}
+        showContactButton={true}
+      />
     );
   }
   
@@ -236,7 +266,7 @@ const HirerApplicants = () => {
             </Card>
           ) : (
             filteredApplicants.map(applicant => (
-              <Card key={applicant.id} className="overflow-hidden">
+              <Card key={applicant.id} className="overflow-hidden hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12">
@@ -250,8 +280,8 @@ const HirerApplicants = () => {
                     </Avatar>
                     <div className="flex-1">
                       <h3 
-                        className="text-md font-medium mb-0.5 cursor-pointer hover:text-reme-orange"
-                        onClick={() => handleViewProfile(applicant.id)}
+                        className="text-md font-medium mb-0.5 cursor-pointer hover:text-reme-orange transition-colors"
+                        onClick={() => handleViewProfile(applicant)}
                       >
                         {applicant.name}
                       </h3>
@@ -303,7 +333,7 @@ const HirerApplicants = () => {
                       variant="outline"
                       size="sm"
                       className="ml-auto"
-                      onClick={() => handleViewProfile(applicant.id)}
+                      onClick={() => handleViewProfile(applicant)}
                     >
                       View Profile
                     </Button>

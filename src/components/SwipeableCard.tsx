@@ -1,14 +1,16 @@
-
 import React, { useState, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { SwipeableCardData } from '../models/types';
+import { Eye } from 'lucide-react';
 
 interface SwipeableCardProps {
   card: SwipeableCardData;
   onSwipe: (direction: 'left' | 'right' | 'up') => void;
+  onViewMore?: (card: SwipeableCardData) => void;
 }
 
-const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
+const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe, onViewMore }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [startX, setStartX] = useState(0);
   const [currentX, setCurrentX] = useState(0);
@@ -16,8 +18,9 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
   const [currentY, setCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | 'none'>('none');
+  const [isAnimating, setIsAnimating] = useState(false);
   
-  const dragThreshold = 100; // Amount of pixels to trigger a swipe
+  const dragThreshold = 100;
   
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setStartX(e.touches[0].clientX);
@@ -80,7 +83,7 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
   };
   
   const resetCard = () => {
-    if (cardRef.current) {
+    if (cardRef.current && !isAnimating) {
       cardRef.current.style.transition = 'transform 0.3s ease';
       cardRef.current.style.transform = 'translateX(0) translateY(0) rotate(0)';
       setTimeout(() => {
@@ -99,36 +102,35 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
     setIsDragging(false);
     
     if (Math.abs(currentX) > dragThreshold) {
-      // Swipe was strong enough to trigger action
+      setIsAnimating(true);
       const direction = currentX > 0 ? 'right' : 'left';
       
-      // Animate the card offscreen
       if (cardRef.current) {
         const endX = direction === 'right' ? window.innerWidth : -window.innerWidth;
         const angle = direction === 'right' ? 30 : -30;
         
-        cardRef.current.style.transition = 'transform 0.5s ease';
+        cardRef.current.style.transition = 'transform 0.3s ease';
         cardRef.current.style.transform = `translateX(${endX}px) rotate(${angle}deg)`;
         
-        // Trigger the swipe action after animation
         setTimeout(() => {
           onSwipe(direction);
+          setIsAnimating(false);
           resetCard();
-        }, 500);
+        }, 300);
       }
     } else if (Math.abs(currentY) > dragThreshold && currentY < 0) {
-      // Upward swipe for super like
+      setIsAnimating(true);
       if (cardRef.current) {
-        cardRef.current.style.transition = 'transform 0.5s ease';
+        cardRef.current.style.transition = 'transform 0.3s ease';
         cardRef.current.style.transform = 'translateY(-1000px) scale(0.8)';
         
         setTimeout(() => {
           onSwipe('up');
+          setIsAnimating(false);
           resetCard();
-        }, 500);
+        }, 300);
       }
     } else {
-      // Not enough to trigger, reset the card
       resetCard();
     }
   };
@@ -137,10 +139,17 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
     handleTouchEnd();
   };
 
+  const handleViewMore = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onViewMore) {
+      onViewMore(card);
+    }
+  };
+
   return (
     <div 
       ref={cardRef}
-      className="swipe-card ios-card cursor-grab active:cursor-grabbing"
+      className="swipe-card ios-card cursor-grab active:cursor-grabbing relative"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -162,6 +171,21 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
         </div>
       )}
       
+      {/* View More Button */}
+      {onViewMore && (
+        <div className="absolute top-4 right-4 z-10">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleViewMore}
+            className="bg-white/90 hover:bg-white shadow-md"
+          >
+            <Eye className="h-4 w-4 mr-1" />
+            View More
+          </Button>
+        </div>
+      )}
+      
       {/* Card content */}
       <div className="flex flex-col h-full">
         {/* Image section */}
@@ -177,6 +201,18 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
               <span className="text-4xl font-bold text-gray-400">
                 {card.type === 'job' ? 'JOB' : card.titleText.charAt(0)}
               </span>
+            </div>
+          )}
+          
+          {/* Disclosure indicator for seekers */}
+          {card.type === 'seeker' && (
+            <div className="absolute bottom-3 left-3">
+              <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                <svg className="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Disclosure Available
+              </div>
             </div>
           )}
         </div>
@@ -215,11 +251,16 @@ const SwipeableCard: React.FC<SwipeableCardProps> = ({ card, onSwipe }) => {
           {/* Tags */}
           {card.tags && card.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-auto">
-              {card.tags.map((tag, index) => (
+              {card.tags.slice(0, 3).map((tag, index) => (
                 <Badge key={index} variant="outline" className="bg-gray-100">
                   {tag}
                 </Badge>
               ))}
+              {card.tags.length > 3 && (
+                <Badge variant="outline" className="bg-gray-100">
+                  +{card.tags.length - 3} more
+                </Badge>
+              )}
             </div>
           )}
         </div>
