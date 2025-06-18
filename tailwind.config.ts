@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -152,30 +153,6 @@ export default {
 					'50%': {
 						transform: 'scale(1.05)'
 					}
-				},
-				'orbital-rotate': {
-					'0%': {
-						transform: 'rotate(0deg) translateX(var(--radius, 100px)) rotate(0deg)'
-					},
-					'100%': {
-						transform: 'rotate(360deg) translateX(var(--radius, 100px)) rotate(-360deg)'
-					}
-				},
-				'orbital-glow': {
-					'0%, 100%': {
-						boxShadow: '0 0 5px rgba(255, 165, 0, 0.5)'
-					},
-					'50%': {
-						boxShadow: '0 0 20px rgba(255, 165, 0, 0.8), 0 0 30px rgba(255, 165, 0, 0.6)'
-					}
-				},
-				'glassmorphism-float': {
-					'0%, 100%': {
-						transform: 'translateY(0px)'
-					},
-					'50%': {
-						transform: 'translateY(-5px)'
-					}
 				}
 			},
 			animation: {
@@ -186,13 +163,7 @@ export default {
 				'fade-in': 'fade-in 0.3s ease-out',
 				'card-swipe-left': 'card-swipe-left 0.5s ease-out forwards',
 				'card-swipe-right': 'card-swipe-right 0.5s ease-out forwards',
-				'pulsate': 'pulsate 1.5s ease-in-out infinite',
-				'orbital-rotate': 'orbital-rotate var(--duration, 20s) linear infinite',
-				'orbital-glow': 'orbital-glow 2s ease-in-out infinite',
-				'glassmorphism-float': 'glassmorphism-float 3s ease-in-out infinite'
-			},
-			backdropBlur: {
-				xs: '2px'
+				'pulsate': 'pulsate 1.5s ease-in-out infinite'
 			}
 		}
 	},

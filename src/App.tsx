@@ -4,13 +4,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
-import UnifiedAuth from "./components/UnifiedAuth";
 import RoleSelection from "./components/RoleSelection";
-import ProtectedRoute from "./components/ProtectedRoute";
+import Authentication from "./components/Authentication";
 import HirerProfileSetup from "./components/hirer/HirerProfileSetup";
 import SeekerProfileSetupStep1 from "./components/seeker/SeekerProfileSetupStep1";
 import SeekerProfileSetupStep2 from "./components/seeker/SeekerProfileSetupStep2";
@@ -30,168 +28,63 @@ import SeekerProfile from "./components/seeker/SeekerProfile";
 import SeekerSaved from "./components/seeker/SeekerSaved";
 import SeekerAISuite from "./components/seeker/SeekerAISuite";
 import SeekerAICoach from "./components/seeker/SeekerAICoach";
-import SeekerAIChat from "./components/seeker/SeekerAIChat";
 import SeekerCVBuilder from "./components/seeker/SeekerCVBuilder";
 import MobileNavbar from "./components/MobileNavbar";
 import MainMenu from "./components/MainMenu";
-import { useAuth } from "@/contexts/AuthContext";
+import { authAPI } from "./services/api";
 
 const queryClient = new QueryClient();
 
-const AppContent = () => {
-  const { user, loading } = useAuth();
-  
-  console.log('AppContent - loading:', loading, 'user:', user);
-  
-  return (
-    <>
-      {/* Add MainMenu for hamburger navigation */}
-      <MainMenu />
-      
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/splash" element={<SplashScreen />} />
-        <Route path="/unified-auth" element={<UnifiedAuth />} />
-        <Route path="/role-selection" element={
-          <ProtectedRoute>
-            <RoleSelection />
-          </ProtectedRoute>
-        } />
-        
-        {/* Hirer Routes */}
-        <Route path="/hirer-setup" element={
-          <ProtectedRoute requireRole="hirer">
-            <HirerProfileSetup />
-          </ProtectedRoute>
-        } />
-        <Route path="/hirer-dashboard" element={
-          <ProtectedRoute requireRole="hirer">
-            <HirerDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/hirer-discover" element={
-          <ProtectedRoute requireRole="hirer">
-            <HirerDiscover />
-          </ProtectedRoute>
-        } />
-        <Route path="/hirer-jobs" element={
-          <ProtectedRoute requireRole="hirer">
-            <HirerJobsList />
-          </ProtectedRoute>
-        } />
-        <Route path="/hirer-create-job" element={
-          <ProtectedRoute requireRole="hirer">
-            <HirerCreateJob />
-          </ProtectedRoute>
-        } />
-        <Route path="/hirer-applicants" element={
-          <ProtectedRoute requireRole="hirer">
-            <HirerApplicants />
-          </ProtectedRoute>
-        } />
-        <Route path="/hirer-messages" element={
-          <ProtectedRoute requireRole="hirer">
-            <HirerMessages />
-          </ProtectedRoute>
-        } />
-        <Route path="/hirer-messages/:threadId" element={
-          <ProtectedRoute requireRole="hirer">
-            <HirerChatDetail />
-          </ProtectedRoute>
-        } />
-        <Route path="/hirer-profile" element={<Navigate to="/hirer-dashboard" replace />} />
-        
-        {/* Seeker Routes */}
-        <Route path="/seeker-setup-step1" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerProfileSetupStep1 />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-setup-step2" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerProfileSetupStep2 />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-setup-step3" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerProfileSetupStep3 />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-dashboard" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerHome />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-discover" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-applications" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerApplications />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-messages" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerMessages />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-profile" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerProfile />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-saved" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerSaved />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-ai-suite" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerAISuite />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-ai-coach" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerAICoach />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-ai-chat" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerAIChat />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-cv-builder" element={
-          <ProtectedRoute requireRole="seeker">
-            <SeekerCVBuilder />
-          </ProtectedRoute>
-        } />
-        <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
-        
-        {/* Redirect old auth route to new unified auth */}
-        <Route path="/auth" element={<Navigate to="/unified-auth" replace />} />
-        
-        {/* Catch-all */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      
-      {user && <MobileNavbar />}
-    </>
-  );
-};
-
 const App = () => {
+  const isAuthenticated = authAPI.isAuthenticated();
+  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <AuthProvider>
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </AuthProvider>
+        <BrowserRouter>
+          {/* Add MainMenu for hamburger navigation */}
+          <MainMenu />
+          
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/splash" element={<SplashScreen />} />
+            <Route path="/role-selection" element={<RoleSelection />} />
+            <Route path="/auth" element={<Authentication />} />
+            
+            {/* Hirer Routes */}
+            <Route path="/hirer-setup" element={<HirerProfileSetup />} />
+            <Route path="/hirer-dashboard" element={<HirerDashboard />} />
+            <Route path="/hirer-discover" element={<HirerDiscover />} />
+            <Route path="/hirer-jobs" element={<HirerJobsList />} />
+            <Route path="/hirer-create-job" element={<HirerCreateJob />} />
+            <Route path="/hirer-applicants" element={<HirerApplicants />} />
+            <Route path="/hirer-messages" element={<HirerMessages />} />
+            <Route path="/hirer-messages/:threadId" element={<HirerChatDetail />} />
+            <Route path="/hirer-profile" element={<Navigate to="/hirer-dashboard" replace />} />
+            
+            {/* Seeker Routes */}
+            <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
+            <Route path="/seeker-setup-step2" element={<SeekerProfileSetupStep2 />} />
+            <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
+            <Route path="/seeker-dashboard" element={<SeekerHome />} />
+            <Route path="/seeker-discover" element={<SeekerDashboard />} />
+            <Route path="/seeker-applications" element={<SeekerApplications />} />
+            <Route path="/seeker-messages" element={<SeekerMessages />} />
+            <Route path="/seeker-profile" element={<SeekerProfile />} />
+            <Route path="/seeker-saved" element={<SeekerSaved />} />
+            <Route path="/seeker-ai-suite" element={<SeekerAISuite />} />
+            <Route path="/seeker-ai-coach" element={<SeekerAICoach />} />
+            <Route path="/seeker-cv-builder" element={<SeekerCVBuilder />} />
+            <Route path="/seeker-search" element={<Navigate to="/seeker-discover" replace />} />
+            
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          
+          {isAuthenticated && <MobileNavbar />}
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );

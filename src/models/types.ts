@@ -59,7 +59,6 @@ export interface JobPosting {
     min?: number;
     max?: number;
     currency?: string;
-    period?: string;
   };
   status?: 'active' | 'draft' | 'archived';
   createdAt: Date;

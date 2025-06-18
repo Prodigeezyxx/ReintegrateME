@@ -3,46 +3,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { UserRole } from '../models/types';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
-import HelpButton from './HelpButton';
 
 const RoleSelection = () => {
   const navigate = useNavigate();
-  const { updateUserRole } = useAuth();
   
-  const handleRoleSelection = async (role: UserRole) => {
-    try {
-      const { user, error } = await updateUserRole(role);
-      
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      if (user) {
-        // Navigate to appropriate setup page
-        if (role === 'hirer') {
-          navigate('/hirer-setup');
-        } else {
-          navigate('/seeker-setup-step1');
-        }
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update role",
-        variant: "destructive"
-      });
-    }
+  const handleRoleSelection = (role: UserRole) => {
+    localStorage.setItem('selectedRole', role);
+    navigate('/auth', { state: { role, mode: 'signup' } });
   };
   
   return (
-    <div className="mobile-container p-6 bg-white min-h-screen">
+    <div className="mobile-container p-6">
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="h-20 w-20 rounded-2xl overflow-hidden mb-10">
           <img 
@@ -64,25 +35,23 @@ const RoleSelection = () => {
           </Button>
           
           <Button
-            className="w-full py-6 text-lg bg-gray-600 hover:bg-gray-700 transition-colors text-white"
+            className="w-full py-6 text-lg bg-reme-purple hover:bg-purple-700 transition-colors"
             onClick={() => handleRoleSelection('seeker')}
           >
             I'm looking for a job
           </Button>
           
           <div className="text-center mt-8">
-            <p className="text-gray-600 mb-2">Need to sign in with a different account?</p>
+            <p className="text-gray-600 mb-2">Already have an account?</p>
             <button 
               className="text-reme-orange font-medium"
-              onClick={() => navigate('/unified-auth')}
+              onClick={() => navigate('/auth', { state: { mode: 'login' } })}
             >
-              Sign in with different account
+              Log in
             </button>
           </div>
         </div>
       </div>
-      
-      <HelpButton />
     </div>
   );
 };

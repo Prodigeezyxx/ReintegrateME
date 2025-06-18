@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Sheet, 
   SheetContent, 
@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { authAPI } from '../services/api';
 import { UserRole } from '../models/types';
 import { 
   LayoutDashboard, 
@@ -32,9 +32,9 @@ interface NavItem {
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({ children }) => {
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
-  const userRole = user?.role as UserRole;
+  const location = useLocation();
+  const currentUser = authAPI.getCurrentUser();
+  const userRole = currentUser?.role as UserRole;
   
   const getHirerNavItems = (): NavItem[] => [
     {
@@ -94,13 +94,9 @@ const MainMenu: React.FC<MainMenuProps> = ({ children }) => {
   
   const navItems = userRole ? (userRole === 'hirer' ? getHirerNavItems() : getSeekerNavItems()) : [];
   
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+  const handleLogout = () => {
+    authAPI.logout();
+    window.location.href = '/';
   };
   
   return (
@@ -117,14 +113,8 @@ const MainMenu: React.FC<MainMenuProps> = ({ children }) => {
         </SheetHeader>
         
         <div className="py-4">
-          {user && userRole ? (
+          {userRole ? (
             <>
-              <div className="px-3 py-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Signed in as {userRole === 'hirer' ? 'Hirer' : 'Job Seeker'}
-                </p>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
-              </div>
               <div className="px-3 py-2">
                 <p className="text-sm font-medium text-muted-foreground">Navigation</p>
               </div>
@@ -157,13 +147,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ children }) => {
             </>
           ) : (
             <div className="px-4">
-              <p className="text-muted-foreground mb-4">Please sign in to access the menu.</p>
-              <Button 
-                className="w-full bg-reme-orange hover:bg-orange-600"
-                onClick={() => navigate('/unified-auth')}
-              >
-                Sign In
-              </Button>
+              <p className="text-muted-foreground">Please sign in to access the menu.</p>
             </div>
           )}
         </div>

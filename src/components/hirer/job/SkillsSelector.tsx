@@ -2,7 +2,6 @@
 import React from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import OrbitalSkillSelector from '@/components/ui/orbital-skill-selector';
 import { skills } from '../../../services/api';
 
 interface SkillsSelectorProps {
@@ -18,37 +17,45 @@ const SkillsSelector: React.FC<SkillsSelectorProps> = ({
   selectedSkills, 
   onToggleSkill 
 }) => {
-  // Transform skills array to match the expected format
-  const skillsData = skills.map((skill, index) => ({
-    id: skill,
-    name: skill,
-    category: 'general'
-  }));
-
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent className="w-full bg-gradient-to-br from-purple-50 to-blue-50">
-        <SheetHeader className="mb-6">
+      <SheetContent>
+        <SheetHeader>
           <SheetTitle>Select Skills</SheetTitle>
-          <p className="text-gray-600 text-sm">
-            Choose skills by clicking on the orbiting elements
-          </p>
         </SheetHeader>
-        
-        <div className="flex flex-col items-center">
-          <OrbitalSkillSelector
-            skills={skillsData}
-            selectedSkills={selectedSkills}
-            onToggleSkill={onToggleSkill}
-            maxSkills={12}
-            className="mb-8"
-          />
+        <div className="mt-6">
+          <div className="grid grid-cols-1 gap-2">
+            {skills.map(skill => (
+              <div 
+                key={skill}
+                className={`p-3 border rounded-md cursor-pointer ${
+                  selectedSkills.includes(skill) 
+                    ? 'border-reme-orange bg-orange-50' 
+                    : 'border-gray-200 hover:bg-gray-50'
+                }`}
+                onClick={() => onToggleSkill(skill)}
+              >
+                <div className="flex items-center">
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{skill}</p>
+                  </div>
+                  {selectedSkills.includes(skill) && (
+                    <div className="h-5 w-5 bg-reme-orange rounded-full flex items-center justify-center">
+                      <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
           
           <Button
-            className="w-full bg-gradient-to-r from-reme-orange to-yellow-500 hover:from-orange-600 hover:to-yellow-600 transition-all duration-300"
+            className="w-full mt-4 bg-reme-orange hover:bg-orange-600 transition-colors"
             onClick={() => setIsOpen(false)}
           >
-            Done ({selectedSkills.length} selected)
+            Done
           </Button>
         </div>
       </SheetContent>
