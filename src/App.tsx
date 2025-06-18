@@ -68,6 +68,7 @@ const App = () => {
             <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
             <Route path="/seeker-setup-step2" element={<SeekerProfileSetupStep2 />} />
             <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
+            <Route path="/seeker-setup-step4" element={<SeekerProfileSetupStep4 />} />
             <Route path="/seeker-dashboard" element={<SeekerHome />} />
             <Route path="/seeker-discover" element={<SeekerDashboard />} />
             <Route path="/seeker-applications" element={<SeekerApplications />} />

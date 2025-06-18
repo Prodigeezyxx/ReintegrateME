@@ -1,46 +1,39 @@
 
 import React, { useEffect, useState } from 'react';
-import { authAPI } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const SplashScreen = () => {
   const navigate = useNavigate();
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [showLogo, setShowLogo] = useState(false);
 
   useEffect(() => {
-    // Show splash screen for 2 seconds, then check auth status
-    const timer = setTimeout(() => {
-      setIsAnimating(false);
-      const isAuthenticated = authAPI.isAuthenticated();
-      
-      if (isAuthenticated) {
-        const user = authAPI.getCurrentUser();
-        if (user?.role === 'hirer') {
-          navigate('/hirer-dashboard');
-        } else {
-          navigate('/seeker-dashboard');
-        }
-      } else {
-        navigate('/role-selection');
-      }
-    }, 2000);
+    // Animate logo appearance
+    const logoTimer = setTimeout(() => {
+      setShowLogo(true);
+    }, 300);
 
-    return () => clearTimeout(timer);
+    // Navigate after animation
+    const navigationTimer = setTimeout(() => {
+      navigate('/role-selection');
+    }, 2500);
+
+    return () => {
+      clearTimeout(logoTimer);
+      clearTimeout(navigationTimer);
+    };
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-      <div className={`transform transition-all duration-1000 ${isAnimating ? 'scale-90 opacity-0' : 'scale-100 opacity-100'}`}>
-        <div className="flex flex-col items-center">
-          <div className="h-24 w-24 rounded-2xl overflow-hidden mb-6">
-            <img 
-              src="/lovable-uploads/8c0cc7ea-9ba0-44bd-8baf-1606a7e2bdb8.png" 
-              alt="ReME Logo" 
-              className="w-full h-full object-cover"
-            />
+    <div className="mobile-container bg-gradient-to-br from-blue-600 to-orange-500 min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className={`transition-all duration-1000 ${showLogo ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <div className="h-24 w-24 mx-auto mb-6 rounded-2xl bg-white flex items-center justify-center shadow-2xl animate-pulsate">
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+              RM
+            </span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">ReME</h1>
-          <p className="text-gray-500">Connect. Apply. Hire.</p>
+          <h1 className="text-4xl font-bold text-white mb-2">ReintegrateMe</h1>
+          <p className="text-blue-100 text-lg">Building Better Futures</p>
         </div>
       </div>
     </div>

@@ -3,16 +3,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { companyAPI } from '../../services/api';
-import { CompanyProfile } from '../../models/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Building } from 'lucide-react';
+import { companyAPI, countries } from '../../services/api';
 import { toast } from '@/hooks/use-toast';
 
 const HirerProfileSetup = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [companyProfile, setCompanyProfile] = useState<Partial<CompanyProfile>>({
+  const [formData, setFormData] = useState({
     companyName: '',
     industry: '',
     companySize: '',
@@ -21,43 +22,71 @@ const HirerProfileSetup = () => {
     locationCity: '',
     locationCountry: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setCompanyProfile(prev => ({ ...prev, [name]: value }));
+  const industries = [
+    'Accommodation and Food Services',
+    'Administrative and Support Services',
+    'Agriculture, Forestry and Fishing',
+    'Arts, Entertainment and Recreation',
+    'Construction and Building',
+    'Education and Training',
+    'Energy and Utilities',
+    'Financial and Insurance Services',
+    'Government and Public Administration',
+    'Healthcare and Social Assistance',
+    'Information Technology',
+    'Manufacturing',
+    'Mining and Resources',
+    'Professional Services',
+    'Property and Real Estate',
+    'Retail and Consumer Services',
+    'Transportation and Logistics',
+    'Wholesale Trade',
+    'Non-Profit and Community Services',
+    'Other'
+  ];
+
+  const companySizes = [
+    '1-10 employees',
+    '11-50 employees',
+    '51-200 employees',
+    '201-500 employees',
+    '501-1000 employees',
+    '1000+ employees'
+  ];
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setCompanyProfile(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!companyProfile.companyName) {
+  const handleSubmit = async () => {
+    if (!formData.companyName.trim()) {
       toast({
-        title: "Error",
-        description: "Company name is required",
+        title: "Company name required",
+        description: "Please enter your company name to continue.",
         variant: "destructive"
       });
       return;
     }
-    
-    setIsLoading(true);
-    
+
     try {
-      await companyAPI.createInitialProfile(companyProfile);
+      setIsLoading(true);
+      await companyAPI.createInitialProfile(formData);
       
       toast({
-        title: "Success",
-        description: "Company profile has been created"
+        title: "Company profile created!",
+        description: "Your company profile has been successfully set up.",
       });
       
       navigate('/hirer-dashboard');
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred creating your profile",
+        description: "Failed to create company profile. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -65,149 +94,149 @@ const HirerProfileSetup = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate('/auth');
+  };
+
   return (
-    <div className="mobile-container p-6">
-      <div className="flex flex-col min-h-screen">
-        <button 
-          onClick={() => navigate(-1)}
-          className="text-gray-500 self-start mb-6"
-          aria-label="Go back"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        
-        <h1 className="text-2xl font-bold mb-2">Company Profile</h1>
-        <p className="text-gray-600 mb-6">Let's set up your company information</p>
-        
-        <div className="progress-bar mb-8">
-          <div className="progress-fill" style={{ width: '50%' }}></div>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-6 flex-1">
-          <div className="space-y-2">
-            <label htmlFor="companyName" className="text-gray-700 font-medium">Company Name *</label>
-            <Input
-              id="companyName"
-              name="companyName"
-              value={companyProfile.companyName}
-              onChange={handleChange}
-              className="ios-input"
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="industry" className="text-gray-700 font-medium">Industry</label>
-            <Select 
-              value={companyProfile.industry} 
-              onValueChange={(value) => handleSelectChange('industry', value)}
-            >
-              <SelectTrigger className="ios-input">
-                <SelectValue placeholder="Select industry" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="technology">Technology</SelectItem>
-                <SelectItem value="healthcare">Healthcare</SelectItem>
-                <SelectItem value="finance">Finance</SelectItem>
-                <SelectItem value="education">Education</SelectItem>
-                <SelectItem value="retail">Retail</SelectItem>
-                <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                <SelectItem value="media">Media & Entertainment</SelectItem>
-                <SelectItem value="professional_services">Professional Services</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="companySize" className="text-gray-700 font-medium">Company Size</label>
-            <Select 
-              value={companyProfile.companySize} 
-              onValueChange={(value) => handleSelectChange('companySize', value)}
-            >
-              <SelectTrigger className="ios-input">
-                <SelectValue placeholder="Select company size" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1-10">1-10 employees</SelectItem>
-                <SelectItem value="11-50">11-50 employees</SelectItem>
-                <SelectItem value="51-200">51-200 employees</SelectItem>
-                <SelectItem value="201-500">201-500 employees</SelectItem>
-                <SelectItem value="501-1000">501-1000 employees</SelectItem>
-                <SelectItem value="1001+">1001+ employees</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="websiteUrl" className="text-gray-700 font-medium">Website URL</label>
-            <Input
-              id="websiteUrl"
-              name="websiteUrl"
-              type="url"
-              placeholder="https://example.com"
-              value={companyProfile.websiteUrl}
-              onChange={handleChange}
-              className="ios-input"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="description" className="text-gray-700 font-medium">Company Description</label>
-            <Textarea
-              id="description"
-              name="description"
-              placeholder="Tell us about your company..."
-              value={companyProfile.description}
-              onChange={handleChange}
-              className="ios-input min-h-[120px]"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="locationCity" className="text-gray-700 font-medium">City</label>
-            <Input
-              id="locationCity"
-              name="locationCity"
-              value={companyProfile.locationCity}
-              onChange={handleChange}
-              className="ios-input"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="locationCountry" className="text-gray-700 font-medium">Country</label>
-            <Select 
-              value={companyProfile.locationCountry} 
-              onValueChange={(value) => handleSelectChange('locationCountry', value)}
-            >
-              <SelectTrigger className="ios-input">
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="United States">United States</SelectItem>
-                <SelectItem value="Canada">Canada</SelectItem>
-                <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                <SelectItem value="Australia">Australia</SelectItem>
-                <SelectItem value="Germany">Germany</SelectItem>
-                <SelectItem value="France">France</SelectItem>
-                <SelectItem value="Spain">Spain</SelectItem>
-                <SelectItem value="India">India</SelectItem>
-                <SelectItem value="Singapore">Singapore</SelectItem>
-                <SelectItem value="Japan">Japan</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <Button
-            type="submit"
-            className="w-full py-6 text-lg bg-reme-orange hover:bg-orange-600 transition-colors mt-8"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Saving...' : 'Continue to Dashboard'}
+    <div className="mobile-container bg-gradient-to-br from-blue-50 to-orange-50 min-h-screen">
+      <div className="min-h-screen flex flex-col p-6">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" size="icon" onClick={handleBack} className="mr-2">
+            <ArrowLeft className="h-6 w-6" />
           </Button>
-        </form>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">Company Setup</h1>
+            <p className="text-gray-600">Tell us about your organization</p>
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center">
+                  <Building className="h-6 w-6 text-orange-600" />
+                </div>
+                <div>
+                  <CardTitle>Company Information</CardTitle>
+                  <p className="text-sm text-gray-600">Basic details about your organization</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="companyName">Company Name *</Label>
+                <Input
+                  id="companyName"
+                  value={formData.companyName}
+                  onChange={(e) => handleInputChange('companyName', e.target.value)}
+                  placeholder="Enter your company name"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="industry">Industry</Label>
+                <Select value={formData.industry} onValueChange={(value) => handleInputChange('industry', value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select your industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {industries.map((industry) => (
+                      <SelectItem key={industry} value={industry}>
+                        {industry}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="companySize">Company Size</Label>
+                <Select value={formData.companySize} onValueChange={(value) => handleInputChange('companySize', value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select company size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {companySizes.map((size) => (
+                      <SelectItem key={size} value={size}>
+                        {size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="websiteUrl">Website URL</Label>
+                <Input
+                  id="websiteUrl"
+                  value={formData.websiteUrl}
+                  onChange={(e) => handleInputChange('websiteUrl', e.target.value)}
+                  placeholder="https://www.yourcompany.com"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="description">Company Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Tell us about your company, values, and commitment to inclusive hiring..."
+                  className="mt-1"
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="locationCity">City</Label>
+                  <Input
+                    id="locationCity"
+                    value={formData.locationCity}
+                    onChange={(e) => handleInputChange('locationCity', e.target.value)}
+                    placeholder="London"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="locationCountry">Country</Label>
+                  <Select value={formData.locationCountry} onValueChange={(value) => handleInputChange('locationCountry', value)}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countries.map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="mt-6 bg-orange-50 p-4 rounded-lg border border-orange-200">
+            <p className="text-sm text-orange-800">
+              <strong>Building inclusive workplaces:</strong> Your profile helps job seekers understand your commitment to diversity and second chances.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <Button 
+            onClick={handleSubmit} 
+            disabled={isLoading || !formData.companyName.trim()}
+            className="w-full py-6 text-lg bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+          >
+            {isLoading ? 'Creating Profile...' : 'Complete Setup & Start Hiring'}
+          </Button>
+        </div>
       </div>
     </div>
   );

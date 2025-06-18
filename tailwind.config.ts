@@ -63,17 +63,30 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// ReME iOS app custom colors
+				// ReintegrateMe brand colors
+				reintegrate: {
+					'blue': '#2563eb',      // blue-600
+					'blue-light': '#3b82f6', // blue-500
+					'blue-dark': '#1d4ed8',  // blue-700
+					'orange': '#ea580c',     // orange-600
+					'orange-light': '#f97316', // orange-500
+					'orange-dark': '#c2410c', // orange-700
+					'gray': '#8E9196',
+					'light-bg': '#f8fafc',   // slate-50
+					'soft-blue': '#dbeafe',  // blue-100
+					'soft-orange': '#fed7aa', // orange-200
+				},
+				// Legacy ReME colors for backward compatibility
 				reme: {
-					'orange': '#FFA500',
+					'orange': '#ea580c',     // Updated to match new orange
 					'gray': '#8E9196',
 					'purple': '#9b87f5',
 					'dark-purple': '#1A1F2C',
 					'light-purple': '#D6BCFA',
-					'light-bg': '#F6F6F7',
+					'light-bg': '#f8fafc',
 					'soft-green': '#F2FCE2',
 					'soft-yellow': '#FEF7CD',
-					'soft-orange': '#FEC6A1',
+					'soft-orange': '#fed7aa',
 					'soft-purple': '#E5DEFF',
 					'soft-pink': '#FFDEE2'
 				}
