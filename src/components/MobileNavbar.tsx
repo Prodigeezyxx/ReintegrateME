@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { authAPI } from '../services/api';
@@ -90,22 +89,22 @@ const MobileNavbar = () => {
   }
   
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-10 beautiful-shadow">
       <div className="flex justify-around items-center h-16 max-w-md mx-auto px-2">
         {navItems.map((item, index) => (
           <NavLink
             key={index}
             to={item.path}
             className={({ isActive }) => `
-              flex flex-col items-center justify-center w-full h-full px-1 py-2 rounded-lg transition-all duration-200
-              ${item.isCenter ? 'transform -translate-y-2' : ''}
+              flex flex-col items-center justify-center w-full h-full px-1 py-2 rounded-xl transition-all duration-200 font-geist
+              ${item.isCenter ? 'transform -translate-y-2 mx-2' : ''}
               ${isActive 
                 ? item.isCenter 
-                  ? 'text-white bg-reme-orange shadow-lg' 
-                  : 'text-reme-orange bg-orange-50'
+                  ? 'text-white bg-gradient-to-r from-indigo-500 to-purple-500 beautiful-shadow scale-105' 
+                  : 'text-indigo-600 bg-gradient-to-r from-indigo-50 to-purple-50 beautiful-shadow-subtle'
                 : item.isCenter 
-                  ? 'text-white bg-reme-orange hover:bg-orange-600' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'text-white bg-gradient-to-r from-slate-400 to-slate-500 hover:from-indigo-400 hover:to-purple-400 beautiful-shadow-subtle hover:beautiful-shadow' 
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
               }
             `}
           >

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
-import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw } from 'lucide-react';
+import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw, Zap } from 'lucide-react';
 import { authAPI, jobAPI } from '../../services/api';
 
 const HirerDashboard = () => {
@@ -124,143 +124,172 @@ const HirerDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="mobile-container p-6 flex items-center justify-center min-h-screen bg-white">
+      <div className="mobile-container mx-auto p-6 flex items-center justify-center min-h-screen bg-zinc-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-reme-orange mx-auto"></div>
-          <p className="mt-4 text-gray-500">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
+          <p className="mt-4 text-slate-500 font-geist">Loading dashboard...</p>
         </div>
       </div>
     );
   }
   
   return (
-    <div className="mobile-container p-6 bg-white min-h-screen">
-      <div className="flex flex-col min-h-screen">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleRefresh} 
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </Button>
-        </div>
-        
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleStatsClick('activeJobs')}>
-            <CardContent className="p-4 flex flex-col items-center justify-center">
-              <Briefcase className="h-6 w-6 text-reme-orange mb-2" />
-              <p className="text-2xl font-bold">{stats.activeOpenings}</p>
-              <p className="text-xs text-muted-foreground">Active Jobs</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleStatsClick('totalApplicants')}>
-            <CardContent className="p-4 flex flex-col items-center justify-center">
-              <Users className="h-6 w-6 text-blue-500 mb-2" />
-              <p className="text-2xl font-bold">{stats.totalApplicants}</p>
-              <p className="text-xs text-muted-foreground">Total Applicants</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleStatsClick('newApplicants')}>
-            <CardContent className="p-4 flex flex-col items-center justify-center">
-              <Users className="h-6 w-6 text-green-500 mb-2" />
-              <p className="text-2xl font-bold">{stats.newApplicants}</p>
-              <p className="text-xs text-muted-foreground">New Applicants</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleStatsClick('unreadMessages')}>
-            <CardContent className="p-4 flex flex-col items-center justify-center">
-              <MessageSquare className="h-6 w-6 text-purple-500 mb-2" />
-              <p className="text-2xl font-bold">{stats.unreadMessages}</p>
-              <p className="text-xs text-muted-foreground">Unread Messages</p>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Quick Actions */}
-        <Card className="mb-6">
-          <CardHeader className="px-4 pt-4 pb-1">
-            <CardTitle className="text-lg">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 grid grid-cols-2 gap-2">
-            <Button 
-              variant="outline" 
-              className="justify-start"
-              asChild
-            >
-              <Link to="/hirer-jobs">
-                <Briefcase className="h-4 w-4 mr-2" />
-                Manage Jobs
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              className="justify-start"
-              asChild
-            >
-              <Link to="/hirer-create-job">
-                <Plus className="h-4 w-4 mr-2" />
-                Post New Job
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-        
-        {/* Recent Activity */}
-        <Card className="mb-6 flex-1">
-          <CardHeader className="px-4 pt-4 pb-2">
-            <CardTitle className="text-lg">Recent Activity</CardTitle>
-            <CardDescription>Latest updates and events</CardDescription>
-          </CardHeader>
-          <CardContent className="px-4 py-0">
-            {recentActivities.length > 0 ? (
-              <div className="space-y-4">
-                {recentActivities.map(activity => (
-                  <div 
-                    key={activity.id} 
-                    className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
-                    onClick={() => handleActivityClick(activity)}
-                  >
-                    <div className="bg-gray-100 rounded-full p-2 mt-1">
-                      {renderActivityIcon(activity.type)}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{activity.title}</p>
-                      <p className="text-xs text-gray-500">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
+    <div className="min-h-screen bg-zinc-50 pb-20">
+      <div className="mobile-container mx-auto beautiful-shadow">
+        <div className="p-6">
+          {/* Header with workspace branding */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="workspace-button">
+                <Zap className="h-4 w-4 text-indigo-600" />
+                <span className="text-slate-800 font-semibold">ReintegrateMe</span>
               </div>
-            ) : (
-              <p className="py-4 text-center text-sm text-gray-500">No recent activity</p>
-            )}
-          </CardContent>
-        </Card>
-        
-        {/* Talent Discovery */}
-        <div className="mb-6">
-          <Card>
-            <CardHeader className="px-4 pt-4 pb-2">
-              <CardTitle className="text-lg">Talent Discovery</CardTitle>
-              <CardDescription>Find candidates for your jobs</CardDescription>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleRefresh} 
+              disabled={isRefreshing}
+              className="beautiful-shadow-subtle hover:beautiful-shadow rounded-xl"
+            >
+              <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-slate-800 font-geist">Dashboard</h1>
+            <p className="text-slate-500 text-sm">Welcome back! Here's what's happening today.</p>
+          </div>
+          
+          {/* Enhanced Stats Grid */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <Card className="beautiful-shadow hover:beautiful-shadow-subtle transition-all duration-200 cursor-pointer border-0 bg-gradient-to-br from-blue-50 to-indigo-50" onClick={() => handleStatsClick('activeJobs')}>
+              <CardContent className="p-4 flex flex-col items-center justify-center">
+                <div className="bg-blue-500 p-2 rounded-xl mb-2">
+                  <Briefcase className="h-5 w-5 text-white" />
+                </div>
+                <p className="text-2xl font-bold text-slate-800 font-geist">{stats.activeOpenings}</p>
+                <p className="text-xs text-slate-600 font-medium">Active Jobs</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="beautiful-shadow hover:beautiful-shadow-subtle transition-all duration-200 cursor-pointer border-0 bg-gradient-to-br from-emerald-50 to-green-50" onClick={() => handleStatsClick('totalApplicants')}>
+              <CardContent className="p-4 flex flex-col items-center justify-center">
+                <div className="bg-emerald-500 p-2 rounded-xl mb-2">
+                  <Users className="h-5 w-5 text-white" />
+                </div>
+                <p className="text-2xl font-bold text-slate-800 font-geist">{stats.totalApplicants}</p>
+                <p className="text-xs text-slate-600 font-medium">Total Applicants</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="beautiful-shadow hover:beautiful-shadow-subtle transition-all duration-200 cursor-pointer border-0 bg-gradient-to-br from-amber-50 to-orange-50" onClick={() => handleStatsClick('newApplicants')}>
+              <CardContent className="p-4 flex flex-col items-center justify-center">
+                <div className="bg-amber-500 p-2 rounded-xl mb-2 relative">
+                  <Users className="h-5 w-5 text-white" />
+                  {stats.newApplicants > 0 && (
+                    <div className="absolute -top-1 -right-1 notification-dot"></div>
+                  )}
+                </div>
+                <p className="text-2xl font-bold text-slate-800 font-geist">{stats.newApplicants}</p>
+                <p className="text-xs text-slate-600 font-medium">New Applicants</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="beautiful-shadow hover:beautiful-shadow-subtle transition-all duration-200 cursor-pointer border-0 bg-gradient-to-br from-purple-50 to-pink-50" onClick={() => handleStatsClick('unreadMessages')}>
+              <CardContent className="p-4 flex flex-col items-center justify-center">
+                <div className="bg-purple-500 p-2 rounded-xl mb-2 relative">
+                  <MessageSquare className="h-5 w-5 text-white" />
+                  {stats.unreadMessages > 0 && (
+                    <div className="absolute -top-1 -right-1 notification-dot"></div>
+                  )}
+                </div>
+                <p className="text-2xl font-bold text-slate-800 font-geist">{stats.unreadMessages}</p>
+                <p className="text-xs text-slate-600 font-medium">Unread Messages</p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Enhanced Quick Actions */}
+          <Card className="mb-6 beautiful-shadow border-0">
+            <CardHeader className="px-4 pt-4 pb-1">
+              <CardTitle className="text-lg font-geist text-slate-800">Quick Actions</CardTitle>
+              <CardDescription className="text-slate-500">Get things done faster</CardDescription>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-4 grid grid-cols-2 gap-2">
               <Button 
-                className="w-full bg-reme-orange hover:bg-orange-600 transition-colors"
+                variant="outline" 
+                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-all duration-200"
                 asChild
               >
-                <Link to="/hirer-discover">
-                  Browse Talent
+                <Link to="/hirer-jobs">
+                  <Briefcase className="h-4 w-4 mr-2 text-slate-600" />
+                  <span className="font-medium text-slate-700">Manage Jobs</span>
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all duration-200"
+                asChild
+              >
+                <Link to="/hirer-create-job">
+                  <Plus className="h-4 w-4 mr-2 text-indigo-600" />
+                  <span className="font-medium text-indigo-700">Post New Job</span>
                 </Link>
               </Button>
             </CardContent>
           </Card>
+          
+          {/* Enhanced Recent Activity */}
+          <Card className="mb-6 flex-1 beautiful-shadow border-0">
+            <CardHeader className="px-4 pt-4 pb-2">
+              <CardTitle className="text-lg font-geist text-slate-800">Recent Activity</CardTitle>
+              <CardDescription className="text-slate-500">Latest updates and events</CardDescription>
+            </CardHeader>
+            <CardContent className="px-4 py-0">
+              {recentActivities.length > 0 ? (
+                <div className="space-y-1">
+                  {recentActivities.map(activity => (
+                    <div 
+                      key={activity.id} 
+                      className="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0 cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 rounded-lg px-2 transition-all duration-200"
+                      onClick={() => handleActivityClick(activity)}
+                    >
+                      <div className="bg-slate-100 rounded-xl p-2 mt-1 beautiful-shadow-subtle">
+                        {renderActivityIcon(activity.type)}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-slate-800 font-geist">{activity.title}</p>
+                        <p className="text-xs text-slate-500">{activity.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="py-4 text-center text-sm text-slate-500 font-geist">No recent activity</p>
+              )}
+            </CardContent>
+          </Card>
+          
+          {/* Enhanced Talent Discovery */}
+          <div className="mb-6">
+            <Card className="beautiful-shadow border-0 bg-gradient-to-br from-orange-50 to-amber-50">
+              <CardHeader className="px-4 pt-4 pb-2">
+                <CardTitle className="text-lg font-geist text-slate-800">Talent Discovery</CardTitle>
+                <CardDescription className="text-slate-600">Find the perfect candidates for your jobs</CardDescription>
+              </CardHeader>
+              <CardContent className="p-4">
+                <Button 
+                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white beautiful-shadow transition-all duration-200 font-geist font-medium"
+                  asChild
+                >
+                  <Link to="/hirer-discover">
+                    Browse Talent
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
