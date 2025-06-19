@@ -22,6 +22,7 @@ import HirerMessages from "./components/hirer/HirerMessages";
 import HirerChatDetail from "./components/hirer/HirerChatDetail";
 import SeekerHome from "./components/seeker/SeekerHome";
 import SeekerDashboard from "./components/seeker/SeekerDashboard";
+import SeekerDashboard2 from "./components/seeker/SeekerDashboard2";
 import SeekerApplications from "./components/seeker/SeekerApplications";
 import SeekerMessages from "./components/seeker/SeekerMessages";
 import SeekerChatDetail from "./components/seeker/SeekerChatDetail";
@@ -72,8 +73,8 @@ const App = () => {
             <Route path="/seeker-setup-step2" element={<SeekerProfileSetupStep2 />} />
             <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
             <Route path="/seeker-setup-step4" element={<SeekerProfileSetupStep4 />} />
-            <Route path="/seeker-dashboard" element={<SeekerHome />} />
-            <Route path="/seeker-discover" element={<SeekerDashboard />} />
+            <Route path="/seeker-dashboard" element={<SeekerDashboard2 />} />
+            <Route path="/seeker-discover" element={<SeekerHome />} />
             <Route path="/seeker-applications" element={<SeekerApplications />} />
             <Route path="/seeker-messages" element={<SeekerMessages />} />
             <Route path="/seeker-messages/:conversationId" element={<SeekerChatDetail />} />

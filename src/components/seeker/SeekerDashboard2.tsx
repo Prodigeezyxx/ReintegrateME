@@ -1,0 +1,213 @@
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { authAPI } from '../../services/api';
+import { Bot, Search, FileText, Bell, User, Heart, MessageSquare, Briefcase, ArrowRight, CheckCircle2 } from 'lucide-react';
+import AnimatedCard from '../ui/animated-card';
+import AnimatedProgress from '../ui/animated-progress';
+
+const SeekerDashboard2 = () => {
+  const navigate = useNavigate();
+  const [currentUser] = useState(authAPI.getCurrentUser());
+  const [favorites, setFavorites] = useState([]);
+  
+  useEffect(() => {
+    // Load favorites from localStorage
+    const savedFavorites = localStorage.getItem('seekerFavorites');
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites));
+      } catch (error) {
+        console.error('Error parsing favorites:', error);
+      }
+    }
+  }, []);
+
+  const quickActions = [
+    {
+      title: 'Discover Jobs',
+      description: 'Swipe through job opportunities',
+      icon: <Search className="h-6 w-6" />,
+      color: 'bg-blue-500',
+      path: '/seeker-discover',
+      badge: 'New matches'
+    },
+    {
+      title: 'AI Suite',
+      description: 'AI Coach, CV Builder & Chat',
+      icon: <Bot className="h-6 w-6" />,
+      color: 'bg-purple-500',
+      path: '/seeker-ai-suite',
+      badge: 'Powered by AI'
+    },
+    {
+      title: 'Applications',
+      description: 'Track your job applications',
+      icon: <Bell className="h-6 w-6" />,
+      color: 'bg-green-500',
+      path: '/seeker-applications',
+      badge: '3 pending'
+    },
+    {
+      title: 'Profile',
+      description: 'Manage your profile',
+      icon: <User className="h-6 w-6" />,
+      color: 'bg-orange-500',
+      path: '/seeker-profile',
+      badge: '85% complete'
+    }
+  ];
+
+  const stats = [
+    { label: 'Applications', value: '12', icon: <Briefcase className="h-4 w-4" /> },
+    { label: 'Saved Jobs', value: favorites.length.toString(), icon: <Heart className="h-4 w-4" /> },
+    { label: 'Messages', value: '3', icon: <MessageSquare className="h-4 w-4" /> },
+    { label: 'Profile Views', value: '28', icon: <User className="h-4 w-4" /> }
+  ];
+
+  return (
+    <div className="mobile-container safe-top bg-gradient-to-b from-white to-slate-50 min-h-screen">
+      <div className="p-6 pb-20">
+        {/* Welcome Section */}
+        <AnimatedCard className="mb-6" delay={0}>
+          <div className="text-center py-6">
+            <div className="mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mx-auto flex items-center justify-center mb-3">
+                <User className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 font-geist mb-2">
+              Welcome back, {currentUser?.first_name || 'Job Seeker'}!
+            </h1>
+            <p className="text-slate-600 font-geist">
+              Ready to find your next opportunity?
+            </p>
+          </div>
+        </AnimatedCard>
+
+        {/* Stats Overview */}
+        <AnimatedCard className="mb-6" delay={100}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-geist">Your Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center p-3 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
+                  <div className="flex items-center justify-center mb-2">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      {stat.icon}
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-slate-900 font-geist">{stat.value}</div>
+                  <div className="text-xs text-slate-600 font-geist">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </AnimatedCard>
+
+        {/* Profile Completion */}
+        <AnimatedCard className="mb-6" delay={200}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-geist flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-green-500" />
+              Profile Completion
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-slate-700">85% Complete</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/seeker-profile')}
+                  className="text-indigo-600 hover:text-indigo-700"
+                >
+                  Complete Profile
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+              <AnimatedProgress value={85} />
+              <p className="text-xs text-slate-600">
+                Complete your profile to get better job matches
+              </p>
+            </div>
+          </CardContent>
+        </AnimatedCard>
+
+        {/* Quick Actions */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold text-slate-900 font-geist">Quick Actions</h2>
+          
+          {quickActions.map((action, index) => (
+            <AnimatedCard 
+              key={index} 
+              className="cursor-pointer hover:shadow-lg transition-all duration-200 active:scale-95"
+              delay={300 + (index * 100)}
+              onClick={() => navigate(action.path)}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-4">
+                  <div className={`${action.color} w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0`}>
+                    <div className="text-white">{action.icon}</div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold text-slate-900 font-geist">{action.title}</h3>
+                      {action.badge && (
+                        <Badge variant="secondary" className="text-xs bg-slate-100 text-slate-600">
+                          {action.badge}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-600 font-geist">{action.description}</p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-slate-400 flex-shrink-0" />
+                </div>
+              </CardContent>
+            </AnimatedCard>
+          ))}
+        </div>
+
+        {/* Recent Activity */}
+        <AnimatedCard className="mt-6" delay={700}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-geist">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Search className="h-4 w-4 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-900">New job matches available</p>
+                  <p className="text-xs text-slate-600">5 new opportunities in your area</p>
+                </div>
+                <span className="text-xs text-slate-500">2h ago</span>
+              </div>
+              
+              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <FileText className="h-4 w-4 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-900">Application submitted</p>
+                  <p className="text-xs text-slate-600">Software Developer at Tech Corp</p>
+                </div>
+                <span className="text-xs text-slate-500">1d ago</span>
+              </div>
+            </div>
+          </CardContent>
+        </AnimatedCard>
+      </div>
+    </div>
+  );
+};
+
+export default SeekerDashboard2;
