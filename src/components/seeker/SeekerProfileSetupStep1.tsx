@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -74,7 +75,7 @@ const SeekerProfileSetupStep1 = () => {
         <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
-        {/* Header with enhanced styling and better visibility */}
+        {/* Header with better text visibility */}
         <div className="flex items-center mb-8 animate-slide-up-stagger relative z-10">
           <AnimatedButton 
             variant="ghost" 
@@ -88,10 +89,10 @@ const SeekerProfileSetupStep1 = () => {
             </svg>
           </AnimatedButton>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-white font-geist animate-fade-in-scale drop-shadow-lg">
+            <h1 className="text-3xl font-bold text-white font-geist animate-fade-in-scale text-shadow-lg">
               Tell us about yourself
             </h1>
-            <p className="text-white/90 font-geist mt-1 animate-fade-in-scale animate-delay-100 drop-shadow-sm text-lg">
+            <p className="text-white text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 text-shadow-md font-medium">
               Let employers know who you are - Step 1 of 4 ✨
             </p>
           </div>
@@ -110,8 +111,8 @@ const SeekerProfileSetupStep1 = () => {
         {/* Progress bar with better visibility */}
         <div className="mb-8 animate-slide-up-stagger animate-delay-200 relative z-10">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-geist text-white/90 font-medium drop-shadow-sm">Profile Completion</span>
-            <span className="text-sm font-bold text-white font-geist drop-shadow-sm">25%</span>
+            <span className="text-sm font-geist text-white font-medium text-shadow-sm">Profile Completion</span>
+            <span className="text-sm font-bold text-white font-geist text-shadow-sm">25%</span>
           </div>
           <AnimatedProgress value={25} animate={true} />
         </div>
