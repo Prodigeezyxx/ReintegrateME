@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -65,7 +64,7 @@ const SeekerDashboard2 = () => {
     { label: 'Applications', value: '12', icon: <Briefcase className="h-4 w-4" />, path: '/seeker-applications' },
     { label: 'Saved Jobs', value: favorites.length.toString(), icon: <Heart className="h-4 w-4" />, path: '/seeker-saved' },
     { label: 'Messages', value: '3', icon: <MessageSquare className="h-4 w-4" />, path: '/seeker-messages' },
-    { label: 'Profile Views', value: '28', icon: <User className="h-4 w-4" />, path: '/seeker-profile' }
+    { label: 'AI Suite', value: '3', icon: <Bot className="h-4 w-4" />, path: '/seeker-ai-suite' }
   ];
 
   // Get display name from user data

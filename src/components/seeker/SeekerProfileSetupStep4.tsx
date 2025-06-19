@@ -215,7 +215,7 @@ const SeekerProfileSetupStep4 = () => {
                   id="licence-yes"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="licence-yes" className="text-white font-geist cursor-pointer flex-1">
+                <Label htmlFor="licence-yes" className="text-slate-800 font-geist cursor-pointer flex-1">
                   🚗 Yes, I have a valid UK driving licence
                 </Label>
               </div>
@@ -225,7 +225,7 @@ const SeekerProfileSetupStep4 = () => {
                   id="licence-no"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="licence-no" className="text-white font-geist cursor-pointer flex-1">
+                <Label htmlFor="licence-no" className="text-slate-800 font-geist cursor-pointer flex-1">
                   🚶 No, I don't have a driving licence
                 </Label>
               </div>
@@ -240,17 +240,18 @@ const SeekerProfileSetupStep4 = () => {
           >
             <div className="space-y-3">
               {workPreferenceOptions.map((option, index) => (
-                <AnimatedCheckbox
-                  key={option.value}
-                  id={option.value}
-                  checked={workPreferences.includes(option.value)}
-                  onCheckedChange={(checked) => 
-                    handleWorkPreferenceChange(option.value, checked as boolean)
-                  }
-                  label={`${option.icon} ${option.label}`}
-                  className="p-3 rounded-lg hover:bg-white/10 transition-all duration-300 text-white"
-                  delay={300 + index * 100}
-                />
+                <div key={option.value} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                  <input
+                    type="checkbox"
+                    id={option.value}
+                    checked={workPreferences.includes(option.value)}
+                    onChange={(e) => handleWorkPreferenceChange(option.value, e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <Label htmlFor={option.value} className="text-slate-800 font-geist cursor-pointer flex-1">
+                    {option.icon} {option.label}
+                  </Label>
+                </div>
               ))}
             </div>
           </AnimatedCard>
@@ -271,7 +272,7 @@ const SeekerProfileSetupStep4 = () => {
                   id="relocation-yes"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="relocation-yes" className="text-white font-geist cursor-pointer flex-1">
+                <Label htmlFor="relocation-yes" className="text-slate-800 font-geist cursor-pointer flex-1">
                   ✈️ Yes, I'm open to relocating for work
                 </Label>
               </div>
@@ -281,7 +282,7 @@ const SeekerProfileSetupStep4 = () => {
                   id="relocation-no"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="relocation-no" className="text-white font-geist cursor-pointer flex-1">
+                <Label htmlFor="relocation-no" className="text-slate-800 font-geist cursor-pointer flex-1">
                   🏠 No, I prefer to work locally
                 </Label>
               </div>
