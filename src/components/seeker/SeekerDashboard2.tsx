@@ -68,6 +68,16 @@ const SeekerDashboard2 = () => {
     { label: 'Profile Views', value: '28', icon: <User className="h-4 w-4" /> }
   ];
 
+  // Get display name from user data
+  const getDisplayName = () => {
+    if (currentUser?.email) {
+      // Extract name from email before @ symbol
+      const emailName = currentUser.email.split('@')[0];
+      return emailName.charAt(0).toUpperCase() + emailName.slice(1);
+    }
+    return 'Job Seeker';
+  };
+
   return (
     <div className="mobile-container safe-top bg-gradient-to-b from-white to-slate-50 min-h-screen">
       <div className="p-6 pb-20">
@@ -80,7 +90,7 @@ const SeekerDashboard2 = () => {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-slate-900 font-geist mb-2">
-              Welcome back, {currentUser?.first_name || 'Job Seeker'}!
+              Welcome back, {getDisplayName()}!
             </h1>
             <p className="text-slate-600 font-geist">
               Ready to find your next opportunity?

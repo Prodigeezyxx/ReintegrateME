@@ -10,6 +10,7 @@ interface AnimatedCardProps {
   hover?: boolean;
   title?: string;
   description?: string;
+  onClick?: () => void;
 }
 
 const AnimatedCard: React.FC<AnimatedCardProps> = ({ 
@@ -18,7 +19,8 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
   delay = 0,
   hover = true,
   title,
-  description
+  description,
+  onClick
 }) => {
   return (
     <Card 
@@ -27,9 +29,11 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
         "bg-white/80 border-white/20 shadow-xl hover:shadow-2xl",
         hover && "hover:scale-[1.02] hover:-translate-y-1",
         "animate-fade-in",
+        onClick && "cursor-pointer",
         className
       )}
       style={{ animationDelay: `${delay}ms` }}
+      onClick={onClick}
     >
       {title && (
         <CardHeader className="pb-4">
