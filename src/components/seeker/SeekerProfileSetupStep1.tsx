@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -75,13 +74,13 @@ const SeekerProfileSetupStep1 = () => {
         <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
-        {/* Header with enhanced styling */}
-        <div className="flex items-center mb-8 animate-slide-up-stagger">
+        {/* Header with enhanced styling and better visibility */}
+        <div className="flex items-center mb-8 animate-slide-up-stagger relative z-10">
           <AnimatedButton 
             variant="ghost" 
             size="icon" 
             onClick={handleBack} 
-            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full"
+            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full border border-white/20"
             ripple={false}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,10 +88,10 @@ const SeekerProfileSetupStep1 = () => {
             </svg>
           </AnimatedButton>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-white font-geist animate-fade-in-scale">
+            <h1 className="text-3xl font-bold text-white font-geist animate-fade-in-scale drop-shadow-lg">
               Tell us about yourself
             </h1>
-            <p className="text-white/80 font-geist mt-1 animate-fade-in-scale animate-delay-100">
+            <p className="text-white/90 font-geist mt-1 animate-fade-in-scale animate-delay-100 drop-shadow-sm text-lg">
               Let employers know who you are - Step 1 of 4 ✨
             </p>
           </div>
@@ -100,7 +99,7 @@ const SeekerProfileSetupStep1 = () => {
             <img 
               src={getLogoUrl()} 
               alt="ReintegrateMe"
-              className="h-12 w-12 animate-float"
+              className="h-12 w-12 animate-float drop-shadow-lg"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
@@ -108,17 +107,17 @@ const SeekerProfileSetupStep1 = () => {
           </div>
         </div>
 
-        {/* Progress bar */}
-        <div className="mb-8 animate-slide-up-stagger animate-delay-200">
+        {/* Progress bar with better visibility */}
+        <div className="mb-8 animate-slide-up-stagger animate-delay-200 relative z-10">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-geist text-white/80">Profile Completion</span>
-            <span className="text-sm font-bold text-white font-geist">25%</span>
+            <span className="text-sm font-geist text-white/90 font-medium drop-shadow-sm">Profile Completion</span>
+            <span className="text-sm font-bold text-white font-geist drop-shadow-sm">25%</span>
           </div>
           <AnimatedProgress value={25} animate={true} />
         </div>
 
         {/* Content cards with staggered animations */}
-        <form onSubmit={handleNext} className="flex-1 space-y-6">
+        <form onSubmit={handleNext} className="flex-1 space-y-6 relative z-10">
           <AnimatedCard
             title="Personal Information"
             description="Your basic details for employers"

@@ -62,10 +62,10 @@ const SeekerDashboard2 = () => {
   ];
 
   const stats = [
-    { label: 'Applications', value: '12', icon: <Briefcase className="h-4 w-4" /> },
-    { label: 'Saved Jobs', value: favorites.length.toString(), icon: <Heart className="h-4 w-4" /> },
-    { label: 'Messages', value: '3', icon: <MessageSquare className="h-4 w-4" /> },
-    { label: 'Profile Views', value: '28', icon: <User className="h-4 w-4" /> }
+    { label: 'Applications', value: '12', icon: <Briefcase className="h-4 w-4" />, path: '/seeker-applications' },
+    { label: 'Saved Jobs', value: favorites.length.toString(), icon: <Heart className="h-4 w-4" />, path: '/seeker-saved' },
+    { label: 'Messages', value: '3', icon: <MessageSquare className="h-4 w-4" />, path: '/seeker-messages' },
+    { label: 'Profile Views', value: '28', icon: <User className="h-4 w-4" />, path: '/seeker-profile' }
   ];
 
   // Get display name from user data
@@ -98,7 +98,7 @@ const SeekerDashboard2 = () => {
           </div>
         </AnimatedCard>
 
-        {/* Stats Overview */}
+        {/* Stats Overview - Now clickable */}
         <AnimatedCard className="mb-6" delay={100}>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg font-geist">Your Activity</CardTitle>
@@ -106,7 +106,11 @@ const SeekerDashboard2 = () => {
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
               {stats.map((stat, index) => (
-                <div key={index} className="text-center p-3 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
+                <div 
+                  key={index} 
+                  className="text-center p-3 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl cursor-pointer hover:bg-gradient-to-br hover:from-slate-100 hover:to-slate-200 transition-all duration-200 active:scale-95"
+                  onClick={() => navigate(stat.path)}
+                >
                   <div className="flex items-center justify-center mb-2">
                     <div className="p-2 bg-white rounded-lg shadow-sm">
                       {stat.icon}
@@ -120,8 +124,12 @@ const SeekerDashboard2 = () => {
           </CardContent>
         </AnimatedCard>
 
-        {/* Profile Completion */}
-        <AnimatedCard className="mb-6" delay={200}>
+        {/* Profile Completion - Now clickable */}
+        <AnimatedCard 
+          className="mb-6 cursor-pointer hover:shadow-lg transition-all duration-200" 
+          delay={200}
+          onClick={() => navigate('/seeker-profile')}
+        >
           <CardHeader className="pb-3">
             <CardTitle className="text-lg font-geist flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
@@ -135,7 +143,10 @@ const SeekerDashboard2 = () => {
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => navigate('/seeker-profile')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/seeker-profile');
+                  }}
                   className="text-indigo-600 hover:text-indigo-700"
                 >
                   Complete Profile
@@ -184,14 +195,17 @@ const SeekerDashboard2 = () => {
           ))}
         </div>
 
-        {/* Recent Activity */}
+        {/* Recent Activity - Now clickable */}
         <AnimatedCard className="mt-6" delay={700}>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg font-geist">Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+              <div 
+                className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg cursor-pointer hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 active:scale-95"
+                onClick={() => navigate('/seeker-discover')}
+              >
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <Search className="h-4 w-4 text-blue-600" />
                 </div>
@@ -202,7 +216,10 @@ const SeekerDashboard2 = () => {
                 <span className="text-xs text-slate-500">2h ago</span>
               </div>
               
-              <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+              <div 
+                className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg cursor-pointer hover:from-green-100 hover:to-emerald-100 transition-all duration-200 active:scale-95"
+                onClick={() => navigate('/seeker-applications')}
+              >
                 <div className="p-2 bg-green-100 rounded-lg">
                   <FileText className="h-4 w-4 text-green-600" />
                 </div>
