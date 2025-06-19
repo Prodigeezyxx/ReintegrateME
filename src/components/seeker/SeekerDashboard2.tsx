@@ -64,7 +64,7 @@ const SeekerDashboard2 = () => {
     { label: 'Applications', value: '12', icon: <Briefcase className="h-4 w-4" />, path: '/seeker-applications' },
     { label: 'Saved Jobs', value: favorites.length.toString(), icon: <Heart className="h-4 w-4" />, path: '/seeker-saved' },
     { label: 'Messages', value: '3', icon: <MessageSquare className="h-4 w-4" />, path: '/seeker-messages' },
-    { label: 'AI Suite', value: '3', icon: <Bot className="h-4 w-4" />, path: '/seeker-ai-suite' }
+    { label: 'AI Suite', value: '', icon: <Bot className="h-4 w-4" />, path: '/seeker-ai-suite' }
   ];
 
   // Get display name from user data
