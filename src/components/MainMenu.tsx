@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
@@ -66,12 +65,12 @@ const MainMenu: React.FC<MainMenuProps> = ({ children }) => {
   
   const getSeekerNavItems = (): NavItem[] => [
     {
-      label: 'Discover',
+      label: 'Home',
       path: '/seeker-dashboard',
       icon: <Search className="h-5 w-5" />
     },
     {
-      label: 'Search',
+      label: 'Discover',
       path: '/seeker-search',
       icon: <Search className="h-5 w-5" />
     },

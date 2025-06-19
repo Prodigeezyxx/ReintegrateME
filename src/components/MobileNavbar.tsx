@@ -49,12 +49,12 @@ const MobileNavbar = () => {
   
   const getSeekerNavItems = (): NavItem[] => [
     {
-      label: 'Home',
+      label: 'Discover',
       path: '/seeker-dashboard',
       icon: <Home className="h-5 w-5" />
     },
     {
-      label: 'Discover',
+      label: 'Home',
       path: '/seeker-discover',
       icon: <Search className="h-5 w-5" />
     },
