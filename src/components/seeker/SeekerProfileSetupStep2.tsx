@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -123,7 +122,7 @@ const SeekerProfileSetupStep2 = () => {
         <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
-        {/* Header with enhanced styling */}
+        {/* Header with black text */}
         <div className="flex items-center mb-8 animate-slide-up-stagger">
           <AnimatedButton 
             variant="ghost" 
@@ -135,10 +134,10 @@ const SeekerProfileSetupStep2 = () => {
             <ArrowLeft className="h-6 w-6" />
           </AnimatedButton>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-white font-geist animate-fade-in-scale">
+            <h1 className="text-3xl font-bold text-black font-geist animate-fade-in-scale">
               Legal Information
             </h1>
-            <p className="text-white/80 font-geist mt-1 animate-fade-in-scale animate-delay-100">
+            <p className="text-black text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
               This helps us match you with suitable opportunities - Step 2 of 4 ✨
             </p>
           </div>
@@ -154,11 +153,11 @@ const SeekerProfileSetupStep2 = () => {
           </div>
         </div>
 
-        {/* Progress bar */}
+        {/* Progress bar with black text */}
         <div className="mb-8 animate-slide-up-stagger animate-delay-200">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-geist text-white/80">Profile Completion</span>
-            <span className="text-sm font-bold text-white font-geist">50%</span>
+            <span className="text-sm font-geist text-black font-medium">Profile Completion</span>
+            <span className="text-sm font-bold text-black font-geist">50%</span>
           </div>
           <AnimatedProgress value={50} animate={true} />
         </div>

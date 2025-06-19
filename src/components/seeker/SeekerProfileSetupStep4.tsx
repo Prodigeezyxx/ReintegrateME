@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -146,7 +145,7 @@ const SeekerProfileSetupStep4 = () => {
         <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
-        {/* Header with enhanced styling */}
+        {/* Header with black text */}
         <div className="flex items-center mb-8 animate-slide-up-stagger">
           <AnimatedButton 
             variant="ghost" 
@@ -158,10 +157,10 @@ const SeekerProfileSetupStep4 = () => {
             <ArrowLeft className="h-6 w-6" />
           </AnimatedButton>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-white font-geist animate-fade-in-scale">
+            <h1 className="text-3xl font-bold text-black font-geist animate-fade-in-scale">
               Work Preferences
             </h1>
-            <p className="text-white/80 font-geist mt-1 animate-fade-in-scale animate-delay-100">
+            <p className="text-black text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
               Final step - Step 4 of 4 ✨
             </p>
           </div>
@@ -177,11 +176,11 @@ const SeekerProfileSetupStep4 = () => {
           </div>
         </div>
 
-        {/* Progress bar with celebration */}
+        {/* Progress bar with black text */}
         <div className="mb-8 animate-slide-up-stagger animate-delay-200">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-geist text-white/80">Profile Completion</span>
-            <span className="text-sm font-bold text-white font-geist">
+            <span className="text-sm font-geist text-black font-medium">Profile Completion</span>
+            <span className="text-sm font-bold text-black font-geist">
               {completionPercentage}%
             </span>
           </div>
@@ -191,7 +190,7 @@ const SeekerProfileSetupStep4 = () => {
             animate={true}
           />
           {completionPercentage === 100 && (
-            <div className="flex items-center justify-center mt-2 text-white animate-bounce-once">
+            <div className="flex items-center justify-center mt-2 text-black animate-bounce-once">
               <Trophy className="h-4 w-4 mr-1" />
               <span className="text-xs font-geist">Complete!</span>
             </div>
