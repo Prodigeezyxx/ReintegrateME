@@ -163,21 +163,21 @@ const SeekerProfileSetupStep3 = () => {
               value={hasDisability?.toString() || ''} 
               onValueChange={(value) => setHasDisability(value === 'true')}
             >
-              <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-all duration-300">
+              <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                 <RadioGroupItem 
                   value="true" 
                   id="disability-yes"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="disability-yes" className="text-white font-geist cursor-pointer">Yes, I have a disability</Label>
+                <Label htmlFor="disability-yes" className="text-slate-800 font-geist cursor-pointer">Yes, I have a disability</Label>
               </div>
-              <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-all duration-300">
+              <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                 <RadioGroupItem 
                   value="false" 
                   id="disability-no"
                   className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                 />
-                <Label htmlFor="disability-no" className="text-white font-geist cursor-pointer">No, I do not have a disability</Label>
+                <Label htmlFor="disability-no" className="text-slate-800 font-geist cursor-pointer">No, I do not have a disability</Label>
               </div>
             </RadioGroup>
           </AnimatedCard>
@@ -191,7 +191,7 @@ const SeekerProfileSetupStep3 = () => {
             >
               <div className="space-y-3">
                 {disabilityOptions.map((option) => (
-                  <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+                  <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
                     <Checkbox
                       id={option.value}
                       checked={disabilityTypes.includes(option.value)}
@@ -200,7 +200,7 @@ const SeekerProfileSetupStep3 = () => {
                       }
                       className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                     />
-                    <Label htmlFor={option.value} className="text-sm text-white font-geist cursor-pointer">
+                    <Label htmlFor={option.value} className="text-sm text-slate-800 font-geist cursor-pointer">
                       {option.label}
                     </Label>
                   </div>
@@ -209,13 +209,13 @@ const SeekerProfileSetupStep3 = () => {
               
               {disabilityTypes.includes('other') && (
                 <div className="mt-4">
-                  <Label htmlFor="disability-other" className="text-white font-geist">Please specify</Label>
+                  <Label htmlFor="disability-other" className="text-slate-800 font-geist text-sm">Please specify</Label>
                   <Textarea
                     id="disability-other"
                     value={disabilityOtherDetails}
                     onChange={(e) => setDisabilityOtherDetails(e.target.value)}
                     placeholder="Please provide details..."
-                    className="mt-2 bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                    className="mt-2 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
                   />
                 </div>
               )}
@@ -230,7 +230,7 @@ const SeekerProfileSetupStep3 = () => {
           >
             <div className="space-y-3">
               {adjustmentOptions.map((option) => (
-                <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <Checkbox
                     id={option.value}
                     checked={workplaceAdjustments.includes(option.value)}
@@ -239,7 +239,7 @@ const SeekerProfileSetupStep3 = () => {
                     }
                     className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                   />
-                  <Label htmlFor={option.value} className="text-sm text-white font-geist cursor-pointer">
+                  <Label htmlFor={option.value} className="text-sm text-slate-800 font-geist cursor-pointer">
                     {option.label}
                   </Label>
                 </div>
@@ -248,13 +248,13 @@ const SeekerProfileSetupStep3 = () => {
             
             {workplaceAdjustments.includes('other') && (
               <div className="mt-4">
-                <Label htmlFor="adjustments-other" className="text-white font-geist">Please specify</Label>
+                <Label htmlFor="adjustments-other" className="text-slate-800 font-geist text-sm">Please specify</Label>
                 <Textarea
                   id="adjustments-other"
                   value={workplaceAdjustmentsOther}
                   onChange={(e) => setWorkplaceAdjustmentsOther(e.target.value)}
                   placeholder="Please describe the adjustments you might need..."
-                  className="mt-2 bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                  className="mt-2 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
                 />
               </div>
             )}
@@ -265,7 +265,7 @@ const SeekerProfileSetupStep3 = () => {
             className="glassmorphism border-2 border-blue-400/30 bg-gradient-to-r from-blue-50/80 to-indigo-50/80"
           >
             <div className="text-center">
-              <p className="text-sm text-white font-geist">
+              <p className="text-sm text-slate-700 font-geist">
                 <strong>Your privacy matters:</strong> This information helps us match you with inclusive employers. 
                 You control what you share and when.
               </p>

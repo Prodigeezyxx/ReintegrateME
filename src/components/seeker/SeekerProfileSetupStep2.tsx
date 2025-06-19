@@ -171,26 +171,26 @@ const SeekerProfileSetupStep2 = () => {
             className="glassmorphism-strong"
           >
             <div className="space-y-3">
-              <Label className="text-white font-geist font-medium">Sentence Completed</Label>
+              <Label className="text-slate-800 font-geist font-medium text-sm">Sentence Completed</Label>
               <RadioGroup 
                 value={seekerProfile.sentenceCompleted?.toString() || ''} 
                 onValueChange={(value) => handleBooleanChange('sentenceCompleted', value)}
               >
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <RadioGroupItem 
                     value="true" 
                     id="sentence-yes"
                     className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                   />
-                  <Label htmlFor="sentence-yes" className="text-white font-geist cursor-pointer">Yes</Label>
+                  <Label htmlFor="sentence-yes" className="text-slate-800 font-geist cursor-pointer">Yes</Label>
                 </div>
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <RadioGroupItem 
                     value="false" 
                     id="sentence-no"
                     className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                   />
-                  <Label htmlFor="sentence-no" className="text-white font-geist cursor-pointer">No</Label>
+                  <Label htmlFor="sentence-no" className="text-slate-800 font-geist cursor-pointer">No</Label>
                 </div>
               </RadioGroup>
             </div>
@@ -207,13 +207,13 @@ const SeekerProfileSetupStep2 = () => {
               onValueChange={handleSupervisionChange}
             >
               {legalSupervisionOptions.map(option => (
-                <div key={option.value} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <div key={option.value} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <RadioGroupItem 
                     value={option.value} 
                     id={`supervision-${option.value}`}
                     className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                   />
-                  <Label htmlFor={`supervision-${option.value}`} className="text-white font-geist cursor-pointer">{option.label}</Label>
+                  <Label htmlFor={`supervision-${option.value}`} className="text-slate-800 font-geist cursor-pointer">{option.label}</Label>
                 </div>
               ))}
             </RadioGroup>
@@ -228,7 +228,7 @@ const SeekerProfileSetupStep2 = () => {
           >
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {convictionTypeOptions.map(option => (
-                <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <Checkbox
                     id={`conviction-${option.value}`}
                     checked={seekerProfile.convictionTypes?.includes(option.value as ConvictionType) || false}
@@ -237,7 +237,7 @@ const SeekerProfileSetupStep2 = () => {
                     }
                     className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                   />
-                  <Label htmlFor={`conviction-${option.value}`} className="text-sm text-white font-geist cursor-pointer">
+                  <Label htmlFor={`conviction-${option.value}`} className="text-sm text-slate-800 font-geist cursor-pointer">
                     {option.label}
                   </Label>
                 </div>
@@ -246,12 +246,12 @@ const SeekerProfileSetupStep2 = () => {
             
             {seekerProfile.convictionTypes?.includes('other') && (
               <div className="mt-4">
-                <Label htmlFor="conviction-other" className="text-sm text-white/80 font-geist">Please specify:</Label>
+                <Label htmlFor="conviction-other" className="text-sm text-slate-800 font-geist">Please specify:</Label>
                 <Textarea
                   id="conviction-other"
                   value={seekerProfile.convictionOtherDetails || ''}
                   onChange={(e) => setSeekerProfile(prev => ({ ...prev, convictionOtherDetails: e.target.value }))}
-                  className="mt-2 bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                  className="mt-2 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
                   placeholder="Please provide details..."
                 />
               </div>

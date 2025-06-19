@@ -127,25 +127,25 @@ const SeekerProfileSetupStep1 = () => {
           >
             <div className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="firstName" className="text-white font-geist font-medium">First Name *</label>
+                <label htmlFor="firstName" className="text-slate-800 font-geist font-medium text-sm">First Name *</label>
                 <Input
                   id="firstName"
                   name="firstName"
                   value={seekerProfile.firstName}
                   onChange={handleChange}
-                  className="bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
                   required
                 />
               </div>
               
               <div className="space-y-2">
-                <label htmlFor="lastName" className="text-white font-geist font-medium">Last Name *</label>
+                <label htmlFor="lastName" className="text-slate-800 font-geist font-medium text-sm">Last Name *</label>
                 <Input
                   id="lastName"
                   name="lastName"
                   value={seekerProfile.lastName}
                   onChange={handleChange}
-                  className="bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
                   required
                 />
               </div>
@@ -160,29 +160,29 @@ const SeekerProfileSetupStep1 = () => {
           >
             <div className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="jobTitle" className="text-white font-geist font-medium">Job Title</label>
+                <label htmlFor="jobTitle" className="text-slate-800 font-geist font-medium text-sm">Job Title</label>
                 <Input
                   id="jobTitle"
                   name="jobTitle"
                   placeholder="e.g., Warehouse Assistant"
                   value={seekerProfile.jobTitle}
                   onChange={handleChange}
-                  className="bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
                 />
-                <p className="text-sm text-white/70">The type of role you're seeking</p>
+                <p className="text-xs text-slate-600">The type of role you're seeking</p>
               </div>
               
               <div className="space-y-2">
-                <label htmlFor="headline" className="text-white font-geist font-medium">Professional Headline</label>
+                <label htmlFor="headline" className="text-slate-800 font-geist font-medium text-sm">Professional Headline</label>
                 <Input
                   id="headline"
                   name="headline"
                   placeholder="e.g., Reliable team player seeking new opportunities"
                   value={seekerProfile.headline}
                   onChange={handleChange}
-                  className="bg-white/90 border-white/30 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
+                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
                 />
-                <p className="text-sm text-white/70">A short summary of your professional identity</p>
+                <p className="text-xs text-slate-600">A short summary of your professional identity</p>
               </div>
             </div>
           </AnimatedCard>
