@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import RoleSelection from "./components/RoleSelection";
 import Authentication from "./components/Authentication";
 import HirerProfileSetup from "./components/hirer/HirerProfileSetup";
 import SeekerProfileSetupStep1 from "./components/seeker/SeekerProfileSetupStep1";
+import SeekerSkillsStep from "./components/seeker/SeekerSkillsStep";
 import SeekerProfileSetupStep2 from "./components/seeker/SeekerProfileSetupStep2";
 import SeekerProfileSetupStep3 from "./components/seeker/SeekerProfileSetupStep3";
 import SeekerProfileSetupStep4 from "./components/seeker/SeekerProfileSetupStep4";
@@ -70,6 +72,7 @@ const App = () => {
             
             {/* Seeker Routes */}
             <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
+            <Route path="/seeker-skills-step" element={<SeekerSkillsStep />} />
             <Route path="/seeker-setup-step2" element={<SeekerProfileSetupStep2 />} />
             <Route path="/seeker-setup-step3" element={<SeekerProfileSetupStep3 />} />
             <Route path="/seeker-setup-step4" element={<SeekerProfileSetupStep4 />} />
