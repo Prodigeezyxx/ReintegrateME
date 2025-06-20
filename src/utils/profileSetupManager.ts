@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
 interface SeekerSetupData {
   // Step 1 data
@@ -32,6 +33,14 @@ interface SeekerSetupData {
   workPreferences?: string[];
   openToRelocation?: boolean;
 }
+
+type ConvictionStatus = Database['public']['Enums']['conviction_status'];
+type ConvictionType = Database['public']['Enums']['conviction_type'];
+type LegalSupervisionType = Database['public']['Enums']['legal_supervision_type'];
+type MappaLevel = Database['public']['Enums']['mappa_level'];
+type DisabilityType = Database['public']['Enums']['disability_type'];
+type WorkplaceAdjustment = Database['public']['Enums']['workplace_adjustment'];
+type WorkPreference = Database['public']['Enums']['work_preference'];
 
 export const profileSetupManager = {
   // Save data for a specific step
@@ -69,31 +78,41 @@ export const profileSetupManager = {
         .eq('user_id', user.id)
         .maybeSingle();
 
+      // Helper function to safely cast enum values
+      const castEnumValue = <T extends string>(value: string | undefined, fallback: T | null = null): T | null => {
+        return value ? value as T : fallback;
+      };
+
+      // Helper function to safely cast enum arrays
+      const castEnumArray = <T extends string>(values: string[] | undefined): T[] | null => {
+        return values && values.length > 0 ? values as T[] : null;
+      };
+
       const profileData = {
         user_id: user.id,
-        first_name: data.firstName,
-        last_name: data.lastName,
-        job_title: data.jobTitle,
-        headline: data.headline,
-        key_skills: data.keySkills || [],
-        email: user.email,
-        sentence_completed: data.sentenceCompleted,
-        current_legal_supervision: data.currentLegalSupervision,
-        conviction_types: data.convictionTypes || [],
-        conviction_status: data.convictionStatus,
-        conviction_other_details: data.convictionOtherDetails,
-        barred_from_regulated_work: data.barredFromRegulatedWork,
-        on_dbs_barring_list: data.onDbsBarringList,
-        mappa_level: data.mappaLevel,
-        relevant_for_safeguarding_checks: data.relevantForSafeguardingChecks,
-        has_disability: data.hasDisability,
-        disability_types: data.disabilityTypes || [],
-        disability_other_details: data.disabilityOtherDetails,
-        workplace_adjustments: data.workplaceAdjustments || [],
-        workplace_adjustments_other: data.workplaceAdjustmentsOther,
-        has_driving_licence: data.hasDrivingLicence,
-        work_preferences: data.workPreferences || [],
-        open_to_relocation: data.openToRelocation,
+        first_name: data.firstName || null,
+        last_name: data.lastName || null,
+        job_title: data.jobTitle || null,
+        headline: data.headline || null,
+        key_skills: data.keySkills || null,
+        email: user.email || null,
+        sentence_completed: data.sentenceCompleted || null,
+        current_legal_supervision: castEnumValue<LegalSupervisionType>(data.currentLegalSupervision),
+        conviction_types: castEnumArray<ConvictionType>(data.convictionTypes),
+        conviction_status: castEnumValue<ConvictionStatus>(data.convictionStatus),
+        conviction_other_details: data.convictionOtherDetails || null,
+        barred_from_regulated_work: data.barredFromRegulatedWork || null,
+        on_dbs_barring_list: data.onDbsBarringList || null,
+        mappa_level: castEnumValue<MappaLevel>(data.mappaLevel),
+        relevant_for_safeguarding_checks: data.relevantForSafeguardingChecks || null,
+        has_disability: data.hasDisability || null,
+        disability_types: castEnumArray<DisabilityType>(data.disabilityTypes),
+        disability_other_details: data.disabilityOtherDetails || null,
+        workplace_adjustments: castEnumArray<WorkplaceAdjustment>(data.workplaceAdjustments),
+        workplace_adjustments_other: data.workplaceAdjustmentsOther || null,
+        has_driving_licence: data.hasDrivingLicence || null,
+        work_preferences: castEnumArray<WorkPreference>(data.workPreferences),
+        open_to_relocation: data.openToRelocation || null,
         profile_completion_percentage: profileSetupManager.calculateCompletionPercentage(),
         updated_at: new Date().toISOString()
       };
@@ -109,7 +128,7 @@ export const profileSetupManager = {
         // Create new profile
         result = await supabase
           .from('seeker_profiles')
-          .insert([profileData]);
+          .insert(profileData);
       }
 
       if (result.error) {
