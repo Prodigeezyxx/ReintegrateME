@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Building } from 'lucide-react';
 import { companyAPI, countries } from '../../services/api';
 import { toast } from '@/hooks/use-toast';
+import HirerSkillsPreferences from './HirerSkillsPreferences';
 
 const HirerProfileSetup = () => {
   const navigate = useNavigate();
@@ -20,7 +20,8 @@ const HirerProfileSetup = () => {
     websiteUrl: '',
     description: '',
     locationCity: '',
-    locationCountry: ''
+    locationCountry: '',
+    preferredSkills: [] as string[]
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -56,10 +57,33 @@ const HirerProfileSetup = () => {
     '1000+ employees'
   ];
 
+  // Map industry to job categories for skills suggestions
+  const getJobCategoriesForIndustry = (industry: string): string[] => {
+    const categoryMap: Record<string, string[]> = {
+      'Construction and Building': ['Construction'],
+      'Manufacturing': ['Manufacturing'],
+      'Transportation and Logistics': ['Transportation', 'Logistics'],
+      'Retail and Consumer Services': ['Retail'],
+      'Accommodation and Food Services': ['Hospitality'],
+      'Healthcare and Social Assistance': ['Healthcare'],
+      'Administrative and Support Services': ['Service Industry'],
+      'Energy and Utilities': ['Maintenance'],
+      'Agriculture, Forestry and Fishing': ['Agriculture']
+    };
+    return categoryMap[industry] || ['Service Industry'];
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }));
+  };
+
+  const handleSkillsChange = (skills: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      preferredSkills: skills
     }));
   };
 
@@ -75,7 +99,12 @@ const HirerProfileSetup = () => {
 
     try {
       setIsLoading(true);
-      await companyAPI.createInitialProfile(formData);
+      // Create the company profile without skills (API doesn't support it yet)
+      const { preferredSkills, ...apiData } = formData;
+      await companyAPI.createInitialProfile(apiData);
+      
+      // TODO: Save preferred skills when API is updated to support it
+      console.log('Preferred skills to save:', preferredSkills);
       
       toast({
         title: "Company profile created!",
@@ -111,7 +140,7 @@ const HirerProfileSetup = () => {
           </div>
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 space-y-6">
           <Card>
             <CardHeader>
               <div className="flex items-center space-x-3">
@@ -221,7 +250,14 @@ const HirerProfileSetup = () => {
             </CardContent>
           </Card>
 
-          <div className="mt-6 bg-orange-50 p-4 rounded-lg border border-orange-200">
+          {/* Skills Preferences Section */}
+          <HirerSkillsPreferences
+            selectedSkills={formData.preferredSkills}
+            onSkillsChange={handleSkillsChange}
+            jobCategories={formData.industry ? getJobCategoriesForIndustry(formData.industry) : []}
+          />
+
+          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
             <p className="text-sm text-orange-800">
               <strong>Building inclusive workplaces:</strong> Your profile helps job seekers understand your commitment to diversity and second chances.
             </p>

@@ -67,5 +67,15 @@ export const profileSetupManager = {
       isValid: missingFields.length === 0,
       missingFields
     };
+  },
+
+  // Get skills completion status
+  getSkillsCompletionStatus: (): { hasSkills: boolean; skillCount: number } => {
+    const data = profileSetupManager.getAllData();
+    const skills = data.keySkills || [];
+    return {
+      hasSkills: skills.length > 0,
+      skillCount: skills.length
+    };
   }
 };

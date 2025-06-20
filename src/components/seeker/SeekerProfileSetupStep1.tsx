@@ -60,7 +60,7 @@ const SeekerProfileSetupStep1 = () => {
       description: "Your personal information has been saved successfully.",
     });
     
-    navigate('/seeker-setup-step2');
+    navigate('/seeker-skills-step');
   };
 
   const handleBack = () => {
@@ -198,7 +198,7 @@ const SeekerProfileSetupStep1 = () => {
               ripple={true}
               glow={true}
             >
-              Next: Legal Information
+              Next: Add Your Skills
               <ArrowRight className="ml-3 h-6 w-6" />
             </AnimatedButton>
           </div>

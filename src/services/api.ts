@@ -188,7 +188,7 @@ export const companyAPI = {
   }
 };
 
-// Seeker Profile API
+// Enhanced Seeker Profile API with better skills integration
 export const seekerAPI = {
   // Create initial seeker profile
   createInitialProfile: async (profileData: Partial<SeekerProfile>): Promise<SeekerProfile> => {
@@ -205,11 +205,11 @@ export const seekerAPI = {
       jobTitle: profileData.jobTitle,
       headline: profileData.headline,
       bio: profileData.bio,
-      keySkills: profileData.keySkills,
+      keySkills: profileData.keySkills || [],
       locationCity: profileData.locationCity,
       locationCountry: profileData.locationCountry,
       availabilityStatus: 'actively_looking',
-      profileCompletionPercentage: 30, // Initial completion percentage
+      profileCompletionPercentage: profileData.keySkills && profileData.keySkills.length > 0 ? 40 : 30,
     };
     
     seekerProfiles.push(newProfile);
@@ -314,7 +314,7 @@ export const seekerAPI = {
       profile.displayName = `${profile.firstName} ${profile.lastName}`;
     }
     
-    // Recalculate completion percentage based on filled fields
+    // Enhanced completion calculation that includes skills
     const totalFields = 12; // Updated total number of fields
     let filledFields = 0;
     
@@ -337,7 +337,7 @@ export const seekerAPI = {
   }
 };
 
-// Job API
+// Enhanced Job API with better skills matching
 export const jobAPI = {
   // Create job posting
   createJob: async (jobData: Partial<JobPosting>): Promise<JobPosting> => {
@@ -365,7 +365,7 @@ export const jobAPI = {
       experienceLevel: jobData.experienceLevel,
       locationCity: jobData.locationCity,
       locationCountry: jobData.locationCountry,
-      requiredSkills: jobData.requiredSkills,
+      requiredSkills: jobData.requiredSkills || [],
       salary: jobData.salary,
       createdAt: new Date(),
       status: jobData.status as 'active' | 'draft' | 'archived' | undefined,
@@ -385,13 +385,17 @@ export const jobAPI = {
     return jobPostings.filter(job => job.hirerId === currentUser?.id);
   },
   
-  // Get jobs for seeker feed
+  // Enhanced job feed that considers seeker skills
   getJobsFeed: async (): Promise<SwipeableCardData[]> => {
     if (!currentUser || currentUser.role !== 'seeker') {
       throw new Error('Only job seekers can access job feed');
     }
 
-    // Populate with some demo jobs if empty
+    // Get current seeker's skills for better matching
+    const seekerProfile = seekerProfiles.find(p => p.userId === currentUser?.id);
+    const seekerSkills = seekerProfile?.keySkills || [];
+
+    // Populate with demo jobs if empty
     if (jobPostings.length === 0) {
       const demoJobs = [
         {
@@ -414,30 +418,6 @@ export const jobAPI = {
             min: 22000,
             max: 30000,
             currency: 'GBP',
-            period: 'annual'
-          }
-        },
-        {
-          id: generateId(),
-          hirerId: 'demo',
-          companyId: 'demo',
-          title: 'Electrician',
-          description: 'Join our team of skilled electricians for residential and commercial projects throughout Greater Manchester.',
-          companyName: 'PowerUp Electric',
-          companyLogoUrl: 'https://placehold.co/100x100?text=PE',
-          category: 'Construction',
-          employmentType: 'Full-time',
-          experienceLevel: 'Mid-level',
-          locationCity: 'Manchester',
-          locationCountry: 'United Kingdom',
-          requiredSkills: ['electrical_assistance', 'problem_solving', 'reliability'],
-          createdAt: new Date(),
-          status: 'active' as const,
-          salary: {
-            min: 25000,
-            max: 35000,
-            currency: 'GBP',
-            period: 'annual'
           }
         },
         {
@@ -460,7 +440,6 @@ export const jobAPI = {
             min: 21000,
             max: 24000,
             currency: 'GBP',
-            period: 'annual'
           }
         }
       ];
@@ -468,17 +447,28 @@ export const jobAPI = {
       jobPostings.push(...demoJobs);
     }
     
-    // Convert job postings to swipeable card data
-    return jobPostings.map(job => ({
-      id: job.id,
-      type: 'job',
-      primaryImageUrl: job.companyLogoUrl,
-      titleText: job.title,
-      subtitleText: job.companyName,
-      detailLine1: `${job.locationCity}, ${job.locationCountry}`,
-      detailLine2: job.employmentType,
-      tags: job.requiredSkills || []
-    }));
+    // Convert job postings to swipeable card data with skills matching
+    const jobCards = jobPostings.map(job => {
+      // Calculate skill match percentage
+      const jobSkills = job.requiredSkills || [];
+      const matchingSkills = jobSkills.filter(skill => seekerSkills.includes(skill));
+      const matchPercentage = jobSkills.length > 0 ? (matchingSkills.length / jobSkills.length) * 100 : 0;
+      
+      return {
+        id: job.id,
+        type: 'job' as const,
+        primaryImageUrl: job.companyLogoUrl,
+        titleText: job.title,
+        subtitleText: job.companyName,
+        detailLine1: `${job.locationCity}, ${job.locationCountry}`,
+        detailLine2: job.employmentType,
+        tags: job.requiredSkills || [],
+        skillMatchPercentage: Math.round(matchPercentage)
+      };
+    });
+
+    // Sort by skill match percentage (higher matches first)
+    return jobCards.sort((a, b) => (b.skillMatchPercentage || 0) - (a.skillMatchPercentage || 0));
   },
   
   // Get seekers for hirer feed
@@ -487,7 +477,7 @@ export const jobAPI = {
       throw new Error('Only hirers can access seeker feed');
     }
 
-    // Populate with some demo seekers if empty
+    // Populate with demo seekers if empty
     if (seekerProfiles.length === 0) {
       const demoSeekers = [
         {
@@ -509,57 +499,9 @@ export const jobAPI = {
           lastName: 'Johnson',
           displayName: 'Sarah Johnson',
           profilePictureUrl: 'https://placehold.co/200x200?text=SJ',
-          headline: 'Licensed Electrician',
-          keySkills: ['electrical_assistance', 'problem_solving', 'communication'],
+          headline: 'Licensed Driver & Warehouse Worker',
+          keySkills: ['van_driving', 'warehouse_picking', 'punctuality'],
           locationCity: 'London',
-          locationCountry: 'United Kingdom',
-        },
-        {
-          id: generateId(),
-          userId: 'demo3',
-          firstName: 'Robert',
-          lastName: 'Chen',
-          displayName: 'Robert Chen',
-          profilePictureUrl: 'https://placehold.co/200x200?text=RC',
-          headline: 'HVAC Technician',
-          keySkills: ['hvac_assistance', 'time_management', 'adaptability'],
-          locationCity: 'Glasgow',
-          locationCountry: 'United Kingdom',
-        },
-        {
-          id: generateId(),
-          userId: 'demo4',
-          firstName: 'Lisa',
-          lastName: 'Martinez',
-          displayName: 'Lisa Martinez',
-          profilePictureUrl: 'https://placehold.co/200x200?text=LM',
-          headline: 'Commercial Driver',
-          keySkills: ['hgv_class1', 'route_planning', 'punctuality'],
-          locationCity: 'Edinburgh',
-          locationCountry: 'United Kingdom',
-        },
-        {
-          id: generateId(),
-          userId: 'demo5',
-          firstName: 'James',
-          lastName: 'Wilson',
-          displayName: 'James Wilson',
-          profilePictureUrl: 'https://placehold.co/200x200?text=JW',
-          headline: 'Skilled Plumber',
-          keySkills: ['plumbing_basic', 'problem_solving', 'reliability'],
-          locationCity: 'Leeds',
-          locationCountry: 'United Kingdom',
-        },
-        {
-          id: generateId(),
-          userId: 'demo6',
-          firstName: 'Emma',
-          lastName: 'Thompson',
-          displayName: 'Emma Thompson',
-          profilePictureUrl: 'https://placehold.co/200x200?text=ET',
-          headline: 'Retail Supervisor',
-          keySkills: ['customer_support', 'leadership', 'teamwork'],
-          locationCity: 'Sheffield',
           locationCountry: 'United Kingdom',
         }
       ];
@@ -570,7 +512,7 @@ export const jobAPI = {
     // Convert seeker profiles to swipeable card data
     return seekerProfiles.map(profile => ({
       id: profile.id,
-      type: 'seeker',
+      type: 'seeker' as const,
       primaryImageUrl: profile.profilePictureUrl,
       titleText: profile.displayName,
       subtitleText: profile.headline,
@@ -580,7 +522,7 @@ export const jobAPI = {
   }
 };
 
-// Swipe API
+// Enhanced Swipe API with skills-based matching
 export const swipeAPI = {
   // Process swipe
   processSwipe: async (swipedEntityId: string, swipedEntityType: 'seeker' | 'job', swipeType: 'like' | 'pass' | 'super_like', contextJobId?: string): Promise<{ isMatch: boolean, match?: MatchRecord }> => {
@@ -588,12 +530,30 @@ export const swipeAPI = {
       throw new Error('User must be authenticated to swipe');
     }
     
-    // For demonstration purposes, simulate a match on every 3rd like
     const isLike = swipeType === 'like' || swipeType === 'super_like';
-    const randomMatch = Math.random() < 0.3 && isLike;
+    
+    // Enhanced matching logic that considers skills compatibility
+    let matchProbability = 0.3; // Base probability
+    
+    if (currentUser.role === 'seeker' && swipedEntityType === 'job') {
+      const job = jobPostings.find(j => j.id === swipedEntityId);
+      const seekerProfile = seekerProfiles.find(p => p.userId === currentUser?.id);
+      
+      if (job && seekerProfile) {
+        const jobSkills = job.requiredSkills || [];
+        const seekerSkills = seekerProfile.keySkills || [];
+        const matchingSkills = jobSkills.filter(skill => seekerSkills.includes(skill));
+        
+        if (jobSkills.length > 0) {
+          const skillMatchRatio = matchingSkills.length / jobSkills.length;
+          matchProbability = 0.2 + (skillMatchRatio * 0.6); // 20% base + up to 60% for skills
+        }
+      }
+    }
+    
+    const randomMatch = Math.random() < matchProbability && isLike;
     
     if (randomMatch) {
-      // Create a match record
       let match: MatchRecord;
       
       if (currentUser.role === 'hirer' && swipedEntityType === 'seeker') {
