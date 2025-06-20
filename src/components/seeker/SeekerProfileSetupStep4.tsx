@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
 import AnimatedCard from '../ui/animated-card';
@@ -110,12 +109,12 @@ const SeekerProfileSetupStep4 = () => {
         <div className="flex items-center mb-6 sm:mb-8 animate-slide-up-stagger relative z-10">
           <AnimatedButton 
             variant="ghost" 
-            size="icon" 
+            size="sm" 
             onClick={handleBack} 
-            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full border border-white/20"
+            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-lg border border-white/20 px-3 py-2"
             ripple={false}
           >
-            <ArrowLeft className="h-6 w-6" />
+            Back
           </AnimatedButton>
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-black font-geist animate-fade-in-scale">
@@ -245,7 +244,7 @@ const SeekerProfileSetupStep4 = () => {
               onClick={handleBack}
               className="w-full sm:flex-1 py-4 sm:py-6 text-base sm:text-lg font-bold rounded-2xl
                 bg-white/90 hover:bg-white border-2 border-slate-200
-                text-slate-700 hover:text-slate-900 font-geist"
+                text-slate-700 hover:text-slate-900 font-geist min-h-[44px]"
               ripple={true}
             >
               Back
@@ -258,7 +257,7 @@ const SeekerProfileSetupStep4 = () => {
                 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500
                 hover:from-blue-600 hover:via-purple-600 hover:to-orange-600
                 text-white shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]
-                transition-all duration-500 font-geist disabled:opacity-50"
+                transition-all duration-500 font-geist disabled:opacity-50 min-h-[44px]"
               ripple={true}
               glow={true}
             >
