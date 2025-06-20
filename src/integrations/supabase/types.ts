@@ -782,6 +782,11 @@ export type Database = {
         | "zero_hours"
         | "weekends"
         | "nights"
+        | "contract"
+        | "temporary"
+        | "flexible_hours"
+        | "remote_work"
+        | "shift_work"
       workplace_adjustment:
         | "flexible_hours"
         | "remote_work"
@@ -951,6 +956,11 @@ export const Constants = {
         "zero_hours",
         "weekends",
         "nights",
+        "contract",
+        "temporary",
+        "flexible_hours",
+        "remote_work",
+        "shift_work",
       ],
       workplace_adjustment: [
         "flexible_hours",
