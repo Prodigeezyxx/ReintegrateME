@@ -1,62 +1,84 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { skills } from '../../../services/api';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import SkillSearchInput from '../../skills/SkillSearchInput';
+import CategorySkillsSelector from '../../skills/CategorySkillsSelector';
 
 interface SkillsSelectorProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   selectedSkills: string[];
   onToggleSkill: (skill: string) => void;
+  jobCategory?: string;
 }
 
 const SkillsSelector: React.FC<SkillsSelectorProps> = ({ 
   isOpen, 
   setIsOpen, 
   selectedSkills, 
-  onToggleSkill 
+  onToggleSkill,
+  jobCategory
 }) => {
+  const [activeTab, setActiveTab] = useState('search');
+
+  const handleSkillAdd = (skillId: string) => {
+    if (!selectedSkills.includes(skillId)) {
+      onToggleSkill(skillId);
+    }
+  };
+
+  const handleSkillRemove = (skillId: string) => {
+    if (selectedSkills.includes(skillId)) {
+      onToggleSkill(skillId);
+    }
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent>
+      <SheetContent className="w-full sm:max-w-2xl">
         <SheetHeader>
-          <SheetTitle>Select Skills</SheetTitle>
+          <SheetTitle>Select Required Skills</SheetTitle>
+          <p className="text-sm text-gray-600">
+            Choose the skills that are required or preferred for this position.
+          </p>
         </SheetHeader>
-        <div className="mt-6">
-          <div className="grid grid-cols-1 gap-2">
-            {skills.map(skill => (
-              <div 
-                key={skill}
-                className={`p-3 border rounded-md cursor-pointer ${
-                  selectedSkills.includes(skill) 
-                    ? 'border-reme-orange bg-orange-50' 
-                    : 'border-gray-200 hover:bg-gray-50'
-                }`}
-                onClick={() => onToggleSkill(skill)}
-              >
-                <div className="flex items-center">
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{skill}</p>
-                  </div>
-                  {selectedSkills.includes(skill) && (
-                    <div className="h-5 w-5 bg-reme-orange rounded-full flex items-center justify-center">
-                      <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+        
+        <div className="mt-6 h-full flex flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="search">Search Skills</TabsTrigger>
+              <TabsTrigger value="browse">Browse Categories</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="search" className="flex-1 mt-4">
+              <SkillSearchInput
+                selectedSkills={selectedSkills}
+                onSkillAdd={handleSkillAdd}
+                onSkillRemove={handleSkillRemove}
+                placeholder="Search for required skills..."
+              />
+            </TabsContent>
+            
+            <TabsContent value="browse" className="flex-1 mt-4 overflow-y-auto">
+              <CategorySkillsSelector
+                selectedSkills={selectedSkills}
+                onSkillToggle={onToggleSkill}
+                jobCategory={jobCategory}
+                showAllCategories={true}
+              />
+            </TabsContent>
+          </Tabs>
           
-          <Button
-            className="w-full mt-4 bg-reme-orange hover:bg-orange-600 transition-colors"
-            onClick={() => setIsOpen(false)}
-          >
-            Done
-          </Button>
+          <div className="mt-4 pt-4 border-t">
+            <Button
+              className="w-full bg-reme-orange hover:bg-orange-600 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              Done ({selectedSkills.length} skill{selectedSkills.length !== 1 ? 's' : ''} selected)
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

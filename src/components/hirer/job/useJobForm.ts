@@ -28,22 +28,22 @@ export const useJobForm = () => {
     setJobData(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleToggleSkill = (skill: string) => {
+  const handleToggleSkill = (skillId: string) => {
     setSelectedSkills(prev => 
-      prev.includes(skill) 
-        ? prev.filter(s => s !== skill) 
-        : [...prev, skill]
+      prev.includes(skillId) 
+        ? prev.filter(s => s !== skillId) 
+        : [...prev, skillId]
     );
   };
   
-  const handleAddSkill = (skill: string) => {
-    if (!selectedSkills.includes(skill)) {
-      setSelectedSkills(prev => [...prev, skill]);
+  const handleAddSkill = (skillId: string) => {
+    if (!selectedSkills.includes(skillId)) {
+      setSelectedSkills(prev => [...prev, skillId]);
     }
   };
   
-  const handleRemoveSkill = (skill: string) => {
-    setSelectedSkills(prev => prev.filter(s => s !== skill));
+  const handleRemoveSkill = (skillId: string) => {
+    setSelectedSkills(prev => prev.filter(s => s !== skillId));
   };
   
   const handleSaveDraft = async () => {

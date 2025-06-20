@@ -4,7 +4,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 import { jobCategories, employmentTypes } from '../../../services/api';
+import { getSkillById } from '../../../data/skillsDatabase';
 
 interface JobFormProps {
   jobData: {
@@ -153,21 +156,27 @@ const JobForm: React.FC<JobFormProps> = ({
             
             {selectedSkills.length > 0 ? (
               <div className="flex flex-wrap gap-2 mt-2">
-                {selectedSkills.map(skill => (
-                  <span 
-                    key={skill}
-                    className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded flex items-center"
-                  >
-                    {skill}
-                    <button
-                      type="button"
-                      onClick={() => onRemoveSkill(skill)}
-                      className="ml-1.5 text-gray-500 hover:text-red-500"
+                {selectedSkills.map(skillId => {
+                  const skill = getSkillById(skillId);
+                  const skillName = skill ? skill.name : skillId;
+                  
+                  return (
+                    <Badge
+                      key={skillId}
+                      variant="secondary"
+                      className="bg-blue-50 text-blue-700 flex items-center gap-1"
                     >
-                      &times;
-                    </button>
-                  </span>
-                ))}
+                      {skillName}
+                      <button
+                        type="button"
+                        onClick={() => onRemoveSkill(skillId)}
+                        className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  );
+                })}
               </div>
             ) : (
               <p className="text-sm text-gray-500">No skills selected</p>

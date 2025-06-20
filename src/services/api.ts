@@ -1,4 +1,5 @@
 import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCardData, MatchRecord } from '../models/types';
+import { skillsDatabase, getAllSkills } from '../data/skillsDatabase';
 
 // Mock data and functions to simulate API calls
 // In a real implementation, these would be actual API calls to your backend
@@ -39,21 +40,8 @@ export const employmentTypes = [
   'Apprenticeship'
 ];
 
-// Sample skills
-export const skills = [
-  'Carpentry',
-  'Plumbing',
-  'Electrical',
-  'Forklift Operation',
-  'Welding',
-  'HVAC',
-  'HGV Driving',
-  'Food Service',
-  'Customer Service',
-  'Equipment Maintenance',
-  'Machinery Operation',
-  'Health & Safety Compliance'
-];
+// Export skills from the comprehensive database
+export const skills = getAllSkills().map(skill => skill.name);
 
 // Sample countries
 export const countries = [
@@ -419,7 +407,7 @@ export const jobAPI = {
           experienceLevel: 'Entry-level to Mid-level',
           locationCity: 'London',
           locationCountry: 'United Kingdom',
-          requiredSkills: ['Physical Stamina', 'Tool Knowledge', 'Health & Safety Awareness'],
+          requiredSkills: ['cscs_labourer', 'bricklaying', 'time_management'],
           createdAt: new Date(),
           status: 'active' as const,
           salary: {
@@ -442,7 +430,7 @@ export const jobAPI = {
           experienceLevel: 'Mid-level',
           locationCity: 'Manchester',
           locationCountry: 'United Kingdom',
-          requiredSkills: ['Electrical Systems', 'Wiring', 'Troubleshooting'],
+          requiredSkills: ['electrical_assistance', 'problem_solving', 'reliability'],
           createdAt: new Date(),
           status: 'active' as const,
           salary: {
@@ -465,7 +453,7 @@ export const jobAPI = {
           experienceLevel: 'Entry-level',
           locationCity: 'Birmingham',
           locationCountry: 'United Kingdom',
-          requiredSkills: ['Clean Driving Licence', 'Navigation Skills', 'Time Management'],
+          requiredSkills: ['van_driving', 'route_planning', 'punctuality'],
           createdAt: new Date(),
           status: 'active' as const,
           salary: {
@@ -510,7 +498,7 @@ export const jobAPI = {
           displayName: 'Michael Roberts',
           profilePictureUrl: 'https://placehold.co/200x200?text=MR',
           headline: 'Experienced Carpenter',
-          keySkills: ['Carpentry', 'Framing', 'Finishing Work'],
+          keySkills: ['carpentry_basic', 'teamwork', 'reliability'],
           locationCity: 'Bristol',
           locationCountry: 'United Kingdom',
         },
@@ -522,7 +510,7 @@ export const jobAPI = {
           displayName: 'Sarah Johnson',
           profilePictureUrl: 'https://placehold.co/200x200?text=SJ',
           headline: 'Licensed Electrician',
-          keySkills: ['Electrical Systems', 'Wiring', 'Circuits'],
+          keySkills: ['electrical_assistance', 'problem_solving', 'communication'],
           locationCity: 'London',
           locationCountry: 'United Kingdom',
         },
@@ -534,7 +522,7 @@ export const jobAPI = {
           displayName: 'Robert Chen',
           profilePictureUrl: 'https://placehold.co/200x200?text=RC',
           headline: 'HVAC Technician',
-          keySkills: ['HVAC', 'Refrigeration', 'Maintenance'],
+          keySkills: ['hvac_assistance', 'time_management', 'adaptability'],
           locationCity: 'Glasgow',
           locationCountry: 'United Kingdom',
         },
@@ -546,7 +534,7 @@ export const jobAPI = {
           displayName: 'Lisa Martinez',
           profilePictureUrl: 'https://placehold.co/200x200?text=LM',
           headline: 'Commercial Driver',
-          keySkills: ['HGV Licence', 'Logistics', 'Safety Compliance'],
+          keySkills: ['hgv_class1', 'route_planning', 'punctuality'],
           locationCity: 'Edinburgh',
           locationCountry: 'United Kingdom',
         },
@@ -558,7 +546,7 @@ export const jobAPI = {
           displayName: 'James Wilson',
           profilePictureUrl: 'https://placehold.co/200x200?text=JW',
           headline: 'Skilled Plumber',
-          keySkills: ['Plumbing', 'Pipe Fitting', 'Repairs'],
+          keySkills: ['plumbing_basic', 'problem_solving', 'reliability'],
           locationCity: 'Leeds',
           locationCountry: 'United Kingdom',
         },
@@ -570,7 +558,7 @@ export const jobAPI = {
           displayName: 'Emma Thompson',
           profilePictureUrl: 'https://placehold.co/200x200?text=ET',
           headline: 'Retail Supervisor',
-          keySkills: ['Customer Service', 'Stock Management', 'Team Leadership'],
+          keySkills: ['customer_support', 'leadership', 'teamwork'],
           locationCity: 'Sheffield',
           locationCountry: 'United Kingdom',
         }
