@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
 import AnimatedCard from '../ui/animated-card';
@@ -57,14 +56,14 @@ const SeekerSkillsStep = () => {
 
   return (
     <div className="mobile-container gradient-bg-primary min-h-screen">
-      <div className="min-h-screen flex flex-col p-6 relative overflow-hidden">
+      <div className="min-h-screen flex flex-col p-4 sm:p-6 relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute top-10 right-10 w-20 h-20 bg-white/10 rounded-full animate-float animate-delay-100" />
         <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
         {/* Header */}
-        <div className="flex items-center mb-8 animate-slide-up-stagger relative z-10">
+        <div className="flex items-center mb-6 sm:mb-8 animate-slide-up-stagger relative z-10">
           <AnimatedButton 
             variant="ghost" 
             size="icon" 
@@ -75,10 +74,10 @@ const SeekerSkillsStep = () => {
             <ArrowLeft className="h-6 w-6" />
           </AnimatedButton>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-black font-geist animate-fade-in-scale">
+            <h1 className="text-2xl sm:text-3xl font-bold text-black font-geist animate-fade-in-scale">
               Your Skills & Experience
             </h1>
-            <p className="text-black text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
+            <p className="text-black text-base sm:text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
               Let employers know what you can do - Step 1.5 of 4 ✨
             </p>
           </div>
@@ -86,7 +85,7 @@ const SeekerSkillsStep = () => {
             <img 
               src={getLogoUrl()} 
               alt="ReintegrateMe"
-              className="h-12 w-12 animate-float drop-shadow-lg"
+              className="h-10 w-10 sm:h-12 sm:w-12 animate-float drop-shadow-lg"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
@@ -95,7 +94,7 @@ const SeekerSkillsStep = () => {
         </div>
 
         {/* Progress bar */}
-        <div className="mb-8 animate-slide-up-stagger animate-delay-200 relative z-10">
+        <div className="mb-6 sm:mb-8 animate-slide-up-stagger animate-delay-200 relative z-10">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-geist text-black font-medium">Profile Completion</span>
             <span className="text-sm font-bold text-black font-geist">35%</span>
@@ -135,22 +134,21 @@ const SeekerSkillsStep = () => {
         </div>
 
         {/* Navigation buttons */}
-        <div className="mt-6 flex gap-3 animate-slide-up-stagger animate-delay-400 relative z-10">
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 animate-slide-up-stagger animate-delay-400 relative z-10">
           <AnimatedButton
             variant="outline"
             onClick={handleBack}
-            className="flex-1 py-6 text-lg font-bold rounded-2xl
+            className="w-full sm:flex-1 py-4 sm:py-6 text-base sm:text-lg font-bold rounded-2xl
               bg-white/90 hover:bg-white border-2 border-slate-200
               text-slate-700 hover:text-slate-900 font-geist"
             ripple={true}
           >
-            <ArrowLeft className="mr-2 h-5 w-5" />
             Back
           </AnimatedButton>
           
           <AnimatedButton
             onClick={handleNext}
-            className="flex-2 py-6 text-lg font-bold rounded-2xl
+            className="w-full sm:flex-2 py-4 sm:py-6 text-base sm:text-lg font-bold rounded-2xl
               bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500
               hover:from-blue-600 hover:via-purple-600 hover:to-orange-600
               text-white shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]
@@ -159,7 +157,6 @@ const SeekerSkillsStep = () => {
             glow={true}
           >
             Next: Legal Information
-            <ArrowRight className="ml-3 h-6 w-6" />
           </AnimatedButton>
         </div>
       </div>

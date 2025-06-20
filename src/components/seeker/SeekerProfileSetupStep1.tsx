@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
 import AnimatedCard from '../ui/animated-card';
@@ -69,14 +69,14 @@ const SeekerProfileSetupStep1 = () => {
 
   return (
     <div className="mobile-container gradient-bg-primary min-h-screen">
-      <div className="min-h-screen flex flex-col p-6 relative overflow-hidden">
+      <div className="min-h-screen flex flex-col p-4 sm:p-6 relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute top-10 right-10 w-20 h-20 bg-white/10 rounded-full animate-float animate-delay-100" />
         <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
         {/* Header with black text */}
-        <div className="flex items-center mb-8 animate-slide-up-stagger relative z-10">
+        <div className="flex items-center mb-6 sm:mb-8 animate-slide-up-stagger relative z-10">
           <AnimatedButton 
             variant="ghost" 
             size="icon" 
@@ -84,15 +84,13 @@ const SeekerProfileSetupStep1 = () => {
             className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full border border-white/20"
             ripple={false}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ArrowLeft className="h-6 w-6" />
           </AnimatedButton>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-black font-geist animate-fade-in-scale">
+            <h1 className="text-2xl sm:text-3xl font-bold text-black font-geist animate-fade-in-scale">
               Tell us about yourself
             </h1>
-            <p className="text-black text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
+            <p className="text-black text-base sm:text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
               Let employers know who you are - Step 1 of 4 ✨
             </p>
           </div>
@@ -100,7 +98,7 @@ const SeekerProfileSetupStep1 = () => {
             <img 
               src={getLogoUrl()} 
               alt="ReintegrateMe"
-              className="h-12 w-12 animate-float drop-shadow-lg"
+              className="h-10 w-10 sm:h-12 sm:w-12 animate-float drop-shadow-lg"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
@@ -109,7 +107,7 @@ const SeekerProfileSetupStep1 = () => {
         </div>
 
         {/* Progress bar with black text */}
-        <div className="mb-8 animate-slide-up-stagger animate-delay-200 relative z-10">
+        <div className="mb-6 sm:mb-8 animate-slide-up-stagger animate-delay-200 relative z-10">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-geist text-black font-medium">Profile Completion</span>
             <span className="text-sm font-bold text-black font-geist">25%</span>
@@ -118,7 +116,7 @@ const SeekerProfileSetupStep1 = () => {
         </div>
 
         {/* Content cards with staggered animations */}
-        <form onSubmit={handleNext} className="flex-1 space-y-6 relative z-10">
+        <form onSubmit={handleNext} className="flex-1 space-y-4 sm:space-y-6 relative z-10">
           <AnimatedCard
             title="Personal Information"
             description="Your basic details for employers"
@@ -133,7 +131,7 @@ const SeekerProfileSetupStep1 = () => {
                   name="firstName"
                   value={seekerProfile.firstName}
                   onChange={handleChange}
-                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
+                  className="h-12 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
                   required
                 />
               </div>
@@ -145,7 +143,7 @@ const SeekerProfileSetupStep1 = () => {
                   name="lastName"
                   value={seekerProfile.lastName}
                   onChange={handleChange}
-                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
+                  className="h-12 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
                   required
                 />
               </div>
@@ -167,7 +165,7 @@ const SeekerProfileSetupStep1 = () => {
                   placeholder="e.g., Warehouse Assistant"
                   value={seekerProfile.jobTitle}
                   onChange={handleChange}
-                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
+                  className="h-12 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
                 />
                 <p className="text-xs text-slate-600">The type of role you're seeking</p>
               </div>
@@ -180,17 +178,17 @@ const SeekerProfileSetupStep1 = () => {
                   placeholder="e.g., Reliable team player seeking new opportunities"
                   value={seekerProfile.headline}
                   onChange={handleChange}
-                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
+                  className="h-12 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400 focus:ring-blue-400"
                 />
                 <p className="text-xs text-slate-600">A short summary of your professional identity</p>
               </div>
             </div>
           </AnimatedCard>
 
-          <div className="mt-8 animate-slide-up-stagger animate-delay-400">
+          <div className="mt-6 sm:mt-8 animate-slide-up-stagger animate-delay-400">
             <AnimatedButton
               type="submit"
-              className="w-full py-6 text-lg font-bold rounded-2xl
+              className="w-full py-4 sm:py-6 text-base sm:text-lg font-bold rounded-2xl
                 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500
                 hover:from-blue-600 hover:via-purple-600 hover:to-orange-600
                 text-white shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]
@@ -199,7 +197,6 @@ const SeekerProfileSetupStep1 = () => {
               glow={true}
             >
               Next: Add Your Skills
-              <ArrowRight className="ml-3 h-6 w-6" />
             </AnimatedButton>
           </div>
         </form>

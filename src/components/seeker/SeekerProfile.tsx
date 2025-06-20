@@ -1,330 +1,413 @@
+
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Camera, MapPin, Mail, Phone, Shield, AlertCircle, Briefcase, ExternalLink } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { authAPI } from '../../services/api';
-import { toast } from '@/hooks/use-toast';
-import { profileSetupManager } from '../../utils/profileSetupManager';
-import { calculateProfileCompletion } from '../../utils/profileCompletionCalculator';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import { Edit2, Save, X, User, Mail, Phone, MapPin, Briefcase, Star } from 'lucide-react';
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { getSkillById } from '../../data/skillsDatabase';
 import SkillsManager from './SkillsManager';
-import { WorkPreferenceType } from '../../models/types';
+
+interface SeekerProfileData {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number?: string;
+  job_title?: string;
+  headline?: string;
+  bio?: string;
+  location_city?: string;
+  location_country?: string;
+  key_skills: string[];
+  profile_image_url?: string;
+  availability_status: string;
+  profile_completion_percentage: number;
+}
 
 const SeekerProfile = () => {
-  const navigate = useNavigate();
-  const currentUser = authAPI.getCurrentUser();
-  
+  const [profile, setProfile] = useState<SeekerProfileData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
-    firstName: '',
-    lastName: '',
-    email: currentUser?.email || '',
-    phone: '',
-    locationCity: '',
-    locationCountry: '',
-    jobTitle: '',
-    headline: '',
-    bio: '',
-    keySkills: [] as string[],
-    workPreferences: [] as WorkPreferenceType[],
-    profileCompletionPercentage: 0
-  });
+  const [editedProfile, setEditedProfile] = useState<Partial<SeekerProfileData>>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load profile data from profileSetupManager
-    const savedData = profileSetupManager.getAllData();
-    const completionPercentage = calculateProfileCompletion();
-    
-    setProfile(prev => ({
-      ...prev,
-      firstName: savedData.firstName || '',
-      lastName: savedData.lastName || '',
-      jobTitle: savedData.jobTitle || '',
-      headline: savedData.headline || '',
-      keySkills: savedData.keySkills || [],
-      workPreferences: (savedData.workPreferences || []) as WorkPreferenceType[],
-      profileCompletionPercentage: completionPercentage
-    }));
+    fetchProfile();
   }, []);
 
-  const handleSave = () => {
+  const fetchProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to view your profile",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('seeker_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load profile data",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data) {
+        setProfile(data);
+        setEditedProfile(data);
+      }
+    } catch (error) {
+      console.error('Profile fetch error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!profile) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('seeker_profiles')
+        .update({
+          ...editedProfile,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update profile",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setProfile({ ...profile, ...editedProfile } as SeekerProfileData);
+      setIsEditing(false);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    } catch (error) {
+      console.error('Profile update error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleSkillsChange = (skills: string[]) => {
+    setEditedProfile(prev => ({ ...prev, key_skills: skills }));
+  };
+
+  const handleCancel = () => {
+    setEditedProfile(profile || {});
     setIsEditing(false);
-    // Save to profileSetupManager and recalculate completion
-    profileSetupManager.saveStepData(1, profile);
-    const newCompletionPercentage = calculateProfileCompletion();
-    setProfile(prev => ({ ...prev, profileCompletionPercentage: newCompletionPercentage }));
-    
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been successfully updated.",
-    });
   };
 
-  const handleInputChange = (field: string, value: string | string[]) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
-  };
+  if (loading) {
+    return (
+      <div className="mobile-container p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-32 bg-gray-200 rounded-lg"></div>
+          <div className="h-48 bg-gray-200 rounded-lg"></div>
+          <div className="h-48 bg-gray-200 rounded-lg"></div>
+        </div>
+      </div>
+    );
+  }
 
-  const getDisclosureStatus = () => {
-    const savedData = profileSetupManager.getAllData();
-    if (savedData.sentenceCompleted !== undefined || savedData.hasDisability !== undefined) {
-      return "Complete";
-    }
-    return "Pending";
-  };
-
-  const getDisplayName = () => {
-    if (profile.firstName || profile.lastName) {
-      return `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
-    }
-    return 'Job Seeker';
-  };
-
-  const handleDisclosureClick = () => {
-    navigate('/seeker-disclosure');
-  };
+  if (!profile) {
+    return (
+      <div className="mobile-container p-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <User className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Profile Not Found</h2>
+            <p className="text-gray-600">
+              It looks like you haven't completed your profile setup yet.
+            </p>
+            <Button className="mt-4" onClick={() => window.location.href = '/seeker-setup-step1'}>
+              Complete Profile Setup
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="mobile-container p-6 pb-20">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => navigate('/seeker-dashboard')}
-            className="mr-2"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-2xl font-bold">My Profile</h1>
-        </div>
-        <Button 
-          variant={isEditing ? "default" : "outline"}
-          onClick={isEditing ? handleSave : () => setIsEditing(true)}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </Button>
-      </div>
-
-      <div className="space-y-6">
-        {/* Profile Header */}
-        <Card className="ios-card">
-          <CardContent className="p-6">
+    <div className="mobile-container p-4 sm:p-6 pb-24 space-y-6">
+      {/* Header Card */}
+      <Card className="glassmorphism-strong">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src="" />
-                  <AvatarFallback className="text-lg bg-gradient-to-br from-blue-100 to-orange-100 text-blue-600">
-                    {getDisplayName().split(' ').map(n => n[0]).join('').toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                {isEditing && (
-                  <Button size="icon" variant="secondary" className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full">
-                    <Camera className="h-4 w-4" />
-                  </Button>
+              <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
+                <AvatarImage src={profile.profile_image_url} />
+                <AvatarFallback className="bg-blue-500 text-white text-lg">
+                  {profile.first_name?.[0]}{profile.last_name?.[0]}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+                  {profile.first_name} {profile.last_name}
+                </h1>
+                {profile.job_title && (
+                  <p className="text-sm sm:text-base text-slate-600 font-medium">
+                    {profile.job_title}
+                  </p>
                 )}
-              </div>
-              <div className="flex-1">
-                {isEditing ? (
-                  <div className="space-y-2">
-                    <div className="flex gap-2">
-                      <Input 
-                        value={profile.firstName || ''} 
-                        onChange={(e) => handleInputChange('firstName', e.target.value)}
-                        placeholder="First Name"
-                        className="text-sm"
-                      />
-                      <Input 
-                        value={profile.lastName || ''} 
-                        onChange={(e) => handleInputChange('lastName', e.target.value)}
-                        placeholder="Last Name"
-                        className="text-sm"
-                      />
-                    </div>
-                    <Input 
-                      value={profile.jobTitle || ''} 
-                      onChange={(e) => handleInputChange('jobTitle', e.target.value)}
-                      placeholder="Job Title"
-                      className="text-sm"
-                    />
+                {profile.location_city && (
+                  <div className="flex items-center text-sm text-slate-500 mt-1">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {profile.location_city}{profile.location_country && `, ${profile.location_country}`}
                   </div>
-                ) : (
-                  <>
-                    <h2 className="text-xl font-semibold">{getDisplayName()}</h2>
-                    <p className="text-blue-600 font-medium">{profile.jobTitle || 'Job Seeker'}</p>
-                    {profile.headline && (
-                      <p className="text-gray-600 text-sm mt-1">{profile.headline}</p>
-                    )}
-                  </>
                 )}
               </div>
             </div>
-            
-            {/* Disclosure Status */}
-            <div 
-              className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 cursor-pointer hover:bg-green-100 transition-colors"
-              onClick={handleDisclosureClick}
+            <Button
+              variant={isEditing ? "outline" : "ghost"}
+              size="icon"
+              onClick={() => setIsEditing(!isEditing)}
+              className="shrink-0"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Shield className="h-4 w-4 text-green-600 mr-2" />
-                  <span className="text-sm font-medium text-green-800">
-                    Disclosure Status: {getDisclosureStatus()}
-                  </span>
-                </div>
-                <ExternalLink className="h-4 w-4 text-green-600" />
-              </div>
-              <p className="text-xs text-green-700 mt-1">
-                {getDisclosureStatus() === "Complete" 
-                  ? "Click to view your disclosure details and legal information."
-                  : "Complete your profile setup to update your disclosure status."
-                }
-              </p>
-            </div>
+              {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
+            </Button>
+          </div>
+        </CardHeader>
+        
+        {profile.headline && (
+          <CardContent className="pt-0">
+            <p className="text-slate-700 italic">"{profile.headline}"</p>
           </CardContent>
-        </Card>
-
-        {/* Contact Information */}
-        <Card className="ios-card">
-          <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <Mail className="h-5 w-5 text-gray-400" />
-              {isEditing ? (
-                <Input 
-                  value={profile.email || ''} 
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  type="email"
-                />
-              ) : (
-                <span>{profile.email}</span>
-              )}
-            </div>
-            <div className="flex items-center space-x-3">
-              <Phone className="h-5 w-5 text-gray-400" />
-              {isEditing ? (
-                <Input 
-                  value={profile.phone || ''} 
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="Phone number"
-                />
-              ) : (
-                <span>{profile.phone || 'Not provided'}</span>
-              )}
-            </div>
-            <div className="flex items-center space-x-3">
-              <MapPin className="h-5 w-5 text-gray-400" />
-              {isEditing ? (
-                <div className="flex gap-2 flex-1">
-                  <Input 
-                    value={profile.locationCity || ''} 
-                    onChange={(e) => handleInputChange('locationCity', e.target.value)}
-                    placeholder="City"
-                  />
-                  <Input 
-                    value={profile.locationCountry || ''} 
-                    onChange={(e) => handleInputChange('locationCountry', e.target.value)}
-                    placeholder="Country"
-                  />
-                </div>
-              ) : (
-                <span>
-                  {profile.locationCity && profile.locationCountry 
-                    ? `${profile.locationCity}, ${profile.locationCountry}`
-                    : 'Not provided'
-                  }
-                </span>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* About */}
-        <Card className="ios-card">
-          <CardHeader>
-            <CardTitle>About</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isEditing ? (
-              <Textarea 
-                value={profile.bio || ''} 
-                onChange={(e) => handleInputChange('bio', e.target.value)}
-                rows={4}
-                placeholder="Tell employers about yourself..."
-              />
-            ) : (
-              <p className="text-gray-600">
-                {profile.bio || 'No bio provided yet. Click Edit to add information about yourself.'}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Skills */}
-        <Card className="ios-card">
-          <CardHeader>
-            <CardTitle>Skills</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SkillsManager 
-              skills={profile.keySkills}
-              onSkillsChange={(skills) => handleInputChange('keySkills', skills)}
-              isEditing={isEditing}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Work Preferences */}
-        {profile.workPreferences && profile.workPreferences.length > 0 && (
-          <Card className="ios-card">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Briefcase className="h-5 w-5 mr-2" />
-                Work Preferences
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {profile.workPreferences.map((pref, index) => (
-                  <Badge key={index} variant="outline" className="bg-orange-50 text-orange-700">
-                    {pref.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         )}
+      </Card>
 
-        {/* Profile Completion */}
-        <Card className="ios-card">
-          <CardHeader>
-            <CardTitle>Profile Completion</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Profile completeness</span>
-                <span>{profile.profileCompletionPercentage}%</span>
+      {/* Contact Information */}
+      <Card className="glassmorphism-strong">
+        <CardHeader>
+          <CardTitle className="flex items-center text-lg">
+            <Mail className="h-5 w-5 mr-2 text-blue-500" />
+            Contact Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isEditing ? (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={editedProfile.email || ''}
+                  onChange={(e) => setEditedProfile(prev => ({ ...prev, email: e.target.value }))}
+                  className="bg-white"
+                />
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-blue-600 to-orange-500 h-2 rounded-full transition-all duration-300" 
-                  style={{ width: `${profile.profileCompletionPercentage}%` }}
-                ></div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={editedProfile.phone_number || ''}
+                  onChange={(e) => setEditedProfile(prev => ({ ...prev, phone_number: e.target.value }))}
+                  className="bg-white"
+                  placeholder="Enter your phone number"
+                />
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Complete all setup steps to reach 100% and maximize your visibility to employers.
-              </p>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center">
+                <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                <span>{profile.email}</span>
+              </div>
+              {profile.phone_number && (
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                  <span>{profile.phone_number}</span>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Professional Summary */}
+      <Card className="glassmorphism-strong">
+        <CardHeader>
+          <CardTitle className="flex items-center text-lg">
+            <Briefcase className="h-5 w-5 mr-2 text-blue-500" />
+            Professional Summary
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isEditing ? (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="job_title">Job Title</Label>
+                <Input
+                  id="job_title"
+                  value={editedProfile.job_title || ''}
+                  onChange={(e) => setEditedProfile(prev => ({ ...prev, job_title: e.target.value }))}
+                  className="bg-white"
+                  placeholder="e.g., Warehouse Assistant"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="headline">Professional Headline</Label>
+                <Input
+                  id="headline"
+                  value={editedProfile.headline || ''}
+                  onChange={(e) => setEditedProfile(prev => ({ ...prev, headline: e.target.value }))}
+                  className="bg-white"
+                  placeholder="Brief professional summary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={editedProfile.bio || ''}
+                  onChange={(e) => setEditedProfile(prev => ({ ...prev, bio: e.target.value }))}
+                  className="bg-white min-h-[100px]"
+                  placeholder="Tell employers about yourself..."
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              {profile.job_title && (
+                <div>
+                  <h4 className="font-medium text-slate-700">Current Role</h4>
+                  <p className="text-slate-600">{profile.job_title}</p>
+                </div>
+              )}
+              {profile.bio && (
+                <div>
+                  <h4 className="font-medium text-slate-700">About</h4>
+                  <p className="text-slate-600 whitespace-pre-wrap">{profile.bio}</p>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Skills */}
+      <Card className="glassmorphism-strong">
+        <CardHeader>
+          <CardTitle className="flex items-center text-lg">
+            <Star className="h-5 w-5 mr-2 text-blue-500" />
+            Skills & Abilities
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isEditing ? (
+            <SkillsManager
+              skills={editedProfile.key_skills || []}
+              onSkillsChange={handleSkillsChange}
+              isEditing={true}
+              jobCategories={[]}
+            />
+          ) : (
+            <div className="space-y-4">
+              {profile.key_skills && profile.key_skills.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {profile.key_skills.map(skillId => {
+                    const skill = getSkillById(skillId);
+                    if (!skill) return null;
+                    
+                    return (
+                      <Badge
+                        key={skillId}
+                        variant="secondary"
+                        className="bg-blue-50 text-blue-700 hover:bg-blue-100"
+                      >
+                        {skill.name}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-slate-500 italic">No skills added yet</p>
+              )}
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Profile Completion */}
+      <Card className="glassmorphism-strong">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-slate-700">Profile Completion</span>
+            <span className="text-sm font-bold text-slate-900">
+              {profile.profile_completion_percentage || 0}%
+            </span>
+          </div>
+          <div className="w-full bg-slate-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${profile.profile_completion_percentage || 0}%` }}
+            />
+          </div>
+          <p className="text-xs text-slate-500 mt-2">
+            Complete your profile to increase your chances of being discovered by employers
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Save/Cancel buttons for editing */}
+      {isEditing && (
+        <div className="flex gap-3 pb-6">
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            className="flex-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save Changes
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

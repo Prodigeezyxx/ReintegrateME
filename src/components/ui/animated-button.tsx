@@ -32,8 +32,11 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   return (
     <Button
       className={cn(
+        // Base styles for mobile-first design
         "relative overflow-hidden transition-all duration-300 ease-out transform",
+        "min-h-[44px] touch-manipulation", // Ensure minimum touch target size
         "hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]",
+        "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2",
         glow && "hover:shadow-[0_0_20px_rgba(59,130,246,0.5)]",
         pulse && "animate-pulse-gentle",
         "font-geist font-semibold",
@@ -51,7 +54,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
           )}
         />
       )}
-      <span className="relative z-10">{children}</span>
+      <span className="relative z-10 flex items-center justify-center">{children}</span>
     </Button>
   );
 };
