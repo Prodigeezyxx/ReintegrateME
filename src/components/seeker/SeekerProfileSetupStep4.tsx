@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -8,6 +9,7 @@ import { profileSetupManager } from '../../utils/profileSetupManager';
 import AnimatedCard from '../ui/animated-card';
 import AnimatedButton from '../ui/animated-button';
 import AnimatedProgress from '../ui/animated-progress';
+import ImageUpload from '../ui/image-upload';
 import { getLogoUrl } from '../../utils/logoUpload';
 
 const workPreferenceOptions = [
@@ -29,7 +31,8 @@ const SeekerProfileSetupStep4 = () => {
   const [seekerProfile, setSeekerProfile] = useState({
     hasDrivingLicence: undefined as boolean | undefined,
     workPreferences: [] as string[],
-    openToRelocation: undefined as boolean | undefined
+    openToRelocation: undefined as boolean | undefined,
+    profileImageUrl: undefined as string | undefined
   });
 
   useEffect(() => {
@@ -37,7 +40,8 @@ const SeekerProfileSetupStep4 = () => {
     setSeekerProfile({
       hasDrivingLicence: savedData.hasDrivingLicence,
       workPreferences: savedData.workPreferences || [],
-      openToRelocation: savedData.openToRelocation
+      openToRelocation: savedData.openToRelocation,
+      profileImageUrl: savedData.profileImageUrl
     });
   }, []);
 
@@ -57,6 +61,11 @@ const SeekerProfileSetupStep4 = () => {
       profileSetupManager.saveStepData(4, { workPreferences: newPrefs });
       return { ...prev, workPreferences: newPrefs };
     });
+  };
+
+  const handleImageChange = (url: string | null) => {
+    setSeekerProfile(prev => ({ ...prev, profileImageUrl: url || undefined }));
+    profileSetupManager.saveStepData(4, { profileImageUrl: url || undefined });
   };
 
   const handleComplete = async (e: React.FormEvent) => {
@@ -120,10 +129,10 @@ const SeekerProfileSetupStep4 = () => {
           </AnimatedButton>
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-black font-geist animate-fade-in-scale">
-              Work Preferences
+              Final Details
             </h1>
             <p className="text-black text-base sm:text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
-              Final step - let's understand your preferences - Step 4 of 4 ✨
+              Complete your profile - Step 4 of 4 ✨
             </p>
           </div>
           <div className="ml-4">
@@ -148,6 +157,25 @@ const SeekerProfileSetupStep4 = () => {
         </div>
 
         <form onSubmit={handleComplete} className="flex-1 space-y-4 sm:space-y-6 relative z-10">
+          {/* Profile Picture Upload */}
+          <AnimatedCard
+            title="Profile Picture"
+            description="Add a professional photo to help employers recognize you"
+            delay={50}
+            className="glassmorphism-strong"
+          >
+            <div className="flex justify-center">
+              <ImageUpload
+                currentImageUrl={seekerProfile.profileImageUrl}
+                onImageChange={handleImageChange}
+                bucketName="profile-images"
+                uploadPath="seekers"
+                size="lg"
+                placeholder="Optional but recommended"
+              />
+            </div>
+          </AnimatedCard>
+
           {/* Driving Licence */}
           <AnimatedCard
             title="Driving Licence"

@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { SwipeableCardData } from '../models/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Heart, MapPin, Briefcase, Clock, Award } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface SeekerProfileViewProps {
   seeker: SwipeableCardData;
@@ -51,19 +51,12 @@ const SeekerProfileView: React.FC<SeekerProfileViewProps> = ({
           <Card className="overflow-hidden">
             <CardContent className="p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="h-20 w-20 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-orange-100">
-                  {seeker.primaryImageUrl ? (
-                    <img 
-                      src={seeker.primaryImageUrl} 
-                      alt={seeker.titleText}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-2xl font-bold text-blue-600">
-                      {seeker.titleText.charAt(0)}
-                    </div>
-                  )}
-                </div>
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={seeker.primaryImageUrl} alt={seeker.titleText} />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-100 to-orange-100 text-2xl font-bold text-blue-600">
+                    {seeker.titleText.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-gray-900">{seeker.titleText}</h2>
                   <p className="text-blue-600 font-medium">{seeker.subtitleText}</p>

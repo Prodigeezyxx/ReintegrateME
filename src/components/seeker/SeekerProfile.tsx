@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getSkillById } from '../../data/skillsDatabase';
 import SkillsManager from './SkillsManager';
+import ImageUpload from '../ui/image-upload';
 
 interface SeekerProfileData {
   id: string;
@@ -110,7 +111,7 @@ const SeekerProfile = () => {
         return;
       }
 
-      setProfile({ ...profile, ...editedProfile } as SeekerProfileData);
+      setProfile({...profile, ...editedProfile} as SeekerProfileData);
       setIsEditing(false);
       toast({
         title: "Success",
@@ -128,6 +129,10 @@ const SeekerProfile = () => {
 
   const handleSkillsChange = (skills: string[]) => {
     setEditedProfile(prev => ({ ...prev, key_skills: skills }));
+  };
+
+  const handleImageChange = (url: string | null) => {
+    setEditedProfile(prev => ({ ...prev, profile_image_url: url || undefined }));
   };
 
   const handleCancel = () => {
@@ -173,12 +178,23 @@ const SeekerProfile = () => {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
-                <AvatarImage src={profile.profile_image_url} />
-                <AvatarFallback className="bg-blue-500 text-white text-lg">
-                  {profile.first_name?.[0]}{profile.last_name?.[0]}
-                </AvatarFallback>
-              </Avatar>
+              {isEditing ? (
+                <ImageUpload
+                  currentImageUrl={editedProfile.profile_image_url}
+                  onImageChange={handleImageChange}
+                  bucketName="profile-images"
+                  uploadPath="seekers"
+                  size="md"
+                  placeholder="Update your photo"
+                />
+              ) : (
+                <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
+                  <AvatarImage src={profile.profile_image_url} />
+                  <AvatarFallback className="bg-blue-500 text-white text-lg">
+                    {profile.first_name?.[0]}{profile.last_name?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+              )}
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
                   {profile.first_name} {profile.last_name}

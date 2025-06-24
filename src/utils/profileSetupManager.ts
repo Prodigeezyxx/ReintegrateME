@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { 
@@ -36,6 +37,7 @@ interface SeekerSetupData {
   hasDrivingLicence?: boolean;
   workPreferences?: string[];
   openToRelocation?: boolean;
+  profileImageUrl?: string;
 }
 
 type ConvictionStatus = Database['public']['Enums']['conviction_status'];
@@ -100,6 +102,7 @@ export const profileSetupManager = {
         job_title: data.jobTitle || null,
         headline: data.headline || null,
         key_skills: data.keySkills || null,
+        profile_image_url: data.profileImageUrl || null,
         email: user.email || null,
         sentence_completed: data.sentenceCompleted || null,
         conviction_types: castEnumArray<ConvictionType>(data.convictionTypes, mapConvictionTypes),
