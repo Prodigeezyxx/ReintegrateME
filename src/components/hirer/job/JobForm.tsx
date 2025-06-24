@@ -6,7 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
-import { jobCategories, employmentTypes } from '../../../services/api';
+import { jobCategories } from '../../../data/jobCategories';
+import { employmentTypes } from '../../../services/api';
 import { getSkillById } from '../../../data/skillsDatabase';
 
 interface JobFormProps {
@@ -122,7 +123,7 @@ const JobForm: React.FC<JobFormProps> = ({
               name="locationCity"
               value={jobData.locationCity}
               onChange={onChange}
-              placeholder="e.g. Portland"
+              placeholder="e.g. London"
               required
             />
           </div>
@@ -136,7 +137,7 @@ const JobForm: React.FC<JobFormProps> = ({
               name="locationCountry"
               value={jobData.locationCountry}
               onChange={onChange}
-              placeholder="e.g. United States"
+              placeholder="e.g. United Kingdom"
               required
             />
           </div>

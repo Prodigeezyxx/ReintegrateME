@@ -26,18 +26,18 @@ const SeekerCVBuilder = () => {
       <div className="space-y-4">
         <Card className="ios-card">
           <CardHeader>
-            <CardTitle className="text-lg">Your Resume</CardTitle>
+            <CardTitle className="text-lg">Your CV</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center py-8">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">No Resume Yet</h3>
-              <p className="text-gray-500 mb-6">Create your first resume to get started</p>
+              <h3 className="text-lg font-semibold mb-2">No CV Yet</h3>
+              <p className="text-gray-500 mb-6">Create your first CV to get started</p>
               <Button className="bg-green-600 hover:bg-green-700">
                 <Edit className="h-4 w-4 mr-2" />
-                Create Resume
+                Create CV
               </Button>
             </div>
           </CardContent>
