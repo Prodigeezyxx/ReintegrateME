@@ -86,13 +86,6 @@ const SeekerDisclosure = () => {
                 <Badge variant="outline">{getLegalStatus()}</Badge>
               </div>
               
-              {savedData.currentLegalSupervision && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Current Supervision:</span>
-                  <Badge variant="outline">{savedData.currentLegalSupervision}</Badge>
-                </div>
-              )}
-              
               {savedData.convictionTypes && savedData.convictionTypes.length > 0 && (
                 <div>
                   <span className="text-sm font-medium">Conviction Types:</span>
@@ -110,6 +103,36 @@ const SeekerDisclosure = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Conviction Status:</span>
                   <Badge variant="outline">{savedData.convictionStatus}</Badge>
+                </div>
+              )}
+
+              {savedData.barredFromRegulatedWork !== undefined && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Barred from Regulated Work:</span>
+                  <Badge variant="outline">
+                    {savedData.barredFromRegulatedWork === true ? 'Yes' : 
+                     savedData.barredFromRegulatedWork === false ? 'No' : 'Unknown'}
+                  </Badge>
+                </div>
+              )}
+
+              {savedData.onDbsBarringList !== undefined && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">DBS Barring List:</span>
+                  <Badge variant="outline">
+                    {savedData.onDbsBarringList === true ? 'Yes' : 
+                     savedData.onDbsBarringList === false ? 'No' : 'Unknown'}
+                  </Badge>
+                </div>
+              )}
+
+              {savedData.mappaLevel && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">MAPPA Level:</span>
+                  <Badge variant="outline">
+                    {savedData.mappaLevel === 'not_applicable' ? 'N/A' : 
+                     `Level ${savedData.mappaLevel.split('_')[1]}`}
+                  </Badge>
                 </div>
               )}
             </div>
