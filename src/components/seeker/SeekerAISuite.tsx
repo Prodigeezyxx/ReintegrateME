@@ -11,14 +11,14 @@ const SeekerAISuite = () => {
   const aiFeatures = [
     {
       title: 'AI Coach',
-      description: 'Get personalized guidance for job searching, interviews, and workplace skills',
+      description: 'Get personalised guidance for job searching, interviews, and workplace skills',
       icon: <Bot className="h-8 w-8" />,
       path: '/seeker-ai-coach',
       color: 'bg-blue-500'
     },
     {
       title: 'CV Builder',
-      description: 'Create and optimize your resume with AI assistance',
+      description: 'Create and optimise your resume with AI assistance',
       icon: <FileText className="h-8 w-8" />,
       path: '/seeker-cv-builder',
       color: 'bg-green-500'
@@ -73,7 +73,7 @@ const SeekerAISuite = () => {
             <div className="flex items-start gap-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
               <div>
-                <p className="font-medium">Personalized Coaching</p>
+                <p className="font-medium">Personalised Coaching</p>
                 <p className="text-gray-600">Get tailored advice for your specific situation</p>
               </div>
             </div>
@@ -87,7 +87,7 @@ const SeekerAISuite = () => {
             <div className="flex items-start gap-3">
               <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
               <div>
-                <p className="font-medium">Resume Optimization</p>
+                <p className="font-medium">Resume Optimisation</p>
                 <p className="text-gray-600">Create compelling CVs that get noticed</p>
               </div>
             </div>
