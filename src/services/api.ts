@@ -1,9 +1,6 @@
 import { User, UserRole, SeekerProfile, CompanyProfile, JobPosting, SwipeableCardData, MatchRecord } from '../models/types';
 import { skillsDatabase, getAllSkills } from '../data/skillsDatabase';
 
-// Mock data and functions to simulate API calls
-// In a real implementation, these would be actual API calls to your backend
-
 // Generate a random ID
 const generateId = () => Math.random().toString(36).substring(2, 15);
 
@@ -16,6 +13,9 @@ const seekerProfiles: SeekerProfile[] = [];
 const companyProfiles: CompanyProfile[] = [];
 const jobPostings: JobPosting[] = [];
 const matches: MatchRecord[] = [];
+
+// Browser storage for images (fallback when Supabase storage fails)
+const imageStorage = new Map<string, string>();
 
 // Sample job categories
 export const jobCategories = [
@@ -57,9 +57,54 @@ export const countries = [
   'Denmark'
 ];
 
+// Image storage helper functions
+export const imageStorageAPI = {
+  // Store image in browser memory
+  storeImage: (key: string, imageData: string): void => {
+    try {
+      imageStorage.set(key, imageData);
+      // Also try to store in localStorage for persistence
+      localStorage.setItem(`img_${key}`, imageData);
+    } catch (error) {
+      console.warn('Failed to store image in localStorage:', error);
+      // Fallback to memory only
+      imageStorage.set(key, imageData);
+    }
+  },
+  
+  // Retrieve image from browser memory
+  getImage: (key: string): string | null => {
+    // First try memory
+    let image = imageStorage.get(key);
+    if (image) return image;
+    
+    // Then try localStorage
+    try {
+      image = localStorage.getItem(`img_${key}`);
+      if (image) {
+        imageStorage.set(key, image); // Cache in memory
+        return image;
+      }
+    } catch (error) {
+      console.warn('Failed to retrieve image from localStorage:', error);
+    }
+    
+    return null;
+  },
+  
+  // Convert file to base64 for storage
+  fileToBase64: (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+};
+
 // Authentication API
 export const authAPI = {
-  // Sign up with email
   signupEmail: async (role: UserRole, email: string, password: string): Promise<User> => {
     // Check if user already exists
     const existingUser = users.find(u => u.email === email);
@@ -81,9 +126,7 @@ export const authAPI = {
     return newUser;
   },
   
-  // Login with email and password
   login: async (email: string, password: string): Promise<User> => {
-    // In a real app, you would verify the password
     const user = users.find(u => u.email === email);
     
     if (!user) {
@@ -94,17 +137,14 @@ export const authAPI = {
     return user;
   },
   
-  // Log out
   logout: () => {
     currentUser = null;
   },
   
-  // Get current user
   getCurrentUser: (): User | null => {
     return currentUser;
   },
   
-  // Check if user is authenticated
   isAuthenticated: (): boolean => {
     return currentUser !== null;
   }
@@ -112,7 +152,6 @@ export const authAPI = {
 
 // Company Profile API
 export const companyAPI = {
-  // Create initial company profile
   createInitialProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
     if (!currentUser || currentUser.role !== 'hirer') {
       throw new Error('Only hirers can create a company profile');
@@ -128,18 +167,15 @@ export const companyAPI = {
       description: profileData.description,
       locationCity: profileData.locationCity,
       locationCountry: profileData.locationCountry,
-      profileCompletionPercentage: 30, // Initial completion percentage
+      profileCompletionPercentage: 30,
     };
     
     companyProfiles.push(newProfile);
-    
-    // Update user with profile ID
     currentUser.profileId = newProfile.id;
     
     return newProfile;
   },
   
-  // Get company profile
   getProfile: async (): Promise<CompanyProfile> => {
     if (!currentUser || currentUser.role !== 'hirer') {
       throw new Error('Only hirers can access company profiles');
@@ -154,7 +190,6 @@ export const companyAPI = {
     return profile;
   },
   
-  // Update company profile
   updateProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
     if (!currentUser || currentUser.role !== 'hirer') {
       throw new Error('Only hirers can update company profiles');
@@ -169,8 +204,8 @@ export const companyAPI = {
     // Update profile fields
     Object.assign(profile, profileData);
     
-    // Recalculate completion percentage based on filled fields
-    const totalFields = 8; // Total number of optional fields
+    // Recalculate completion percentage
+    const totalFields = 8;
     let filledFields = 0;
     
     if (profile.companyName) filledFields++;
@@ -188,9 +223,8 @@ export const companyAPI = {
   }
 };
 
-// Enhanced Seeker Profile API with better skills integration
+// Enhanced Seeker Profile API
 export const seekerAPI = {
-  // Create initial seeker profile
   createInitialProfile: async (profileData: Partial<SeekerProfile>): Promise<SeekerProfile> => {
     if (!currentUser || currentUser.role !== 'seeker') {
       throw new Error('Only job seekers can create a seeker profile');
@@ -213,24 +247,19 @@ export const seekerAPI = {
     };
     
     seekerProfiles.push(newProfile);
-    
-    // Update user with profile ID
     currentUser.profileId = newProfile.id;
     
     return newProfile;
   },
   
-  // Complete profile setup with all collected data
   completeProfileSetup: async (allSetupData: any): Promise<SeekerProfile> => {
     if (!currentUser || currentUser.role !== 'seeker') {
       throw new Error('Only job seekers can complete profile setup');
     }
     
-    // Check if profile already exists
     let profile = seekerProfiles.find(p => p.userId === currentUser?.id);
     
     if (!profile) {
-      // Create new profile with all the setup data
       profile = {
         id: generateId(),
         userId: currentUser.id,
@@ -239,8 +268,6 @@ export const seekerAPI = {
         displayName: `${allSetupData.firstName || ''} ${allSetupData.lastName || ''}`.trim(),
         jobTitle: allSetupData.jobTitle,
         headline: allSetupData.headline,
-        
-        // Legal information
         sentenceCompleted: allSetupData.sentenceCompleted,
         currentLegalSupervision: allSetupData.currentLegalSupervision,
         convictionTypes: allSetupData.convictionTypes,
@@ -250,27 +277,21 @@ export const seekerAPI = {
         onDbsBarringList: allSetupData.onDbsBarringList,
         mappaLevel: allSetupData.mappaLevel,
         relevantForSafeguardingChecks: allSetupData.relevantForSafeguardingChecks,
-        
-        // Disability information
         hasDisability: allSetupData.hasDisability,
         disabilityTypes: allSetupData.disabilityTypes,
         disabilityOtherDetails: allSetupData.disabilityOtherDetails,
         workplaceAdjustments: allSetupData.workplaceAdjustments,
         workplaceAdjustmentsOther: allSetupData.workplaceAdjustmentsOther,
-        
-        // Work preferences
         hasDrivingLicence: allSetupData.hasDrivingLicence,
         workPreferences: allSetupData.workPreferences,
         openToRelocation: allSetupData.openToRelocation,
-        
         availabilityStatus: 'actively_looking',
-        profileCompletionPercentage: 85 // High completion after setup
+        profileCompletionPercentage: 85
       };
       
       seekerProfiles.push(profile);
       currentUser.profileId = profile.id;
     } else {
-      // Update existing profile with all setup data
       Object.assign(profile, allSetupData);
       profile.displayName = `${profile.firstName} ${profile.lastName}`.trim();
       profile.profileCompletionPercentage = 85;
@@ -279,7 +300,6 @@ export const seekerAPI = {
     return profile;
   },
   
-  // Get seeker profile
   getProfile: async (): Promise<SeekerProfile> => {
     if (!currentUser || currentUser.role !== 'seeker') {
       throw new Error('Only job seekers can access seeker profiles');
@@ -294,7 +314,6 @@ export const seekerAPI = {
     return profile;
   },
   
-  // Update seeker profile
   updateProfile: async (profileData: Partial<SeekerProfile>): Promise<SeekerProfile> => {
     if (!currentUser || currentUser.role !== 'seeker') {
       throw new Error('Only job seekers can update seeker profiles');
@@ -306,16 +325,13 @@ export const seekerAPI = {
       throw new Error('Profile not found');
     }
     
-    // Update profile fields
     Object.assign(profile, profileData);
     
-    // If first name or last name is updated, update display name as well
     if (profileData.firstName || profileData.lastName) {
       profile.displayName = `${profile.firstName} ${profile.lastName}`;
     }
     
-    // Enhanced completion calculation that includes skills
-    const totalFields = 12; // Updated total number of fields
+    const totalFields = 12;
     let filledFields = 0;
     
     if (profile.firstName) filledFields++;
@@ -337,15 +353,13 @@ export const seekerAPI = {
   }
 };
 
-// Enhanced Job API with better skills matching
+// Enhanced Job API
 export const jobAPI = {
-  // Create job posting
   createJob: async (jobData: Partial<JobPosting>): Promise<JobPosting> => {
     if (!currentUser || currentUser.role !== 'hirer') {
       throw new Error('Only hirers can create job postings');
     }
     
-    // Get company profile
     const companyProfile = companyProfiles.find(p => p.userId === currentUser?.id);
     
     if (!companyProfile) {
@@ -376,7 +390,6 @@ export const jobAPI = {
     return newJob;
   },
   
-  // Get jobs for hirer
   getHirerJobs: async (): Promise<JobPosting[]> => {
     if (!currentUser || currentUser.role !== 'hirer') {
       throw new Error('Only hirers can access their job postings');
@@ -385,17 +398,14 @@ export const jobAPI = {
     return jobPostings.filter(job => job.hirerId === currentUser?.id);
   },
   
-  // Enhanced job feed that considers seeker skills
   getJobsFeed: async (): Promise<SwipeableCardData[]> => {
     if (!currentUser || currentUser.role !== 'seeker') {
       throw new Error('Only job seekers can access job feed');
     }
 
-    // Get current seeker's skills for better matching
     const seekerProfile = seekerProfiles.find(p => p.userId === currentUser?.id);
     const seekerSkills = seekerProfile?.keySkills || [];
 
-    // Populate with demo jobs if empty
     if (jobPostings.length === 0) {
       const demoJobs = [
         {
@@ -447,9 +457,7 @@ export const jobAPI = {
       jobPostings.push(...demoJobs);
     }
     
-    // Convert job postings to swipeable card data with skills matching
     const jobCards = jobPostings.map(job => {
-      // Calculate skill match percentage
       const jobSkills = job.requiredSkills || [];
       const matchingSkills = jobSkills.filter(skill => seekerSkills.includes(skill));
       const matchPercentage = jobSkills.length > 0 ? (matchingSkills.length / jobSkills.length) * 100 : 0;
@@ -467,17 +475,14 @@ export const jobAPI = {
       };
     });
 
-    // Sort by skill match percentage (higher matches first)
     return jobCards.sort((a, b) => (b.skillMatchPercentage || 0) - (a.skillMatchPercentage || 0));
   },
   
-  // Get seekers for hirer feed
   getSeekersFeed: async (): Promise<SwipeableCardData[]> => {
     if (!currentUser || currentUser.role !== 'hirer') {
       throw new Error('Only hirers can access seeker feed');
     }
 
-    // Populate with demo seekers if empty
     if (seekerProfiles.length === 0) {
       const demoSeekers = [
         {
@@ -509,7 +514,6 @@ export const jobAPI = {
       seekerProfiles.push(...demoSeekers);
     }
     
-    // Convert seeker profiles to swipeable card data
     return seekerProfiles.map(profile => ({
       id: profile.id,
       type: 'seeker' as const,
@@ -522,9 +526,8 @@ export const jobAPI = {
   }
 };
 
-// Enhanced Swipe API with skills-based matching
+// Enhanced Swipe API
 export const swipeAPI = {
-  // Process swipe
   processSwipe: async (swipedEntityId: string, swipedEntityType: 'seeker' | 'job', swipeType: 'like' | 'pass' | 'super_like', contextJobId?: string): Promise<{ isMatch: boolean, match?: MatchRecord }> => {
     if (!currentUser) {
       throw new Error('User must be authenticated to swipe');
@@ -532,8 +535,7 @@ export const swipeAPI = {
     
     const isLike = swipeType === 'like' || swipeType === 'super_like';
     
-    // Enhanced matching logic that considers skills compatibility
-    let matchProbability = 0.3; // Base probability
+    let matchProbability = 0.3;
     
     if (currentUser.role === 'seeker' && swipedEntityType === 'job') {
       const job = jobPostings.find(j => j.id === swipedEntityId);
@@ -546,7 +548,7 @@ export const swipeAPI = {
         
         if (jobSkills.length > 0) {
           const skillMatchRatio = matchingSkills.length / jobSkills.length;
-          matchProbability = 0.2 + (skillMatchRatio * 0.6); // 20% base + up to 60% for skills
+          matchProbability = 0.2 + (skillMatchRatio * 0.6);
         }
       }
     }
@@ -616,7 +618,6 @@ export const swipeAPI = {
     return { isMatch: false };
   },
   
-  // Get matches for current user
   getMatches: async (): Promise<MatchRecord[]> => {
     if (!currentUser) {
       throw new Error('User must be authenticated to get matches');
