@@ -51,11 +51,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size (max 3MB)
+    if (file.size > 3 * 1024 * 1024) {
       toast({
         title: "File too large",
-        description: "Please select an image smaller than 5MB",
+        description: "Please select an image smaller than 3MB",
         variant: "destructive"
       });
       return;
@@ -176,6 +176,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         >
           {isUploading ? 'Uploading...' : previewUrl ? 'Change Image' : 'Upload Image'}
         </Button>
+        <p className="text-xs text-gray-500 mt-1">Max size: 3MB</p>
         {placeholder && (
           <p className="text-xs text-gray-500 mt-1">{placeholder}</p>
         )}

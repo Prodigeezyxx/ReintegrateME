@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { authAPI } from '../services/api';
@@ -16,36 +17,8 @@ const MobileNavbar = () => {
   const currentUser = authAPI.getCurrentUser();
   const userRole = currentUser?.role as UserRole;
   
-  if (!userRole) return null;
-  
-  const getHirerNavItems = (): NavItem[] => [
-    {
-      label: 'Dashboard',
-      path: '/hirer-dashboard',
-      icon: <Home className="h-5 w-5" />
-    },
-    {
-      label: 'Jobs',
-      path: '/hirer-jobs',
-      icon: <Briefcase className="h-5 w-5" />
-    },
-    {
-      label: 'AI Suite',
-      path: '/hirer-ai-suite',
-      icon: <Bot className="h-6 w-6" />,
-      isCenter: true
-    },
-    {
-      label: 'Applicants',
-      path: '/hirer-applicants',
-      icon: <Users className="h-5 w-5" />
-    },
-    {
-      label: 'Messages',
-      path: '/hirer-messages',
-      icon: <MessageSquare className="h-5 w-5" />
-    }
-  ];
+  // Don't show navbar for hirers at all
+  if (!userRole || userRole === 'hirer') return null;
   
   const getSeekerNavItems = (): NavItem[] => [
     {
@@ -76,11 +49,10 @@ const MobileNavbar = () => {
     }
   ];
   
-  const navItems = userRole === 'hirer' ? getHirerNavItems() : getSeekerNavItems();
+  const navItems = getSeekerNavItems();
   
   // Don't show navbar on certain pages
-  if (location.pathname.includes('/hirer-messages/') || 
-      location.pathname.includes('/seeker-messages/') || 
+  if (location.pathname.includes('/seeker-messages/') || 
       location.pathname === '/splash' || 
       location.pathname === '/' || 
       location.pathname === '/role-selection' || 

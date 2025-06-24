@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw } from 'lucide-react';
-import { authAPI, jobAPI } from '../../services/api';
+import { authAPI, jobAPI, companyAPI } from '../../services/api';
 import { getLogoUrl } from '../../utils/logoUpload';
 
 const HirerDashboard = () => {
@@ -17,11 +17,25 @@ const HirerDashboard = () => {
   const [recentActivities, setRecentActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [companyName, setCompanyName] = useState('Dashboard');
   const navigate = useNavigate();
   
   useEffect(() => {
     fetchDashboardData();
+    fetchCompanyName();
   }, []);
+
+  const fetchCompanyName = async () => {
+    try {
+      const profile = await companyAPI.getProfile();
+      if (profile && profile.company_name) {
+        setCompanyName(profile.company_name);
+      }
+    } catch (error) {
+      console.error('Failed to fetch company name:', error);
+      // Keep default "Dashboard" if failed
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -135,7 +149,7 @@ const HirerDashboard = () => {
   }
   
   return (
-    <div className="min-h-screen bg-zinc-50 pb-20">
+    <div className="min-h-screen bg-zinc-50">
       <div className="mobile-container mx-auto beautiful-shadow">
         <div className="p-6">
           {/* Header with workspace branding */}
@@ -165,7 +179,7 @@ const HirerDashboard = () => {
           </div>
 
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-slate-800 font-geist">Dashboard</h1>
+            <h1 className="text-2xl font-bold text-slate-800 font-geist">{companyName}</h1>
             <p className="text-slate-500 text-sm">Welcome back! Here's what's happening today.</p>
           </div>
           
