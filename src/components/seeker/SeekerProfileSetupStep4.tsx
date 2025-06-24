@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -18,7 +17,10 @@ const workPreferenceOptions = [
   'temporary',
   'flexible_hours',
   'remote_work',
-  'shift_work'
+  'shift_work',
+  'zero_hours',
+  'weekends',
+  'nights'
 ];
 
 const SeekerProfileSetupStep4 = () => {

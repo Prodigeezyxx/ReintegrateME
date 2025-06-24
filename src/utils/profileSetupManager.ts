@@ -1,6 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
-import { mapWorkplaceAdjustments, mapDisabilityTypes } from "./enumMappings";
+import { 
+  mapWorkplaceAdjustments, 
+  mapDisabilityTypes, 
+  mapConvictionTypes, 
+  mapWorkPreferences 
+} from "./enumMappings";
 
 interface SeekerSetupData {
   // Step 1 data
@@ -97,7 +102,7 @@ export const profileSetupManager = {
         key_skills: data.keySkills || null,
         email: user.email || null,
         sentence_completed: data.sentenceCompleted || null,
-        conviction_types: castEnumArray<ConvictionType>(data.convictionTypes),
+        conviction_types: castEnumArray<ConvictionType>(data.convictionTypes, mapConvictionTypes),
         conviction_status: castEnumValue<ConvictionStatus>(data.convictionStatus),
         conviction_other_details: data.convictionOtherDetails || null,
         barred_from_regulated_work: data.barredFromRegulatedWork || null,
@@ -110,7 +115,7 @@ export const profileSetupManager = {
         workplace_adjustments: castEnumArray<WorkplaceAdjustment>(data.workplaceAdjustments, mapWorkplaceAdjustments),
         workplace_adjustments_other: data.workplaceAdjustmentsOther || null,
         has_driving_licence: data.hasDrivingLicence || null,
-        work_preferences: castEnumArray<WorkPreference>(data.workPreferences),
+        work_preferences: castEnumArray<WorkPreference>(data.workPreferences, mapWorkPreferences),
         open_to_relocation: data.openToRelocation || null,
         profile_completion_percentage: profileSetupManager.calculateCompletionPercentage(),
         updated_at: new Date().toISOString()
