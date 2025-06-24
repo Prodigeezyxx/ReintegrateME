@@ -28,8 +28,8 @@ const HirerDashboard = () => {
   const fetchCompanyName = async () => {
     try {
       const profile = await companyAPI.getProfile();
-      if (profile && profile.company_name) {
-        setCompanyName(profile.company_name);
+      if (profile && profile.companyName) {
+        setCompanyName(profile.companyName);
       }
     } catch (error) {
       console.error('Failed to fetch company name:', error);
