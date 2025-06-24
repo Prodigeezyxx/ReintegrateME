@@ -1,304 +1,193 @@
+
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Users, Briefcase, MessageSquare, Plus, Building2, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw } from 'lucide-react';
-import { authAPI, jobAPI } from '../../services/api';
-import { getLogoUrl } from '../../utils/logoUpload';
+
+interface CompanyProfile {
+  id: string;
+  company_name: string;
+  logo_url?: string;
+  profile_completion_percentage: number;
+}
 
 const HirerDashboard = () => {
-  const [stats, setStats] = useState({
-    activeOpenings: 0,
-    totalApplicants: 0,
-    newApplicants: 0,
-    unreadMessages: 0,
-  });
-  const [recentActivities, setRecentActivities] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
-  
+  const [profile, setProfile] = useState<CompanyProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    fetchDashboardData();
+    fetchProfile();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchProfile = async () => {
     try {
-      setIsRefreshing(true);
-      // In a real app, we would fetch the dashboard data from an API
-      // For now, we'll simulate it with mock data
-      
-      // Get user's jobs to calculate stats
-      const jobs = await jobAPI.getHirerJobs();
-      
-      // Calculate mock statistics
-      const activeOpenings = jobs.filter(job => job.status !== 'archived').length;
-      const totalApplicants = Math.floor(Math.random() * 50) + 10;
-      const newApplicants = Math.floor(Math.random() * 10);
-      const unreadMessages = Math.floor(Math.random() * 15);
-      
-      setStats({
-        activeOpenings,
-        totalApplicants,
-        newApplicants,
-        unreadMessages
-      });
-      
-      // Mock recent activities
-      setRecentActivities([
-        { id: 1, type: 'application', title: 'New application for Construction Worker', time: '2 hours ago' },
-        { id: 2, type: 'message', title: 'Sarah Johnson sent you a message', time: '5 hours ago' },
-        { id: 3, type: 'match', title: 'New match with Robert Chen', time: '1 day ago' },
-        { id: 4, type: 'view', title: 'Your Electrician job post was viewed 24 times', time: '2 days ago' },
-      ]);
-      
-      setIsLoading(false);
-      setIsRefreshing(false);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('company_profiles')
+        .select('id, company_name, logo_url, profile_completion_percentage')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        // No profile found, redirect to setup
+        navigate('/hirer-setup');
+        return;
+      }
+
+      setProfile(data);
     } catch (error) {
+      console.error('Error fetching profile:', error);
       toast({
         title: "Error",
-        description: "Failed to load dashboard data",
+        description: "Failed to load profile data",
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
-  
-  const handleRefresh = () => {
-    fetchDashboardData();
-  };
-  
-  const handleActivityClick = (activity) => {
-    switch (activity.type) {
-      case 'application':
-        navigate('/hirer-applicants');
-        break;
-      case 'message':
-        navigate('/hirer-messages');
-        break;
-      case 'match':
-        navigate('/hirer-discover');
-        break;
-      case 'view':
-        navigate('/hirer-jobs');
-        break;
-      default:
-        break;
-    }
-  };
-  
-  const handleStatsClick = (statType) => {
-    switch (statType) {
-      case 'activeJobs':
-        navigate('/hirer-jobs');
-        break;
-      case 'totalApplicants':
-        navigate('/hirer-applicants');
-        break;
-      case 'newApplicants':
-        navigate('/hirer-applicants?filter=new');
-        break;
-      case 'unreadMessages':
-        navigate('/hirer-messages');
-        break;
-      default:
-        break;
-    }
-  };
-  
-  const renderActivityIcon = (type) => {
-    switch (type) {
-      case 'application':
-        return <Users className="h-4 w-4 text-blue-500" />;
-      case 'message':
-        return <MessageSquare className="h-4 w-4 text-green-500" />;
-      case 'match':
-        return <Users className="h-4 w-4 text-reme-orange" />;
-      case 'view':
-        return <Activity className="h-4 w-4 text-purple-500" />;
-      default:
-        return <Activity className="h-4 w-4" />;
     }
   };
 
   if (isLoading) {
     return (
-      <div className="mobile-container mx-auto p-6 flex items-center justify-center min-h-screen bg-zinc-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
-          <p className="mt-4 text-slate-500 font-geist">Loading dashboard...</p>
+      <div className="mobile-container p-6 max-w-4xl mx-auto">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-32 bg-gray-200 rounded"></div>
+          </div>
         </div>
       </div>
     );
   }
-  
-  return (
-    <div className="min-h-screen bg-zinc-50 pb-20">
-      <div className="mobile-container mx-auto beautiful-shadow">
-        <div className="p-6">
-          {/* Header with workspace branding */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="workspace-button">
-                <img 
-                  src={getLogoUrl()} 
-                  alt="ReintegrateMe"
-                  className="h-4 w-4"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-                <span className="text-slate-800 font-semibold">ReintegrateMe</span>
-              </div>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleRefresh} 
-              disabled={isRefreshing}
-              className="beautiful-shadow-subtle hover:beautiful-shadow rounded-xl"
-            >
-              <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
 
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-slate-800 font-geist">Dashboard</h1>
-            <p className="text-slate-500 text-sm">Welcome back! Here's what's happening today.</p>
+  if (!profile) {
+    return null; // Will redirect to setup
+  }
+
+  return (
+    <div className="mobile-container p-6 max-w-4xl mx-auto">
+      {/* Header with Company Info */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center overflow-hidden">
+            {profile.logo_url ? (
+              <img 
+                src={profile.logo_url} 
+                alt="Company logo" 
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <Building2 className="h-6 w-6 text-white" />
+            )}
           </div>
-          
-          {/* Enhanced Stats Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <Card className="beautiful-shadow hover:beautiful-shadow-subtle transition-all duration-200 cursor-pointer border-0 bg-gradient-to-br from-blue-50 to-indigo-50" onClick={() => handleStatsClick('activeJobs')}>
-              <CardContent className="p-4 flex flex-col items-center justify-center">
-                <div className="bg-blue-500 p-2 rounded-xl mb-2">
-                  <Briefcase className="h-5 w-5 text-white" />
-                </div>
-                <p className="text-2xl font-bold text-slate-800 font-geist">{stats.activeOpenings}</p>
-                <p className="text-xs text-slate-600 font-medium">Active Jobs</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="beautiful-shadow hover:beautiful-shadow-subtle transition-all duration-200 cursor-pointer border-0 bg-gradient-to-br from-emerald-50 to-green-50" onClick={() => handleStatsClick('totalApplicants')}>
-              <CardContent className="p-4 flex flex-col items-center justify-center">
-                <div className="bg-emerald-500 p-2 rounded-xl mb-2">
-                  <Users className="h-5 w-5 text-white" />
-                </div>
-                <p className="text-2xl font-bold text-slate-800 font-geist">{stats.totalApplicants}</p>
-                <p className="text-xs text-slate-600 font-medium">Total Applicants</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="beautiful-shadow hover:beautiful-shadow-subtle transition-all duration-200 cursor-pointer border-0 bg-gradient-to-br from-amber-50 to-orange-50" onClick={() => handleStatsClick('newApplicants')}>
-              <CardContent className="p-4 flex flex-col items-center justify-center">
-                <div className="bg-amber-500 p-2 rounded-xl mb-2 relative">
-                  <Users className="h-5 w-5 text-white" />
-                  {stats.newApplicants > 0 && (
-                    <div className="absolute -top-1 -right-1 notification-dot"></div>
-                  )}
-                </div>
-                <p className="text-2xl font-bold text-slate-800 font-geist">{stats.newApplicants}</p>
-                <p className="text-xs text-slate-600 font-medium">New Applicants</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="beautiful-shadow hover:beautiful-shadow-subtle transition-all duration-200 cursor-pointer border-0 bg-gradient-to-br from-purple-50 to-pink-50" onClick={() => handleStatsClick('unreadMessages')}>
-              <CardContent className="p-4 flex flex-col items-center justify-center">
-                <div className="bg-purple-500 p-2 rounded-xl mb-2 relative">
-                  <MessageSquare className="h-5 w-5 text-white" />
-                  {stats.unreadMessages > 0 && (
-                    <div className="absolute -top-1 -right-1 notification-dot"></div>
-                  )}
-                </div>
-                <p className="text-2xl font-bold text-slate-800 font-geist">{stats.unreadMessages}</p>
-                <p className="text-xs text-slate-600 font-medium">Unread Messages</p>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Enhanced Quick Actions */}
-          <Card className="mb-6 beautiful-shadow border-0">
-            <CardHeader className="px-4 pt-4 pb-1">
-              <CardTitle className="text-lg font-geist text-slate-800">Quick Actions</CardTitle>
-              <CardDescription className="text-slate-500">Get things done faster</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 grid grid-cols-2 gap-2">
-              <Button 
-                variant="outline" 
-                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-all duration-200"
-                asChild
-              >
-                <Link to="/hirer-jobs">
-                  <Briefcase className="h-4 w-4 mr-2 text-slate-600" />
-                  <span className="font-medium text-slate-700">Manage Jobs</span>
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all duration-200"
-                asChild
-              >
-                <Link to="/hirer-create-job">
-                  <Plus className="h-4 w-4 mr-2 text-indigo-600" />
-                  <span className="font-medium text-indigo-700">Post New Job</span>
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-          
-          {/* Enhanced Recent Activity */}
-          <Card className="mb-6 flex-1 beautiful-shadow border-0">
-            <CardHeader className="px-4 pt-4 pb-2">
-              <CardTitle className="text-lg font-geist text-slate-800">Recent Activity</CardTitle>
-              <CardDescription className="text-slate-500">Latest updates and events</CardDescription>
-            </CardHeader>
-            <CardContent className="px-4 py-0">
-              {recentActivities.length > 0 ? (
-                <div className="space-y-1">
-                  {recentActivities.map(activity => (
-                    <div 
-                      key={activity.id} 
-                      className="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0 cursor-pointer hover:bg-gradient-to-r hover:from-slate-50 hover:to-slate-100 rounded-lg px-2 transition-all duration-200"
-                      onClick={() => handleActivityClick(activity)}
-                    >
-                      <div className="bg-slate-100 rounded-xl p-2 mt-1 beautiful-shadow-subtle">
-                        {renderActivityIcon(activity.type)}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-slate-800 font-geist">{activity.title}</p>
-                        <p className="text-xs text-slate-500">{activity.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="py-4 text-center text-sm text-slate-500 font-geist">No recent activity</p>
-              )}
-            </CardContent>
-          </Card>
-          
-          {/* Enhanced Talent Discovery */}
-          <div className="mb-6">
-            <Card className="beautiful-shadow border-0 bg-gradient-to-br from-orange-50 to-amber-50">
-              <CardHeader className="px-4 pt-4 pb-2">
-                <CardTitle className="text-lg font-geist text-slate-800">Talent Discovery</CardTitle>
-                <CardDescription className="text-slate-600">Find the perfect candidates for your jobs</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4">
-                <Button 
-                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white beautiful-shadow transition-all duration-200 font-geist font-medium"
-                  asChild
-                >
-                  <Link to="/hirer-discover">
-                    Browse Talent
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{profile.company_name}</h1>
+            <p className="text-gray-600">Hirer Dashboard</p>
           </div>
         </div>
+        <Button
+          variant="outline"
+          onClick={() => navigate('/hirer-profile')}
+          className="flex items-center gap-2"
+        >
+          <User className="h-4 w-4" />
+          Profile
+        </Button>
+      </div>
+
+      {/* Profile Completion */}
+      {profile.profile_completion_percentage < 100 && (
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold">Complete Your Profile</h3>
+              <Badge variant="outline">{profile.profile_completion_percentage}%</Badge>
+            </div>
+            <Progress value={profile.profile_completion_percentage} className="mb-3" />
+            <p className="text-sm text-gray-600 mb-4">
+              Complete your company profile to attract the best candidates
+            </p>
+            <Button 
+              size="sm" 
+              onClick={() => navigate('/hirer-profile')}
+              className="bg-gradient-to-r from-blue-500 to-purple-500"
+            >
+              Complete Profile
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/hirer-create-job')}>
+          <CardContent className="p-6 text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Plus className="h-6 w-6 text-blue-600" />
+            </div>
+            <h3 className="font-semibold mb-2">Post New Job</h3>
+            <p className="text-sm text-gray-600">Create a new job posting to find candidates</p>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/hirer-discover')}>
+          <CardContent className="p-6 text-center">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Users className="h-6 w-6 text-green-600" />
+            </div>
+            <h3 className="font-semibold mb-2">Discover Talent</h3>
+            <p className="text-sm text-gray-600">Browse and connect with job seekers</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Navigation */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/hirer-jobs')}>
+          <CardContent className="p-6 text-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Briefcase className="h-6 w-6 text-purple-600" />
+            </div>
+            <h3 className="font-semibold mb-2">My Jobs</h3>
+            <p className="text-sm text-gray-600">Manage your job postings</p>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/hirer-applicants')}>
+          <CardContent className="p-6 text-center">
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Users className="h-6 w-6 text-orange-600" />
+            </div>
+            <h3 className="font-semibold mb-2">Applicants</h3>
+            <p className="text-sm text-gray-600">Review job applications</p>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/hirer-messages')}>
+          <CardContent className="p-6 text-center">
+            <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <MessageSquare className="h-6 w-6 text-indigo-600" />
+            </div>
+            <h3 className="font-semibold mb-2">Messages</h3>
+            <p className="text-sm text-gray-600">Chat with candidates</p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

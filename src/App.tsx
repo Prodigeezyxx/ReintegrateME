@@ -10,6 +10,7 @@ import SplashScreen from "./components/SplashScreen";
 import RoleSelection from "./components/RoleSelection";
 import Authentication from "./components/Authentication";
 import HirerProfileSetup from "./components/hirer/HirerProfileSetup";
+import HirerProfile from "./components/hirer/HirerProfile";
 import SeekerProfileSetupStep1 from "./components/seeker/SeekerProfileSetupStep1";
 import SeekerSkillsStep from "./components/seeker/SeekerSkillsStep";
 import SeekerProfileSetupStep2 from "./components/seeker/SeekerProfileSetupStep2";
@@ -68,7 +69,7 @@ const App = () => {
             <Route path="/hirer-applicants" element={<HirerApplicants />} />
             <Route path="/hirer-messages" element={<HirerMessages />} />
             <Route path="/hirer-messages/:threadId" element={<HirerChatDetail />} />
-            <Route path="/hirer-profile" element={<Navigate to="/hirer-dashboard" replace />} />
+            <Route path="/hirer-profile" element={<HirerProfile />} />
             
             {/* Seeker Routes */}
             <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
