@@ -5,7 +5,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
 import AnimatedCard from '../ui/animated-card';
@@ -13,13 +12,10 @@ import AnimatedButton from '../ui/animated-button';
 import AnimatedProgress from '../ui/animated-progress';
 import { getLogoUrl } from '../../utils/logoUpload';
 
-const legalSupervisionOptions = [
-  { value: 'probation', label: 'Probation' },
-  { value: 'parole', label: 'Parole' },
-  { value: 'community_sentence', label: 'Community Sentence' },
-  { value: 'licence', label: 'Licence' },
-  { value: 'mappa_oversight', label: 'MAPPA Oversight' },
-  { value: 'none', label: 'None' }
+const convictionStatusOptions = [
+  { value: 'spent', label: 'Spent (under Rehabilitation of Offenders Act 1974)' },
+  { value: 'unspent', label: 'Unspent' },
+  { value: 'pending', label: 'Pending' }
 ];
 
 const convictionTypeOptions = [
@@ -45,7 +41,6 @@ const SeekerProfileSetupStep2 = () => {
   const navigate = useNavigate();
   const [seekerProfile, setSeekerProfile] = useState({
     sentenceCompleted: undefined as boolean | undefined,
-    currentLegalSupervision: undefined as string | undefined,
     convictionTypes: [] as string[],
     convictionStatus: undefined as string | undefined,
     barredFromRegulatedWork: undefined as boolean | undefined,
@@ -59,7 +54,6 @@ const SeekerProfileSetupStep2 = () => {
     const savedData = profileSetupManager.getAllData();
     setSeekerProfile(prev => ({
       sentenceCompleted: savedData.sentenceCompleted,
-      currentLegalSupervision: savedData.currentLegalSupervision,
       convictionTypes: savedData.convictionTypes || [],
       convictionStatus: savedData.convictionStatus,
       barredFromRegulatedWork: savedData.barredFromRegulatedWork,
@@ -71,14 +65,9 @@ const SeekerProfileSetupStep2 = () => {
   }, []);
 
   const handleBooleanChange = (field: string, value: string) => {
-    const boolValue = value === 'true' ? true : value === 'false' ? false : undefined;
+    const boolValue = value === 'true' ? true : value === 'false' ? false : value === 'unknown' ? undefined : undefined;
     setSeekerProfile(prev => ({ ...prev, [field]: boolValue }));
     profileSetupManager.saveStepData(2, { [field]: boolValue });
-  };
-
-  const handleSupervisionChange = (value: string) => {
-    setSeekerProfile(prev => ({ ...prev, currentLegalSupervision: value }));
-    profileSetupManager.saveStepData(2, { currentLegalSupervision: value });
   };
 
   const handleConvictionTypeChange = (convictionType: string, checked: boolean) => {
@@ -117,22 +106,22 @@ const SeekerProfileSetupStep2 = () => {
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
         {/* Header with black text */}
-        <div className="flex items-center mb-6 sm:mb-8 animate-slide-up-stagger">
+        <div className="flex items-centre mb-6 sm:mb-8 animate-slide-up-stagger">
           <AnimatedButton 
             variant="ghost" 
             size="icon" 
             onClick={handleBack} 
-            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full border border-white/20"
+            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full border border-white/20 min-h-[44px]"
             ripple={false}
           >
-            <ArrowLeft className="h-6 w-6" />
+            Back
           </AnimatedButton>
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-black font-geist animate-fade-in-scale">
               Legal Information
             </h1>
             <p className="text-black text-base sm:text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
-              This helps us match you with suitable opportunities - Step 2 of 4 ✨
+              This helps us match you with suitable opportunities - Step 2 of 4
             </p>
           </div>
           <div className="ml-4">
@@ -149,7 +138,7 @@ const SeekerProfileSetupStep2 = () => {
 
         {/* Progress bar with black text */}
         <div className="mb-6 sm:mb-8 animate-slide-up-stagger animate-delay-200">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-centre justify-between mb-3">
             <span className="text-sm font-geist text-black font-medium">Profile Completion</span>
             <span className="text-sm font-bold text-black font-geist">50%</span>
           </div>
@@ -169,7 +158,7 @@ const SeekerProfileSetupStep2 = () => {
                 value={seekerProfile.sentenceCompleted?.toString() || ''} 
                 onValueChange={(value) => handleBooleanChange('sentenceCompleted', value)}
               >
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                <div className="flex items-centre space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <RadioGroupItem 
                     value="true" 
                     id="sentence-yes"
@@ -177,7 +166,7 @@ const SeekerProfileSetupStep2 = () => {
                   />
                   <Label htmlFor="sentence-yes" className="text-slate-800 font-geist cursor-pointer">Yes</Label>
                 </div>
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                <div className="flex items-centre space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <RadioGroupItem 
                     value="false" 
                     id="sentence-no"
@@ -189,27 +178,134 @@ const SeekerProfileSetupStep2 = () => {
             </div>
           </AnimatedCard>
 
-          {/* Current Legal Supervision */}
+          {/* Conviction Status */}
           <AnimatedCard
-            title="Current Legal Supervision"
+            title="Conviction Status"
             delay={200}
             className="glassmorphism-strong"
           >
             <RadioGroup 
-              value={seekerProfile.currentLegalSupervision || ''} 
-              onValueChange={handleSupervisionChange}
+              value={seekerProfile.convictionStatus || ''} 
+              onValueChange={(value) => {
+                setSeekerProfile(prev => ({ ...prev, convictionStatus: value }));
+                profileSetupManager.saveStepData(2, { convictionStatus: value });
+              }}
             >
-              {legalSupervisionOptions.map(option => (
-                <div key={option.value} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
+              {convictionStatusOptions.map(option => (
+                <div key={option.value} className="flex items-centre space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <RadioGroupItem 
                     value={option.value} 
-                    id={`supervision-${option.value}`}
+                    id={`conviction-status-${option.value}`}
                     className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
                   />
-                  <Label htmlFor={`supervision-${option.value}`} className="text-slate-800 font-geist cursor-pointer">{option.label}</Label>
+                  <Label htmlFor={`conviction-status-${option.value}`} className="text-slate-800 font-geist cursor-pointer">{option.label}</Label>
                 </div>
               ))}
             </RadioGroup>
+          </AnimatedCard>
+
+          {/* Safeguarding Questions */}
+          <AnimatedCard
+            title="Safeguarding Information"
+            delay={250}
+            className="glassmorphism-strong"
+          >
+            <div className="space-y-6">
+              {/* Barred from regulated work */}
+              <div>
+                <Label className="text-slate-800 font-geist font-medium text-sm mb-3 block">
+                  Barred from regulated work with children or vulnerable adults
+                </Label>
+                <RadioGroup 
+                  value={seekerProfile.barredFromRegulatedWork === undefined ? 'unknown' : seekerProfile.barredFromRegulatedWork.toString()} 
+                  onValueChange={(value) => handleBooleanChange('barredFromRegulatedWork', value)}
+                >
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="true" id="barred-yes" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="barred-yes" className="text-slate-800 font-geist cursor-pointer">Yes</Label>
+                  </div>
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="false" id="barred-no" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="barred-no" className="text-slate-800 font-geist cursor-pointer">No</Label>
+                  </div>
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="unknown" id="barred-unknown" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="barred-unknown" className="text-slate-800 font-geist cursor-pointer">Unknown</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* DBS Barring List */}
+              <div>
+                <Label className="text-slate-800 font-geist font-medium text-sm mb-3 block">
+                  Subject to DBS Barring List
+                </Label>
+                <RadioGroup 
+                  value={seekerProfile.onDbsBarringList === undefined ? 'unknown' : seekerProfile.onDbsBarringList.toString()} 
+                  onValueChange={(value) => handleBooleanChange('onDbsBarringList', value)}
+                >
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="true" id="dbs-yes" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="dbs-yes" className="text-slate-800 font-geist cursor-pointer">Yes</Label>
+                  </div>
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="false" id="dbs-no" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="dbs-no" className="text-slate-800 font-geist cursor-pointer">No</Label>
+                  </div>
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="unknown" id="dbs-unknown" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="dbs-unknown" className="text-slate-800 font-geist cursor-pointer">Unknown</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* MAPPA Level */}
+              <div>
+                <Label className="text-slate-800 font-geist font-medium text-sm mb-3 block">
+                  MAPPA Level
+                </Label>
+                <RadioGroup 
+                  value={seekerProfile.mappaLevel || ''} 
+                  onValueChange={(value) => {
+                    setSeekerProfile(prev => ({ ...prev, mappaLevel: value }));
+                    profileSetupManager.saveStepData(2, { mappaLevel: value });
+                  }}
+                >
+                  {['level_1', 'level_2', 'level_3', 'not_applicable'].map((level) => (
+                    <div key={level} className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                      <RadioGroupItem value={level} id={`mappa-${level}`} className="border-2 border-blue-400 text-blue-600" />
+                      <Label htmlFor={`mappa-${level}`} className="text-slate-800 font-geist cursor-pointer">
+                        {level === 'not_applicable' ? 'N/A' : `Level ${level.split('_')[1]}`}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              {/* Relevant for safeguarding checks */}
+              <div>
+                <Label className="text-slate-800 font-geist font-medium text-sm mb-3 block">
+                  Relevant for safeguarding checks
+                </Label>
+                <RadioGroup 
+                  value={seekerProfile.relevantForSafeguardingChecks === undefined ? 'unknown' : seekerProfile.relevantForSafeguardingChecks.toString()} 
+                  onValueChange={(value) => handleBooleanChange('relevantForSafeguardingChecks', value)}
+                >
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="true" id="safeguarding-yes" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="safeguarding-yes" className="text-slate-800 font-geist cursor-pointer">Yes</Label>
+                  </div>
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="false" id="safeguarding-no" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="safeguarding-no" className="text-slate-800 font-geist cursor-pointer">No</Label>
+                  </div>
+                  <div className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                    <RadioGroupItem value="unknown" id="safeguarding-unknown" className="border-2 border-blue-400 text-blue-600" />
+                    <Label htmlFor="safeguarding-unknown" className="text-slate-800 font-geist cursor-pointer">Unknown</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
           </AnimatedCard>
 
           {/* Conviction Types */}
@@ -221,7 +317,7 @@ const SeekerProfileSetupStep2 = () => {
           >
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {convictionTypeOptions.map(option => (
-                <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                <div key={option.value} className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <Checkbox
                     id={`conviction-${option.value}`}
                     checked={seekerProfile.convictionTypes?.includes(option.value) || false}
@@ -262,7 +358,7 @@ const SeekerProfileSetupStep2 = () => {
               onClick={handleBack}
               className="w-full sm:flex-1 py-4 sm:py-6 text-base sm:text-lg font-bold rounded-2xl
                 bg-white/90 hover:bg-white border-2 border-slate-200
-                text-slate-700 hover:text-slate-900 font-geist"
+                text-slate-700 hover:text-slate-900 font-geist min-h-[44px]"
               ripple={true}
             >
               Back
@@ -274,7 +370,7 @@ const SeekerProfileSetupStep2 = () => {
                 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500
                 hover:from-blue-600 hover:via-purple-600 hover:to-orange-600
                 text-white shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]
-                transition-all duration-500 font-geist"
+                transition-all duration-500 font-geist min-h-[44px]"
               ripple={true}
               glow={true}
             >

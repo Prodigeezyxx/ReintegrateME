@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { profileSetupManager } from '../../utils/profileSetupManager';
 import AnimatedCard from '../ui/animated-card';
@@ -31,12 +31,12 @@ const SeekerProfileSetupStep3 = () => {
   }, []);
 
   const disabilityOptions: { value: string; label: string }[] = [
-    { value: 'mobility_physical_access', label: 'Mobility or physical access needs' },
-    { value: 'sensory_hearing_vision_processing', label: 'Sensory (hearing, vision, processing)' },
-    { value: 'long_term_medical_condition', label: 'Long-term medical condition' },
-    { value: 'neurodivergence', label: 'Neurodivergence (ADHD, Autism, etc.)' },
+    { value: 'mobility_physical_access', label: 'Mobility / physical access needs' },
+    { value: 'sensory_hearing_vision_processing', label: 'Sensory (hearing / vision / processing)' },
+    { value: 'long_term_medical_condition', label: 'Long-term medical condition (e.g. diabetes, epilepsy, HIV, etc.)' },
+    { value: 'neurodivergence', label: 'Neurodivergence (e.g. ADHD, Autism, Dyslexia, Dyspraxia, etc.)' },
     { value: 'learning_difficulty', label: 'Learning difficulty' },
-    { value: 'mental_health', label: 'Mental health condition' },
+    { value: 'mental_health', label: 'Mental health' },
     { value: 'communication_needs', label: 'Communication needs' },
     { value: 'cognitive_memory_difficulties', label: 'Cognitive or memory difficulties' },
     { value: 'other', label: 'Other' },
@@ -50,8 +50,7 @@ const SeekerProfileSetupStep3 = () => {
     { value: 'assistive_technology', label: 'Assistive technology' },
     { value: 'modified_physical_work_environment', label: 'Modified physical work environment' },
     { value: 'communication_support', label: 'Communication support' },
-    { value: 'none', label: 'None required' },
-    { value: 'other', label: 'Other' }
+    { value: 'none', label: 'None required' }
   ];
 
   const handleDisabilityTypeChange = (type: string, checked: boolean) => {
@@ -113,22 +112,22 @@ const SeekerProfileSetupStep3 = () => {
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
         {/* Header with black text */}
-        <div className="flex items-center mb-8 animate-slide-up-stagger">
+        <div className="flex items-centre mb-8 animate-slide-up-stagger">
           <AnimatedButton 
             variant="ghost" 
             size="icon" 
             onClick={handleBack} 
-            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full"
+            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full min-h-[44px]"
             ripple={false}
           >
-            <ArrowLeft className="h-6 w-6" />
+            Back
           </AnimatedButton>
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-black font-geist animate-fade-in-scale">
               Health & Accessibility
             </h1>
             <p className="text-black text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
-              Optional information to help us support you - Step 3 of 4 ✨
+              Optional information to help us support you - Step 3 of 4
             </p>
           </div>
           <div className="ml-4">
@@ -145,7 +144,7 @@ const SeekerProfileSetupStep3 = () => {
 
         {/* Progress bar with black text */}
         <div className="mb-8 animate-slide-up-stagger animate-delay-200">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-centre justify-between mb-3">
             <span className="text-sm font-geist text-black font-medium">Profile Completion</span>
             <span className="text-sm font-bold text-black font-geist">75%</span>
           </div>
@@ -162,7 +161,7 @@ const SeekerProfileSetupStep3 = () => {
               value={hasDisability?.toString() || ''} 
               onValueChange={(value) => setHasDisability(value === 'true')}
             >
-              <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
+              <div className="flex items-centre space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                 <RadioGroupItem 
                   value="true" 
                   id="disability-yes"
@@ -170,7 +169,7 @@ const SeekerProfileSetupStep3 = () => {
                 />
                 <Label htmlFor="disability-yes" className="text-slate-800 font-geist cursor-pointer">Yes, I have a disability</Label>
               </div>
-              <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
+              <div className="flex items-centre space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
                 <RadioGroupItem 
                   value="false" 
                   id="disability-no"
@@ -184,13 +183,13 @@ const SeekerProfileSetupStep3 = () => {
           {hasDisability && (
             <AnimatedCard
               title="Type of Disability"
-              description="Select all that apply (optional)"
+              description="If 'Yes', select any that apply:"
               delay={200}
               className="glassmorphism-strong"
             >
               <div className="space-y-3">
                 {disabilityOptions.map((option) => (
-                  <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                  <div key={option.value} className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
                     <Checkbox
                       id={option.value}
                       checked={disabilityTypes.includes(option.value)}
@@ -229,7 +228,7 @@ const SeekerProfileSetupStep3 = () => {
           >
             <div className="space-y-3">
               {adjustmentOptions.map((option) => (
-                <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
+                <div key={option.value} className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
                   <Checkbox
                     id={option.value}
                     checked={workplaceAdjustments.includes(option.value)}
@@ -244,26 +243,13 @@ const SeekerProfileSetupStep3 = () => {
                 </div>
               ))}
             </div>
-            
-            {workplaceAdjustments.includes('other') && (
-              <div className="mt-4">
-                <Label htmlFor="adjustments-other" className="text-slate-800 font-geist text-sm">Please specify</Label>
-                <Textarea
-                  id="adjustments-other"
-                  value={workplaceAdjustmentsOther}
-                  onChange={(e) => setWorkplaceAdjustmentsOther(e.target.value)}
-                  placeholder="Please describe the adjustments you might need..."
-                  className="mt-2 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
-                />
-              </div>
-            )}
           </AnimatedCard>
 
           <AnimatedCard 
             delay={400}
             className="glassmorphism border-2 border-blue-400/30 bg-gradient-to-r from-blue-50/80 to-indigo-50/80"
           >
-            <div className="text-center">
+            <div className="text-centre">
               <p className="text-sm text-slate-700 font-geist">
                 <strong>Your privacy matters:</strong> This information helps us match you with inclusive employers. 
                 You control what you share and when.
@@ -276,7 +262,7 @@ const SeekerProfileSetupStep3 = () => {
           <AnimatedButton 
             variant="outline" 
             onClick={handleSkip} 
-            className="flex-1 bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white font-geist"
+            className="flex-1 bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white font-geist min-h-[44px]"
           >
             Skip for Now
           </AnimatedButton>
@@ -284,12 +270,11 @@ const SeekerProfileSetupStep3 = () => {
             onClick={handleNext} 
             className="flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500
               hover:from-blue-600 hover:via-purple-600 hover:to-orange-600
-              text-white font-geist"
+              text-white font-geist min-h-[44px]"
             ripple={true}
             glow={true}
           >
             Continue
-            <ArrowRight className="ml-2 h-4 w-4" />
           </AnimatedButton>
         </div>
       </div>

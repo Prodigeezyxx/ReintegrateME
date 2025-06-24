@@ -1,6 +1,6 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { mapWorkplaceAdjustments, mapDisabilityTypes } from "./enumMappings";
 
 interface SeekerSetupData {
   // Step 1 data
@@ -12,9 +12,8 @@ interface SeekerSetupData {
   
   // Step 2 data
   sentenceCompleted?: boolean;
-  currentLegalSupervision?: string;
-  convictionTypes?: string[];
   convictionStatus?: string;
+  convictionTypes?: string[];
   convictionOtherDetails?: string;
   barredFromRegulatedWork?: boolean;
   onDbsBarringList?: boolean;
@@ -36,7 +35,6 @@ interface SeekerSetupData {
 
 type ConvictionStatus = Database['public']['Enums']['conviction_status'];
 type ConvictionType = Database['public']['Enums']['conviction_type'];
-type LegalSupervisionType = Database['public']['Enums']['legal_supervision_type'];
 type MappaLevel = Database['public']['Enums']['mappa_level'];
 type DisabilityType = Database['public']['Enums']['disability_type'];
 type WorkplaceAdjustment = Database['public']['Enums']['workplace_adjustment'];
@@ -83,9 +81,11 @@ export const profileSetupManager = {
         return value ? value as T : fallback;
       };
 
-      // Helper function to safely cast enum arrays
-      const castEnumArray = <T extends string>(values: string[] | undefined): T[] | null => {
-        return values && values.length > 0 ? values as T[] : null;
+      // Helper function to safely cast enum arrays with mapping
+      const castEnumArray = <T extends string>(values: string[] | undefined, mapper?: (vals: string[]) => string[]): T[] | null => {
+        if (!values || values.length === 0) return null;
+        const mappedValues = mapper ? mapper(values) : values;
+        return mappedValues as T[];
       };
 
       const profileData = {
@@ -97,7 +97,6 @@ export const profileSetupManager = {
         key_skills: data.keySkills || null,
         email: user.email || null,
         sentence_completed: data.sentenceCompleted || null,
-        current_legal_supervision: castEnumValue<LegalSupervisionType>(data.currentLegalSupervision),
         conviction_types: castEnumArray<ConvictionType>(data.convictionTypes),
         conviction_status: castEnumValue<ConvictionStatus>(data.convictionStatus),
         conviction_other_details: data.convictionOtherDetails || null,
@@ -106,9 +105,9 @@ export const profileSetupManager = {
         mappa_level: castEnumValue<MappaLevel>(data.mappaLevel),
         relevant_for_safeguarding_checks: data.relevantForSafeguardingChecks || null,
         has_disability: data.hasDisability || null,
-        disability_types: castEnumArray<DisabilityType>(data.disabilityTypes),
+        disability_types: castEnumArray<DisabilityType>(data.disabilityTypes, mapDisabilityTypes),
         disability_other_details: data.disabilityOtherDetails || null,
-        workplace_adjustments: castEnumArray<WorkplaceAdjustment>(data.workplaceAdjustments),
+        workplace_adjustments: castEnumArray<WorkplaceAdjustment>(data.workplaceAdjustments, mapWorkplaceAdjustments),
         workplace_adjustments_other: data.workplaceAdjustmentsOther || null,
         has_driving_licence: data.hasDrivingLicence || null,
         work_preferences: castEnumArray<WorkPreference>(data.workPreferences),
@@ -160,7 +159,7 @@ export const profileSetupManager = {
     });
 
     // Optional but important fields
-    const optionalFields = ['jobTitle', 'headline', 'keySkills', 'sentenceCompleted', 'currentLegalSupervision'];
+    const optionalFields = ['jobTitle', 'headline', 'keySkills', 'sentenceCompleted'];
     optionalFields.forEach(field => {
       totalFields += 1;
       const value = data[field as keyof SeekerSetupData];
