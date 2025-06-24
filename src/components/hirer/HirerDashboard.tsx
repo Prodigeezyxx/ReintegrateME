@@ -245,6 +245,26 @@ const HirerDashboard = () => {
                   <span className="font-medium text-indigo-700">Post New Job</span>
                 </Link>
               </Button>
+              <Button
+                variant="outline"
+                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 transition-all duration-200"
+                asChild
+              >
+                <Link to="/hirer-profile">
+                  <Users className="h-4 w-4 mr-2 text-emerald-600" />
+                  <span className="font-medium text-emerald-700">Edit Profile</span>
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 transition-all duration-200"
+                asChild
+              >
+                <Link to="/hirer-discover">
+                  <Activity className="h-4 w-4 mr-2 text-amber-600" />
+                  <span className="font-medium text-amber-700">Browse Talent</span>
+                </Link>
+              </Button>
             </CardContent>
           </Card>
           

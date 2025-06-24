@@ -22,6 +22,7 @@ import HirerCreateJob from "./components/hirer/HirerCreateJob";
 import HirerApplicants from "./components/hirer/HirerApplicants";
 import HirerMessages from "./components/hirer/HirerMessages";
 import HirerChatDetail from "./components/hirer/HirerChatDetail";
+import HirerProfile from "./components/hirer/HirerProfile";
 import SeekerHome from "./components/seeker/SeekerHome";
 import SeekerDashboard from "./components/seeker/SeekerDashboard";
 import SeekerDashboard2 from "./components/seeker/SeekerDashboard2";
@@ -68,7 +69,7 @@ const App = () => {
             <Route path="/hirer-applicants" element={<HirerApplicants />} />
             <Route path="/hirer-messages" element={<HirerMessages />} />
             <Route path="/hirer-messages/:threadId" element={<HirerChatDetail />} />
-            <Route path="/hirer-profile" element={<Navigate to="/hirer-dashboard" replace />} />
+            <Route path="/hirer-profile" element={<HirerProfile />} />
             
             {/* Seeker Routes */}
             <Route path="/seeker-setup-step1" element={<SeekerProfileSetupStep1 />} />
