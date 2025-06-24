@@ -1,6 +1,5 @@
-
 import { supabase } from "@/integrations/supabase/client";
-import { imageStorageAPI } from "../services/api";
+import { imageStorageAPI } from "../services/storage";
 
 export const uploadLogo = async (file: File): Promise<string | null> => {
   try {
