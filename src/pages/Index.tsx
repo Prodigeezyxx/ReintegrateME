@@ -30,7 +30,7 @@ const Index = () => {
           setHasNavigated(true);
           // Redirect authenticated users to their respective dashboards
           if (currentUser.role === 'hirer') {
-            navigate('/hirer-dashboard', { replace: true });
+            navigate('/hirer-talent-overview', { replace: true });
           } else if (currentUser.role === 'seeker') {
             navigate('/seeker-dashboard', { replace: true });
           } else {

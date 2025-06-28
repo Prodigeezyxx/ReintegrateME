@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -67,7 +66,7 @@ const Authentication = () => {
         const user = await authAPI.login(email, password);
         
         if (user.role === 'hirer') {
-          navigate('/hirer-dashboard');
+          navigate('/hirer-talent-overview');
         } else {
           navigate('/seeker-dashboard');
         }

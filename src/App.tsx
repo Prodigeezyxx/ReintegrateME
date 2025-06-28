@@ -15,6 +15,7 @@ import SeekerSkillsStep from "./components/seeker/SeekerSkillsStep";
 import SeekerProfileSetupStep2 from "./components/seeker/SeekerProfileSetupStep2";
 import SeekerProfileSetupStep3 from "./components/seeker/SeekerProfileSetupStep3";
 import SeekerProfileSetupStep4 from "./components/seeker/SeekerProfileSetupStep4";
+import HirerTalentOverview from "./components/hirer/HirerTalentOverview";
 import HirerDashboard from "./components/hirer/HirerDashboard";
 import HirerDiscover from "./components/hirer/HirerDiscover";
 import HirerJobsList from "./components/hirer/HirerJobsList";
@@ -62,6 +63,7 @@ const App = () => {
             
             {/* Hirer Routes */}
             <Route path="/hirer-setup" element={<HirerProfileSetup />} />
+            <Route path="/hirer-talent-overview" element={<HirerTalentOverview />} />
             <Route path="/hirer-dashboard" element={<HirerDashboard />} />
             <Route path="/hirer-discover" element={<HirerDiscover />} />
             <Route path="/hirer-jobs" element={<HirerJobsList />} />
