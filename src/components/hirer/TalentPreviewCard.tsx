@@ -25,7 +25,10 @@ const TalentPreviewCard: React.FC<TalentPreviewCardProps> = ({ talent, onClick }
                 onError={(e) => {
                   const target = e.currentTarget;
                   target.style.display = 'none';
-                  target.nextElementSibling.style.display = 'flex';
+                  const nextElement = target.nextElementSibling as HTMLElement;
+                  if (nextElement) {
+                    nextElement.style.display = 'flex';
+                  }
                 }}
               />
             ) : null}
