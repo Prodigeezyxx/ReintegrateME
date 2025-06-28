@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
-import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw } from 'lucide-react';
+import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw, ArrowRight } from 'lucide-react';
 import { authAPI, jobAPI, companyAPI } from '../../services/api';
 import { getLogoUrl } from '../../utils/logoUpload';
+import { SwipeableCardData } from '../../models/types';
+import TalentPreviewCard from './TalentPreviewCard';
 
 const HirerDashboard = () => {
   const [stats, setStats] = useState({
@@ -18,11 +20,14 @@ const HirerDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [companyName, setCompanyName] = useState('Dashboard');
+  const [talentPreviews, setTalentPreviews] = useState<SwipeableCardData[]>([]);
+  const [isTalentLoading, setIsTalentLoading] = useState(true);
   const navigate = useNavigate();
   
   useEffect(() => {
     fetchDashboardData();
     fetchCompanyName();
+    fetchTalentPreviews();
   }, []);
 
   const fetchCompanyName = async () => {
@@ -34,6 +39,18 @@ const HirerDashboard = () => {
     } catch (error) {
       console.error('Failed to fetch company name:', error);
       // Keep default "Dashboard" if failed
+    }
+  };
+
+  const fetchTalentPreviews = async () => {
+    try {
+      setIsTalentLoading(true);
+      const talents = await jobAPI.getSeekersFeed();
+      setTalentPreviews(talents.slice(0, 3)); // Show first 3 talents
+      setIsTalentLoading(false);
+    } catch (error) {
+      console.error('Failed to fetch talent previews:', error);
+      setIsTalentLoading(false);
     }
   };
 
@@ -82,6 +99,7 @@ const HirerDashboard = () => {
   
   const handleRefresh = () => {
     fetchDashboardData();
+    fetchTalentPreviews();
   };
   
   const handleActivityClick = (activity) => {
@@ -120,6 +138,10 @@ const HirerDashboard = () => {
       default:
         break;
     }
+  };
+  
+  const handleTalentPreviewClick = (talent: SwipeableCardData) => {
+    navigate('/hirer-discover');
   };
   
   const renderActivityIcon = (type) => {
@@ -182,6 +204,63 @@ const HirerDashboard = () => {
             <h1 className="text-2xl font-bold text-slate-800 font-geist">{companyName}</h1>
             <p className="text-slate-500 text-sm">Welcome back! Here's what's happening today.</p>
           </div>
+
+          {/* Hero Browse Talent Section */}
+          <Card className="mb-6 beautiful-shadow border-0 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+            <CardHeader className="px-4 pt-6 pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-geist text-slate-800 mb-1">Discover Top Talent</CardTitle>
+                  <CardDescription className="text-slate-600">Find the perfect candidates for your roles</CardDescription>
+                </div>
+                <div className="bg-orange-100 p-2 rounded-xl">
+                  <Users className="h-6 w-6 text-orange-600" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="px-4 pb-6">
+              {isTalentLoading ? (
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="min-w-[200px] h-32 bg-slate-200 animate-pulse rounded-lg"></div>
+                  ))}
+                </div>
+              ) : talentPreviews.length > 0 ? (
+                <>
+                  <div className="flex gap-3 overflow-x-auto pb-2 mb-4">
+                    {talentPreviews.map((talent) => (
+                      <TalentPreviewCard
+                        key={talent.id}
+                        talent={talent}
+                        onClick={() => handleTalentPreviewClick(talent)}
+                      />
+                    ))}
+                  </div>
+                  <Button 
+                    className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white beautiful-shadow transition-all duration-200 font-geist font-medium text-base py-3"
+                    asChild
+                  >
+                    <Link to="/hirer-discover" className="flex items-center justify-center gap-2">
+                      Browse All Talent
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-slate-600 mb-4 font-geist">No talent profiles available at the moment</p>
+                  <Button 
+                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white beautiful-shadow transition-all duration-200 font-geist font-medium"
+                    asChild
+                  >
+                    <Link to="/hirer-discover">
+                      Browse Talent
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
           
           {/* Enhanced Stats Grid */}
           <div className="grid grid-cols-2 gap-3 mb-6">
@@ -232,53 +311,68 @@ const HirerDashboard = () => {
             </Card>
           </div>
           
-          {/* Enhanced Quick Actions */}
+          {/* Enhanced Quick Actions - moved higher with prominent Browse Talent */}
           <Card className="mb-6 beautiful-shadow border-0">
             <CardHeader className="px-4 pt-4 pb-1">
               <CardTitle className="text-lg font-geist text-slate-800">Quick Actions</CardTitle>
               <CardDescription className="text-slate-500">Get things done faster</CardDescription>
             </CardHeader>
-            <CardContent className="p-4 grid grid-cols-2 gap-2">
-              <Button 
-                variant="outline" 
-                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-all duration-200"
-                asChild
-              >
-                <Link to="/hirer-jobs">
-                  <Briefcase className="h-4 w-4 mr-2 text-slate-600" />
-                  <span className="font-medium text-slate-700">Manage Jobs</span>
-                </Link>
-              </Button>
+            <CardContent className="p-4 space-y-3">
+              {/* Prominent Browse Talent Button */}
               <Button
-                variant="outline"
-                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all duration-200"
+                className="w-full justify-start beautiful-shadow hover:beautiful-shadow-subtle bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white transition-all duration-200 py-3 text-base font-medium"
                 asChild
               >
-                <Link to="/hirer-create-job">
-                  <Plus className="h-4 w-4 mr-2 text-indigo-600" />
-                  <span className="font-medium text-indigo-700">Post New Job</span>
+                <Link to="/hirer-discover" className="flex items-center gap-3">
+                  <Users className="h-5 w-5" />
+                  <span>Browse Talent</span>
+                  <ArrowRight className="h-4 w-4 ml-auto" />
                 </Link>
               </Button>
-              <Button
-                variant="outline"
-                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 transition-all duration-200"
-                asChild
-              >
-                <Link to="/hirer-profile">
-                  <Users className="h-4 w-4 mr-2 text-emerald-600" />
-                  <span className="font-medium text-emerald-700">Edit Profile</span>
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 transition-all duration-200"
-                asChild
-              >
-                <Link to="/hirer-discover">
-                  <Activity className="h-4 w-4 mr-2 text-amber-600" />
-                  <span className="font-medium text-amber-700">Browse Talent</span>
-                </Link>
-              </Button>
+              
+              {/* Regular Quick Actions in 2x2 grid */}
+              <div className="grid grid-cols-2 gap-2">
+                <Button 
+                  variant="outline" 
+                  className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 transition-all duration-200"
+                  asChild
+                >
+                  <Link to="/hirer-jobs">
+                    <Briefcase className="h-4 w-4 mr-2 text-slate-600" />
+                    <span className="font-medium text-slate-700">Manage Jobs</span>
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all duration-200"
+                  asChild
+                >
+                  <Link to="/hirer-create-job">
+                    <Plus className="h-4 w-4 mr-2 text-indigo-600" />
+                    <span className="font-medium text-indigo-700">Post New Job</span>
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 transition-all duration-200"
+                  asChild
+                >
+                  <Link to="/hirer-profile">
+                    <Users className="h-4 w-4 mr-2 text-emerald-600" />
+                    <span className="font-medium text-emerald-700">Edit Profile</span>
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="justify-start beautiful-shadow-subtle hover:beautiful-shadow border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-all duration-200"
+                  asChild
+                >
+                  <Link to="/hirer-messages">
+                    <MessageSquare className="h-4 w-4 mr-2 text-purple-600" />
+                    <span className="font-medium text-purple-700">Messages</span>
+                  </Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
           
@@ -312,26 +406,6 @@ const HirerDashboard = () => {
               )}
             </CardContent>
           </Card>
-          
-          {/* Enhanced Talent Discovery */}
-          <div className="mb-6">
-            <Card className="beautiful-shadow border-0 bg-gradient-to-br from-orange-50 to-amber-50">
-              <CardHeader className="px-4 pt-4 pb-2">
-                <CardTitle className="text-lg font-geist text-slate-800">Talent Discovery</CardTitle>
-                <CardDescription className="text-slate-600">Find the perfect candidates for your jobs</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4">
-                <Button 
-                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white beautiful-shadow transition-all duration-200 font-geist font-medium"
-                  asChild
-                >
-                  <Link to="/hirer-discover">
-                    Browse Talent
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
     </div>
