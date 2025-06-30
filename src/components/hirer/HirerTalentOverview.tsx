@@ -217,7 +217,7 @@ const HirerTalentOverview = () => {
                 </div>
               </div>
             </CardContent>
-          </div>
+          </Card>
 
           {/* Skip Option */}
           <div>
