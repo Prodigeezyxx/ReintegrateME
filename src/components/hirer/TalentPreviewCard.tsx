@@ -16,7 +16,7 @@ const TalentPreviewCard: React.FC<TalentPreviewCardProps> = ({ talent, onClick }
     >
       <CardContent className="p-4">
         <div className="flex flex-col items-center text-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center mb-3 overflow-hidden">
+          <div className="w-16 h-16 rounded-full mb-3 overflow-hidden bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center">
             {talent.primaryImageUrl ? (
               <img 
                 src={talent.primaryImageUrl} 
@@ -24,17 +24,17 @@ const TalentPreviewCard: React.FC<TalentPreviewCardProps> = ({ talent, onClick }
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const target = e.currentTarget;
-                  target.style.display = 'none';
-                  const nextElement = target.nextElementSibling as HTMLElement;
-                  if (nextElement) {
-                    nextElement.style.display = 'flex';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center text-emerald-600 font-bold text-lg">${talent.titleText?.charAt(0) || 'T'}</div>`;
                   }
                 }}
               />
-            ) : null}
-            <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center text-emerald-600 font-bold text-lg">
-              {talent.titleText?.charAt(0) || 'T'}
-            </div>
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-green-100 flex items-center justify-center text-emerald-600 font-bold text-lg">
+                {talent.titleText?.charAt(0) || 'T'}
+              </div>
+            )}
           </div>
           <h3 className="font-semibold text-slate-800 text-sm font-geist mb-1">
             {talent.titleText}

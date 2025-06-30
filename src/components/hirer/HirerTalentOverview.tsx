@@ -16,8 +16,8 @@ const HirerTalentOverview = () => {
   const [isTalentLoading, setIsTalentLoading] = useState(true);
   const [stats, setStats] = useState({
     activeJobs: 0,
-    profileViews: 0,
-    responseRate: 0,
+    totalApplications: 0,
+    newMessages: 0,
   });
   const navigate = useNavigate();
   
@@ -55,8 +55,8 @@ const HirerTalentOverview = () => {
       const jobs = await jobAPI.getHirerJobs();
       setStats({
         activeJobs: jobs.filter(job => job.status !== 'archived').length,
-        profileViews: Math.floor(Math.random() * 150) + 50,
-        responseRate: Math.floor(Math.random() * 40) + 60,
+        totalApplications: Math.floor(Math.random() * 25) + 5, // Simulated applications
+        newMessages: Math.floor(Math.random() * 8) + 1, // Simulated new messages
       });
     } catch (error) {
       console.error('Failed to fetch stats:', error);
