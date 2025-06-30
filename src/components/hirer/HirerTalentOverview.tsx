@@ -1,12 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Briefcase, TrendingUp, ArrowRight, SkipForward } from 'lucide-react';
+import { SkipForward } from 'lucide-react';
 import { jobAPI, companyAPI } from '../../services/api';
 import { getLogoUrl } from '../../utils/logoUpload';
 import { SwipeableCardData } from '../../models/types';
-import TalentPreviewCard from './TalentPreviewCard';
+import QuickStatsCards from './QuickStatsCards';
+import TalentDiscoverySection from './TalentDiscoverySection';
+import GettingStartedTips from './GettingStartedTips';
 
 const HirerTalentOverview = () => {
   const [companyName, setCompanyName] = useState('Your Company');
@@ -97,127 +99,17 @@ const HirerTalentOverview = () => {
           </div>
 
           {/* Quick Stats Cards */}
-          <div className="grid grid-cols-3 gap-3 mb-8">
-            <Card className="beautiful-shadow-subtle border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
-              <CardContent className="p-4 text-center">
-                <div className="bg-blue-500 p-2 rounded-xl mb-2 w-fit mx-auto">
-                  <Briefcase className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xl font-bold text-slate-800 font-geist">{stats.activeJobs}</p>
-                <p className="text-xs text-slate-600">Active Jobs</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="beautiful-shadow-subtle border-0 bg-gradient-to-br from-emerald-50 to-green-50">
-              <CardContent className="p-4 text-center">
-                <div className="bg-emerald-500 p-2 rounded-xl mb-2 w-fit mx-auto">
-                  <Users className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xl font-bold text-slate-800 font-geist">{stats.profileViews}</p>
-                <p className="text-xs text-slate-600">Profile Views</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="beautiful-shadow-subtle border-0 bg-gradient-to-br from-purple-50 to-pink-50">
-              <CardContent className="p-4 text-center">
-                <div className="bg-purple-500 p-2 rounded-xl mb-2 w-fit mx-auto">
-                  <TrendingUp className="h-4 w-4 text-white" />
-                </div>
-                <p className="text-xl font-bold text-slate-800 font-geist">{stats.responseRate}%</p>
-                <p className="text-xs text-slate-600">Response Rate</p>
-              </CardContent>
-            </Card>
-          </div>
+          <QuickStatsCards stats={stats} />
 
-          {/* Main Talent Discovery Section */}
-          <Card className="mb-6 beautiful-shadow border-0 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-            <CardHeader className="px-4 pt-6 pb-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-geist text-slate-800 mb-1">Discover Top Talent</CardTitle>
-                  <CardDescription className="text-slate-600">Find the perfect candidates for your roles</CardDescription>
-                </div>
-                <div className="bg-orange-100 p-2 rounded-xl">
-                  <Users className="h-6 w-6 text-orange-600" />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="px-4 pb-6">
-              {isTalentLoading ? (
-                <div className="flex gap-3 overflow-x-auto pb-2">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="min-w-[200px] h-32 bg-slate-200 animate-pulse rounded-lg"></div>
-                  ))}
-                </div>
-              ) : talentPreviews.length > 0 ? (
-                <div className="flex gap-3 overflow-x-auto pb-2">
-                  {talentPreviews.map((talent) => (
-                    <TalentPreviewCard
-                      key={talent.id}
-                      talent={talent}
-                      onClick={() => handleTalentPreviewClick(talent)}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-slate-600 mb-4 font-geist">No talent profiles available at the moment</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Prominent Browse Talent Button - Moved Up */}
-          <div className="mb-8">
-            <Button 
-              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white beautiful-shadow transition-all duration-200 font-geist font-bold text-xl py-8 h-auto"
-              asChild
-            >
-              <Link to="/hirer-discover" className="flex items-center justify-center gap-3">
-                <Users className="h-6 w-6" />
-                Browse All Talent
-                <ArrowRight className="h-6 w-6" />
-              </Link>
-            </Button>
-          </div>
+          {/* Talent Discovery Section */}
+          <TalentDiscoverySection
+            talentPreviews={talentPreviews}
+            isTalentLoading={isTalentLoading}
+            onTalentPreviewClick={handleTalentPreviewClick}
+          />
 
           {/* Getting Started Tips */}
-          <Card className="mb-8 beautiful-shadow border-0">
-            <CardHeader className="px-4 pt-4 pb-2">
-              <CardTitle className="text-lg font-geist text-slate-800">Getting Started Tips</CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="bg-blue-100 p-1.5 rounded-lg mt-0.5">
-                    <Briefcase className="h-3 w-3 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-800">Post your first job</p>
-                    <p className="text-xs text-slate-600">Create detailed job postings to attract the right candidates</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="bg-emerald-100 p-1.5 rounded-lg mt-0.5">
-                    <Users className="h-3 w-3 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-800">Browse talent profiles</p>
-                    <p className="text-xs text-slate-600">Use our swipe feature to discover candidates that match your needs</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="bg-purple-100 p-1.5 rounded-lg mt-0.5">
-                    <TrendingUp className="h-3 w-3 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-800">Optimize your company profile</p>
-                    <p className="text-xs text-slate-600">Complete your profile to attract more quality applications</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <GettingStartedTips />
 
           {/* Skip Option */}
           <div>
