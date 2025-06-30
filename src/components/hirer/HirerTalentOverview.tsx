@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -131,7 +130,7 @@ const HirerTalentOverview = () => {
           </div>
 
           {/* Main Talent Discovery Section */}
-          <Card className="mb-8 beautiful-shadow border-0 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+          <Card className="mb-6 beautiful-shadow border-0 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
             <CardHeader className="px-4 pt-6 pb-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -151,7 +150,7 @@ const HirerTalentOverview = () => {
                   ))}
                 </div>
               ) : talentPreviews.length > 0 ? (
-                <div className="flex gap-3 overflow-x-auto pb-2 mb-4">
+                <div className="flex gap-3 overflow-x-auto pb-2">
                   {talentPreviews.map((talent) => (
                     <TalentPreviewCard
                       key={talent.id}
@@ -167,6 +166,20 @@ const HirerTalentOverview = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* Prominent Browse Talent Button - Moved Up */}
+          <div className="mb-8">
+            <Button 
+              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white beautiful-shadow transition-all duration-200 font-geist font-bold text-xl py-8 h-auto"
+              asChild
+            >
+              <Link to="/hirer-discover" className="flex items-center justify-center gap-3">
+                <Users className="h-6 w-6" />
+                Browse All Talent
+                <ArrowRight className="h-6 w-6" />
+              </Link>
+            </Button>
+          </div>
 
           {/* Getting Started Tips */}
           <Card className="mb-8 beautiful-shadow border-0">
@@ -204,21 +217,10 @@ const HirerTalentOverview = () => {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <Button 
-              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white beautiful-shadow transition-all duration-200 font-geist font-medium text-base py-6"
-              asChild
-            >
-              <Link to="/hirer-discover" className="flex items-center justify-center gap-2">
-                <Users className="h-5 w-5" />
-                Browse All Talent
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-            
+          {/* Skip Option */}
+          <div>
             <Button 
               variant="ghost"
               className="w-full text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-geist font-medium py-4"

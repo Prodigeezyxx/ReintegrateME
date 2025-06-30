@@ -111,7 +111,8 @@ const HirerProfileSetup = () => {
         description: "Your company profile has been successfully set up.",
       });
       
-      navigate('/hirer-dashboard');
+      // Redirect to talent overview instead of dashboard
+      navigate('/hirer-talent-overview');
     } catch (error) {
       toast({
         title: "Error",
@@ -270,7 +271,7 @@ const HirerProfileSetup = () => {
             disabled={isLoading || !formData.companyName.trim()}
             className="w-full py-6 text-lg bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
           >
-            {isLoading ? 'Creating Profile...' : 'Complete Setup & Start Hiring'}
+            {isLoading ? 'Creating Profile...' : 'Complete Setup & Discover Talent'}
           </Button>
         </div>
       </div>
