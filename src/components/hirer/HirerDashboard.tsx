@@ -4,10 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Briefcase, Users, MessageSquare, Activity, Plus, RefreshCw, ArrowRight } from 'lucide-react';
-import { jobAPI, companyAPI } from '../../services/api';
+import { authAPI, jobAPI, companyAPI } from '../../services/api';
 import { getLogoUrl } from '../../utils/logoUpload';
 import { SwipeableCardData } from '../../models/types';
-import { supabase } from '@/integrations/supabase/client';
 import TalentPreviewCard from './TalentPreviewCard';
 
 const HirerDashboard = () => {
@@ -23,38 +22,13 @@ const HirerDashboard = () => {
   const [companyName, setCompanyName] = useState('Dashboard');
   const [talentPreviews, setTalentPreviews] = useState<SwipeableCardData[]>([]);
   const [isTalentLoading, setIsTalentLoading] = useState(true);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Check authentication and get user
-    const checkAuth = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error || !user) {
-        navigate('/auth');
-        return;
-      }
-      
-      // Check if user role is hirer
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-      
-      if (profile?.role !== 'hirer') {
-        navigate('/');
-        return;
-      }
-      
-      setUser(user);
-      fetchDashboardData();
-      fetchCompanyName();
-      fetchTalentPreviews();
-    };
-    
-    checkAuth();
-  }, [navigate]);
+    fetchDashboardData();
+    fetchCompanyName();
+    fetchTalentPreviews();
+  }, []);
 
   const fetchCompanyName = async () => {
     try {
@@ -64,6 +38,7 @@ const HirerDashboard = () => {
       }
     } catch (error) {
       console.error('Failed to fetch company name:', error);
+      // Keep default "Dashboard" if failed
     }
   };
 
@@ -71,15 +46,10 @@ const HirerDashboard = () => {
     try {
       setIsTalentLoading(true);
       const talents = await jobAPI.getSeekersFeed();
-      setTalentPreviews(talents.slice(0, 3));
+      setTalentPreviews(talents.slice(0, 3)); // Show first 3 talents
+      setIsTalentLoading(false);
     } catch (error) {
       console.error('Failed to fetch talent previews:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load talent previews",
-        variant: "destructive"
-      });
-    } finally {
       setIsTalentLoading(false);
     }
   };
@@ -87,12 +57,14 @@ const HirerDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setIsRefreshing(true);
+      // In a real app, we would fetch the dashboard data from an API
+      // For now, we'll simulate it with mock data
       
-      // Get user's jobs to calculate real stats
+      // Get user's jobs to calculate stats
       const jobs = await jobAPI.getHirerJobs();
-      const activeOpenings = jobs.filter(job => job.status === 'active').length;
       
-      // For now, use mock data for other stats since we don't have applications/messages tables yet
+      // Calculate mock statistics
+      const activeOpenings = jobs.filter(job => job.status !== 'archived').length;
       const totalApplicants = Math.floor(Math.random() * 50) + 10;
       const newApplicants = Math.floor(Math.random() * 10);
       const unreadMessages = Math.floor(Math.random() * 15);
@@ -104,29 +76,22 @@ const HirerDashboard = () => {
         unreadMessages
       });
       
-      // Mock recent activities based on real jobs
-      const activities = [];
-      if (jobs.length > 0) {
-        activities.push(
-          { id: 1, type: 'application', title: `New application for ${jobs[0].title}`, time: '2 hours ago' },
-          { id: 2, type: 'view', title: `Your ${jobs[0].title} job post was viewed 24 times`, time: '1 day ago' }
-        );
-      }
-      activities.push(
-        { id: 3, type: 'message', title: 'New message from candidate', time: '5 hours ago' },
-        { id: 4, type: 'match', title: 'New match with candidate', time: '2 days ago' }
-      );
+      // Mock recent activities
+      setRecentActivities([
+        { id: 1, type: 'application', title: 'New application for Construction Worker', time: '2 hours ago' },
+        { id: 2, type: 'message', title: 'Sarah Johnson sent you a message', time: '5 hours ago' },
+        { id: 3, type: 'match', title: 'New match with Robert Chen', time: '1 day ago' },
+        { id: 4, type: 'view', title: 'Your Electrician job post was viewed 24 times', time: '2 days ago' },
+      ]);
       
-      setRecentActivities(activities);
-      
+      setIsLoading(false);
+      setIsRefreshing(false);
     } catch (error) {
-      console.error('Dashboard data fetch error:', error);
       toast({
         title: "Error",
-        description: "Failed to load dashboard data. Please try refreshing.",
+        description: "Failed to load dashboard data",
         variant: "destructive"
       });
-    } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
@@ -134,7 +99,6 @@ const HirerDashboard = () => {
   
   const handleRefresh = () => {
     fetchDashboardData();
-    fetchTalentPreviews();
   };
   
   const handleActivityClick = (activity) => {

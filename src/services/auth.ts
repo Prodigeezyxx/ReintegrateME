@@ -1,79 +1,51 @@
 
 import { User, UserRole } from '../models/types';
-import { supabase } from '@/integrations/supabase/client';
+import { generateId } from './types';
+import { getCurrentUser, setCurrentUser, getDatabase } from './database';
 
 export const authAPI = {
   signupEmail: async (role: UserRole, email: string, password: string): Promise<User> => {
-    const { data, error } = await supabase.auth.signUp({
+    const { users } = getDatabase();
+    
+    // Check if user already exists
+    const existingUser = users.find(u => u.email === email);
+    if (existingUser) {
+      throw new Error('User with this email already exists');
+    }
+    
+    // Create new user
+    const newUser: User = {
+      id: generateId(),
       email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          role,
-        }
-      }
-    });
-    
-    if (error) {
-      throw new Error(error.message);
-    }
-    
-    if (!data.user) {
-      throw new Error('Failed to create user');
-    }
-    
-    return {
-      id: data.user.id,
-      email: data.user.email!,
       role,
-      createdAt: new Date(data.user.created_at),
+      createdAt: new Date()
     };
+    
+    users.push(newUser);
+    setCurrentUser(newUser);
+    
+    return newUser;
   },
   
   login: async (email: string, password: string): Promise<User> => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { users } = getDatabase();
+    const user = users.find(u => u.email === email);
     
-    if (error) {
-      throw new Error(error.message);
+    if (!user) {
+      throw new Error('Invalid email or password');
     }
     
-    if (!data.user) {
-      throw new Error('Login failed');
-    }
-    
-    // Get user profile to determine role
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single();
-    
-    return {
-      id: data.user.id,
-      email: data.user.email!,
-      role: (profile?.role as UserRole) || 'seeker',
-      createdAt: new Date(data.user.created_at),
-    };
+    setCurrentUser(user);
+    return user;
   },
   
-  logout: async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      throw new Error(error.message);
-    }
+  logout: () => {
+    setCurrentUser(null);
   },
   
-  getCurrentUser: (): User | null => {
-    // This will be handled by auth state management in components
-    return null;
-  },
+  getCurrentUser,
   
   isAuthenticated: (): boolean => {
-    // This will be handled by auth state management in components
-    return false;
+    return getCurrentUser() !== null;
   }
 };
