@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,8 @@ import { SkipForward } from 'lucide-react';
 import { jobAPI, companyAPI } from '../../services/api';
 import { getLogoUrl } from '../../utils/logoUpload';
 import { SwipeableCardData } from '../../models/types';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 import QuickStatsCards from './QuickStatsCards';
 import TalentDiscoverySection from './TalentDiscoverySection';
 import GettingStartedTips from './GettingStartedTips';
@@ -19,13 +20,25 @@ const HirerTalentOverview = () => {
     totalApplications: 0,
     newMessages: 0,
   });
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   
   useEffect(() => {
-    fetchCompanyName();
-    fetchTalentPreviews();
-    fetchQuickStats();
-  }, []);
+    const checkAuth = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) {
+        navigate('/auth');
+        return;
+      }
+      
+      setUser(user);
+      fetchCompanyName();
+      fetchTalentPreviews();
+      fetchQuickStats();
+    };
+    
+    checkAuth();
+  }, [navigate]);
 
   const fetchCompanyName = async () => {
     try {
@@ -45,6 +58,11 @@ const HirerTalentOverview = () => {
       setTalentPreviews(talents.slice(0, 3));
     } catch (error) {
       console.error('Failed to fetch talent previews:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load talent previews",
+        variant: "destructive"
+      });
     } finally {
       setIsTalentLoading(false);
     }
@@ -54,12 +72,18 @@ const HirerTalentOverview = () => {
     try {
       const jobs = await jobAPI.getHirerJobs();
       setStats({
-        activeJobs: jobs.filter(job => job.status !== 'archived').length,
+        activeJobs: jobs.filter(job => job.status === 'active').length,
         totalApplications: Math.floor(Math.random() * 25) + 5, // Simulated applications
         newMessages: Math.floor(Math.random() * 8) + 1, // Simulated new messages
       });
     } catch (error) {
       console.error('Failed to fetch stats:', error);
+      // Set default stats on error
+      setStats({
+        activeJobs: 0,
+        totalApplications: 0,
+        newMessages: 0,
+      });
     }
   };
   

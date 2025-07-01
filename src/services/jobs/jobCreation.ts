@@ -1,43 +1,85 @@
 
 import { JobPosting } from '../../models/types';
-import { generateId } from '../types';
-import { getCurrentUser, getDatabase } from '../database';
+import { supabase } from '@/integrations/supabase/client';
 
 export const createJob = async (jobData: Partial<JobPosting>): Promise<JobPosting> => {
-  const currentUser = getCurrentUser();
-  const { companyProfiles, jobPostings } = getDatabase();
+  // Get current user from Supabase
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
   
-  if (!currentUser || currentUser.role !== 'hirer') {
-    throw new Error('Only hirers can create job postings');
+  if (authError || !user) {
+    throw new Error('Authentication required to create job postings');
   }
   
-  const companyProfile = companyProfiles.find(p => p.userId === currentUser?.id);
+  // Get company profile for the user
+  const { data: companyProfile, error: companyError } = await supabase
+    .from('company_profiles')
+    .select('*')
+    .eq('user_id', user.id)
+    .single();
   
-  if (!companyProfile) {
-    throw new Error('Company profile not found');
+  if (companyError || !companyProfile) {
+    throw new Error('Company profile not found. Please complete your company profile first.');
   }
   
-  const newJob: JobPosting = {
-    id: generateId(),
-    hirerId: currentUser.id,
-    companyId: companyProfile.id,
+  // Create the job posting
+  const newJobData = {
+    hirer_id: user.id,
+    company_id: companyProfile.id,
     title: jobData.title || '',
     description: jobData.description || '',
-    companyName: companyProfile.companyName,
-    companyLogoUrl: companyProfile.logoUrl,
     category: jobData.category || '',
-    employmentType: jobData.employmentType || '',
-    experienceLevel: jobData.experienceLevel,
-    locationCity: jobData.locationCity,
-    locationCountry: jobData.locationCountry,
-    requiredSkills: jobData.requiredSkills || [],
-    salary: jobData.salary,
-    subjectToDbsBarring: jobData.subjectToDbsBarring || false,
-    createdAt: new Date(),
-    status: jobData.status as 'active' | 'draft' | 'archived' | undefined,
+    employment_type: jobData.employmentType || '',
+    experience_level: jobData.experienceLevel,
+    location_city: jobData.locationCity,
+    location_country: jobData.locationCountry,
+    required_skills: jobData.requiredSkills || [],
+    salary_min: jobData.salary?.min,
+    salary_max: jobData.salary?.max,
+    salary_currency: jobData.salary?.currency || 'GBP',
+    subject_to_dbs_barring: jobData.subjectToDbsBarring || false,
+    status: jobData.status || 'active',
   };
   
-  jobPostings.push(newJob);
+  const { data: newJob, error: insertError } = await supabase
+    .from('job_postings')
+    .insert([newJobData])
+    .select(`
+      *,
+      company_profiles!inner(
+        company_name,
+        logo_url
+      )
+    `)
+    .single();
   
-  return newJob;
+  if (insertError) {
+    throw new Error(`Failed to create job posting: ${insertError.message}`);
+  }
+  
+  // Transform the data to match the JobPosting interface
+  const jobPosting: JobPosting = {
+    id: newJob.id,
+    hirerId: newJob.hirer_id,
+    companyId: newJob.company_id,
+    title: newJob.title,
+    description: newJob.description,
+    companyName: newJob.company_profiles.company_name,
+    companyLogoUrl: newJob.company_profiles.logo_url,
+    category: newJob.category,
+    employmentType: newJob.employment_type,
+    experienceLevel: newJob.experience_level,
+    locationCity: newJob.location_city,
+    locationCountry: newJob.location_country,
+    requiredSkills: newJob.required_skills,
+    salary: {
+      min: newJob.salary_min,
+      max: newJob.salary_max,
+      currency: newJob.salary_currency,
+    },
+    subjectToDbsBarring: newJob.subject_to_dbs_barring,
+    createdAt: new Date(newJob.created_at),
+    status: newJob.status as 'active' | 'draft' | 'archived',
+  };
+  
+  return jobPosting;
 };

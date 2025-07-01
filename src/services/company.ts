@@ -1,85 +1,84 @@
 
 import { CompanyProfile } from '../models/types';
-import { generateId } from './types';
-import { getCurrentUser, getDatabase } from './database';
+import { supabase } from '@/integrations/supabase/client';
 
 export const companyAPI = {
-  createInitialProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
-    const currentUser = getCurrentUser();
-    const { companyProfiles } = getDatabase();
+  getProfile: async (): Promise<CompanyProfile | null> => {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can create a company profile');
+    if (authError || !user) {
+      throw new Error('Authentication required');
     }
     
-    const newProfile: CompanyProfile = {
-      id: generateId(),
-      userId: currentUser.id,
-      companyName: profileData.companyName || '',
+    const { data: profile, error } = await supabase
+      .from('company_profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null; // No profile found
+      }
+      throw new Error(`Failed to fetch company profile: ${error.message}`);
+    }
+    
+    return {
+      id: profile.id,
+      userId: profile.user_id,
+      companyName: profile.company_name,
+      logoUrl: profile.logo_url,
+      industry: profile.industry,
+      companySize: profile.company_size,
+      websiteUrl: profile.website_url,
+      description: profile.description,
+      locationCity: profile.location_city,
+      locationCountry: profile.location_country,
+      profileCompletionPercentage: profile.profile_completion_percentage,
+    };
+  },
+
+  updateProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      throw new Error('Authentication required');
+    }
+    
+    const updateData = {
+      company_name: profileData.companyName,
+      logo_url: profileData.logoUrl,
       industry: profileData.industry,
-      companySize: profileData.companySize,
-      websiteUrl: profileData.websiteUrl,
+      company_size: profileData.companySize,
+      website_url: profileData.websiteUrl,
       description: profileData.description,
-      locationCity: profileData.locationCity,
-      locationCountry: profileData.locationCountry,
-      profileCompletionPercentage: 30,
+      location_city: profileData.locationCity,
+      location_country: profileData.locationCountry,
+      profile_completion_percentage: profileData.profileCompletionPercentage,
     };
     
-    companyProfiles.push(newProfile);
-    currentUser.profileId = newProfile.id;
+    const { data: profile, error } = await supabase
+      .from('company_profiles')
+      .upsert([{ user_id: user.id, ...updateData }])
+      .select()
+      .single();
     
-    return newProfile;
+    if (error) {
+      throw new Error(`Failed to update company profile: ${error.message}`);
+    }
+    
+    return {
+      id: profile.id,
+      userId: profile.user_id,
+      companyName: profile.company_name,
+      logoUrl: profile.logo_url,
+      industry: profile.industry,
+      companySize: profile.company_size,
+      websiteUrl: profile.website_url,
+      description: profile.description,
+      locationCity: profile.location_city,
+      locationCountry: profile.location_country,
+      profileCompletionPercentage: profile.profile_completion_percentage,
+    };
   },
-  
-  getProfile: async (): Promise<CompanyProfile> => {
-    const currentUser = getCurrentUser();
-    const { companyProfiles } = getDatabase();
-    
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can access company profiles');
-    }
-    
-    const profile = companyProfiles.find(p => p.userId === currentUser?.id);
-    
-    if (!profile) {
-      throw new Error('Profile not found');
-    }
-    
-    return profile;
-  },
-  
-  updateProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
-    const currentUser = getCurrentUser();
-    const { companyProfiles } = getDatabase();
-    
-    if (!currentUser || currentUser.role !== 'hirer') {
-      throw new Error('Only hirers can update company profiles');
-    }
-    
-    const profile = companyProfiles.find(p => p.userId === currentUser?.id);
-    
-    if (!profile) {
-      throw new Error('Profile not found');
-    }
-    
-    // Update profile fields
-    Object.assign(profile, profileData);
-    
-    // Recalculate completion percentage
-    const totalFields = 8;
-    let filledFields = 0;
-    
-    if (profile.companyName) filledFields++;
-    if (profile.industry) filledFields++;
-    if (profile.companySize) filledFields++;
-    if (profile.websiteUrl) filledFields++;
-    if (profile.description) filledFields++;
-    if (profile.locationCity) filledFields++;
-    if (profile.locationCountry) filledFields++;
-    if (profile.logoUrl) filledFields++;
-    
-    profile.profileCompletionPercentage = Math.round((filledFields / totalFields) * 100);
-    
-    return profile;
-  }
 };

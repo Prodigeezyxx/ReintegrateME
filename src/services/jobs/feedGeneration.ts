@@ -1,151 +1,60 @@
 
-import { SwipeableCardData } from '../../models/types';
-import { generateId } from '../types';
-import { getCurrentUser, getDatabase } from '../database';
+import { JobPosting, SwipeableCardData } from '../../models/types';
+import { supabase } from '@/integrations/supabase/client';
 
 export const getJobsFeed = async (): Promise<SwipeableCardData[]> => {
-  const currentUser = getCurrentUser();
-  const { seekerProfiles, jobPostings } = getDatabase();
+  const { data: jobs, error } = await supabase
+    .from('job_postings')
+    .select(`
+      *,
+      company_profiles!inner(
+        company_name,
+        logo_url
+      )
+    `)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(20);
   
-  if (!currentUser || currentUser.role !== 'seeker') {
-    throw new Error('Only job seekers can access job feed');
-  }
-
-  const seekerProfile = seekerProfiles.find(p => p.userId === currentUser?.id);
-  const seekerSkills = seekerProfile?.keySkills || [];
-
-  if (jobPostings.length === 0) {
-    const demoJobs = [
-      {
-        id: generateId(),
-        hirerId: 'demo',
-        companyId: 'demo',
-        title: 'Construction Worker',
-        description: 'Looking for experienced construction workers for commercial building projects in Central London.',
-        companyName: 'BuildRight Construction',
-        companyLogoUrl: 'https://placehold.co/100x100?text=BC',
-        category: 'Construction',
-        employmentType: 'Full-time',
-        experienceLevel: 'Entry-level to Mid-level',
-        locationCity: 'London',
-        locationCountry: 'United Kingdom',
-        requiredSkills: ['cscs_labourer', 'bricklaying', 'time_management'],
-        subjectToDbsBarring: false,
-        createdAt: new Date(),
-        status: 'active' as const,
-        salary: {
-          min: 22000,
-          max: 30000,
-          currency: 'GBP',
-        }
-      },
-      {
-        id: generateId(),
-        hirerId: 'demo',
-        companyId: 'demo',
-        title: 'Delivery Driver',
-        description: 'Local delivery routes throughout Birmingham, company vehicle provided. Must have valid UK driving license.',
-        companyName: 'Swift Logistics',
-        companyLogoUrl: 'https://placehold.co/100x100?text=SL',
-        category: 'Transportation',
-        employmentType: 'Full-time',
-        experienceLevel: 'Entry-level',
-        locationCity: 'Birmingham',
-        locationCountry: 'United Kingdom',
-        requiredSkills: ['van_driving', 'route_planning', 'punctuality'],
-        subjectToDbsBarring: false,
-        createdAt: new Date(),
-        status: 'active' as const,
-        salary: {
-          min: 21000,
-          max: 24000,
-          currency: 'GBP',
-        }
-      }
-    ];
-    
-    jobPostings.push(...demoJobs);
+  if (error) {
+    console.error('Failed to fetch jobs feed:', error);
+    return [];
   }
   
-  const jobCards = jobPostings.map(job => {
-    const jobSkills = job.requiredSkills || [];
-    const matchingSkills = jobSkills.filter(skill => seekerSkills.includes(skill));
-    const matchPercentage = jobSkills.length > 0 ? (matchingSkills.length / jobSkills.length) * 100 : 0;
-    
-    return {
-      id: job.id,
-      type: 'job' as const,
-      primaryImageUrl: job.companyLogoUrl,
-      titleText: job.title,
-      subtitleText: job.companyName,
-      detailLine1: `${job.locationCity}, ${job.locationCountry}`,
-      detailLine2: job.employmentType,
-      tags: job.requiredSkills || [],
-      skillMatchPercentage: Math.round(matchPercentage)
-    };
-  });
-
-  return jobCards.sort((a, b) => (b.skillMatchPercentage || 0) - (a.skillMatchPercentage || 0));
+  return jobs.map(job => ({
+    id: job.id,
+    type: 'job' as const,
+    primaryImageUrl: job.company_profiles.logo_url,
+    titleText: job.title,
+    subtitleText: job.company_profiles.company_name,
+    detailLine1: `${job.location_city || ''}, ${job.location_country || ''}`.replace(/^, |, $/, ''),
+    detailLine2: job.employment_type,
+    tags: job.required_skills?.slice(0, 3) || [],
+  }));
 };
 
 export const getSeekersFeed = async (): Promise<SwipeableCardData[]> => {
-  const currentUser = getCurrentUser();
-  const { seekerProfiles } = getDatabase();
+  const { data: seekers, error } = await supabase
+    .from('seeker_profiles')
+    .select('*')
+    .not('first_name', 'is', null)
+    .not('last_name', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(20);
   
-  if (!currentUser || currentUser.role !== 'hirer') {
-    throw new Error('Only hirers can access seeker feed');
-  }
-
-  if (seekerProfiles.length === 0) {
-    const demoSeekers = [
-      {
-        id: generateId(),
-        userId: 'demo1',
-        firstName: 'Michael',
-        lastName: 'Roberts',
-        displayName: 'Michael Roberts',
-        profilePictureUrl: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=400&h=400&fit=crop&crop=face',
-        headline: 'Experienced Carpenter',
-        keySkills: ['carpentry_basic', 'teamwork', 'reliability'],
-        locationCity: 'Bristol',
-        locationCountry: 'United Kingdom',
-      },
-      {
-        id: generateId(),
-        userId: 'demo2',
-        firstName: 'Sarah',
-        lastName: 'Johnson',
-        displayName: 'Sarah Johnson',
-        profilePictureUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop&crop=face',
-        headline: 'Licensed Driver & Warehouse Worker',
-        keySkills: ['van_driving', 'warehouse_picking', 'punctuality'],
-        locationCity: 'London',
-        locationCountry: 'United Kingdom',
-      },
-      {
-        id: generateId(),
-        userId: 'demo3',
-        firstName: 'James',
-        lastName: 'Wilson',
-        displayName: 'James Wilson',
-        profilePictureUrl: 'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=400&h=400&fit=crop&crop=face',
-        headline: 'Retail Associate & Customer Service',
-        keySkills: ['customer_service', 'cash_handling', 'teamwork'],
-        locationCity: 'Manchester',
-        locationCountry: 'United Kingdom',
-      }
-    ];
-    
-    seekerProfiles.push(...demoSeekers);
+  if (error) {
+    console.error('Failed to fetch seekers feed:', error);
+    return [];
   }
   
-  return seekerProfiles.map(profile => ({
-    id: profile.id,
+  return seekers.map(seeker => ({
+    id: seeker.id,
     type: 'seeker' as const,
-    primaryImageUrl: profile.profilePictureUrl,
-    titleText: profile.displayName,
-    subtitleText: profile.headline,
-    detailLine1: profile.locationCity && profile.locationCountry ? `${profile.locationCity}, ${profile.locationCountry}` : undefined,
-    tags: profile.keySkills || []
+    primaryImageUrl: seeker.profile_image_url,
+    titleText: `${seeker.first_name} ${seeker.last_name}`,
+    subtitleText: seeker.job_title || seeker.headline || '',
+    detailLine1: `${seeker.location_city || ''}, ${seeker.location_country || ''}`.replace(/^, |, $/, ''),
+    detailLine2: seeker.availability_status,
+    tags: seeker.key_skills?.slice(0, 3) || [],
   }));
 };
