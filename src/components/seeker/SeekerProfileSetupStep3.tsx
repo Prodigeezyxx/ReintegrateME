@@ -1,16 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import { Shield } from 'lucide-react';
 import { profileSetupManager } from '../../utils/profileSetupManager';
 import AnimatedCard from '../ui/animated-card';
 import AnimatedButton from '../ui/animated-button';
-import AnimatedProgress from '../ui/animated-progress';
-import { getLogoUrl } from '../../utils/logoUpload';
+import SetupStepHeader from './SetupStepHeader';
+import GDPRStatement from './GDPRStatement';
+import DisabilityForm from './DisabilityForm';
 
 const SeekerProfileSetupStep3 = () => {
   const navigate = useNavigate();
@@ -29,29 +26,6 @@ const SeekerProfileSetupStep3 = () => {
     if (savedData.workplaceAdjustments) setWorkplaceAdjustments(savedData.workplaceAdjustments);
     if (savedData.workplaceAdjustmentsOther) setWorkplaceAdjustmentsOther(savedData.workplaceAdjustmentsOther);
   }, []);
-
-  const disabilityOptions: { value: string; label: string }[] = [
-    { value: 'mobility_physical_access', label: 'Mobility / physical access needs' },
-    { value: 'sensory_hearing_vision_processing', label: 'Sensory (hearing / vision / processing)' },
-    { value: 'long_term_medical_condition', label: 'Long-term medical condition (e.g. diabetes, epilepsy, HIV, etc.)' },
-    { value: 'neurodivergence', label: 'Neurodivergence (e.g. ADHD, Autism, Dyslexia, Dyspraxia, etc.)' },
-    { value: 'learning_difficulty', label: 'Learning difficulty' },
-    { value: 'mental_health', label: 'Mental health' },
-    { value: 'communication_needs', label: 'Communication needs' },
-    { value: 'cognitive_memory_difficulties', label: 'Cognitive or memory difficulties' },
-    { value: 'other', label: 'Other' },
-    { value: 'prefer_not_to_specify', label: 'Prefer not to specify' }
-  ];
-
-  const adjustmentOptions: { value: string; label: string }[] = [
-    { value: 'flexible_working_hours', label: 'Flexible working hours' },
-    { value: 'remote_work_option', label: 'Remote work options' },
-    { value: 'additional_training_support', label: 'Additional training or support' },
-    { value: 'assistive_technology', label: 'Assistive technology' },
-    { value: 'modified_physical_work_environment', label: 'Modified physical work environment' },
-    { value: 'communication_support', label: 'Communication support' },
-    { value: 'none', label: 'None required' }
-  ];
 
   const handleDisabilityTypeChange = (type: string, checked: boolean) => {
     if (checked) {
@@ -111,171 +85,31 @@ const SeekerProfileSetupStep3 = () => {
         <div className="absolute bottom-20 left-10 w-16 h-16 bg-white/5 rounded-full animate-float animate-delay-300" />
         <div className="absolute top-1/2 right-5 w-12 h-12 bg-white/10 rounded-full animate-float animate-delay-500" />
 
-        {/* Header with black text */}
-        <div className="flex items-centre mb-8 animate-slide-up-stagger">
-          <AnimatedButton 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleBack} 
-            className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full min-h-[44px]"
-            ripple={false}
-          >
-            Back
-          </AnimatedButton>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-black font-geist animate-fade-in-scale">
-              Health & Accessibility
-            </h1>
-            <p className="text-black text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium">
-              Optional information to help us support you - Step 3 of 4
-            </p>
-          </div>
-          <div className="ml-4">
-            <img 
-              src={getLogoUrl()} 
-              alt="ReintegrateMe"
-              className="h-12 w-12 animate-float"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Progress bar with black text */}
-        <div className="mb-8 animate-slide-up-stagger animate-delay-200">
-          <div className="flex items-centre justify-between mb-3">
-            <span className="text-sm font-geist text-black font-medium">Profile Completion</span>
-            <span className="text-sm font-bold text-black font-geist">75%</span>
-          </div>
-          <AnimatedProgress value={75} animate={true} />
-        </div>
+        <SetupStepHeader
+          title="Health & Accessibility"
+          description="Optional information to help us support you - Step 3 of 4"
+          progress={75}
+          onBack={handleBack}
+        />
 
         <div className="flex-1 space-y-6">
-          {/* GDPR Statement for Disability */}
-          <AnimatedCard
+          <GDPRStatement
+            title="Disability Disclosure (GDPR Statement)"
+            whyWeAsk="We ask about disabilities to ensure that we provide the right support and make any reasonable adjustments needed to help you access training, employment, and services through ReintegrateMe. Sharing this information is entirely optional."
+            howWeHandle="This data is considered special category personal data under the UK GDPR. It will only be used to tailor our services to meet your needs and will never be shared without your explicit consent unless required by law. You can choose not to disclose this information."
             delay={50}
-            className="glassmorphism border-2 border-blue-400/30 bg-gradient-to-r from-blue-50/90 to-blue-100/90"
-          >
-            <div className="flex items-start space-x-3">
-              <Shield className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
-              <div>
-                <h3 className="text-lg font-semibold text-blue-900 mb-3">
-                  Disability Disclosure (GDPR Statement)
-                </h3>
-                <div className="space-y-3 text-sm text-blue-800">
-                  <div>
-                    <h4 className="font-medium mb-1">Why we ask for this:</h4>
-                    <p>
-                      We ask about disabilities to ensure that we provide the right support and make any reasonable adjustments needed to help you access training, employment, and services through ReintegrateMe. Sharing this information is entirely optional.
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-1">How we handle this:</h4>
-                    <p>
-                      This data is considered special category personal data under the UK GDPR. It will only be used to tailor our services to meet your needs and will never be shared without your explicit consent unless required by law. You can choose not to disclose this information.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </AnimatedCard>
+          />
 
-          {/* Disability Status section */}
-          <AnimatedCard
-            title="Disability Status"
-            delay={100}
-            className="glassmorphism-strong"
-          >
-            <RadioGroup 
-              value={hasDisability?.toString() || ''} 
-              onValueChange={(value) => setHasDisability(value === 'true')}
-            >
-              <div className="flex items-centre space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
-                <RadioGroupItem 
-                  value="true" 
-                  id="disability-yes"
-                  className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
-                />
-                <Label htmlFor="disability-yes" className="text-slate-800 font-geist cursor-pointer">Yes, I have a disability</Label>
-              </div>
-              <div className="flex items-centre space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-all duration-300">
-                <RadioGroupItem 
-                  value="false" 
-                  id="disability-no"
-                  className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500" 
-                />
-                <Label htmlFor="disability-no" className="text-slate-800 font-geist cursor-pointer">No, I do not have a disability</Label>
-              </div>
-            </RadioGroup>
-          </AnimatedCard>
-
-          {/* Type of Disability section */}
-          {hasDisability && (
-            <AnimatedCard
-              title="Type of Disability"
-              description="If 'Yes', select any that apply:"
-              delay={200}
-              className="glassmorphism-strong"
-            >
-              <div className="space-y-3">
-                {disabilityOptions.map((option) => (
-                  <div key={option.value} className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
-                    <Checkbox
-                      id={option.value}
-                      checked={disabilityTypes.includes(option.value)}
-                      onCheckedChange={(checked) => 
-                        handleDisabilityTypeChange(option.value, checked as boolean)
-                      }
-                      className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
-                    />
-                    <Label htmlFor={option.value} className="text-sm text-slate-800 font-geist cursor-pointer">
-                      {option.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-              
-              {disabilityTypes.includes('other') && (
-                <div className="mt-4">
-                  <Label htmlFor="disability-other" className="text-slate-800 font-geist text-sm">Please specify</Label>
-                  <Textarea
-                    id="disability-other"
-                    value={disabilityOtherDetails}
-                    onChange={(e) => setDisabilityOtherDetails(e.target.value)}
-                    placeholder="Please provide details..."
-                    className="mt-2 bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-blue-400"
-                  />
-                </div>
-              )}
-            </AnimatedCard>
-          )}
-
-          {/* Workplace Adjustments section */}
-          <AnimatedCard
-            title="Workplace Adjustments"
-            description="What adjustments might you need? (optional)"
-            delay={300}
-            className="glassmorphism-strong"
-          >
-            <div className="space-y-3">
-              {adjustmentOptions.map((option) => (
-                <div key={option.value} className="flex items-centre space-x-3 p-2 rounded-lg hover:bg-slate-50 transition-all duration-300">
-                  <Checkbox
-                    id={option.value}
-                    checked={workplaceAdjustments.includes(option.value)}
-                    onCheckedChange={(checked) => 
-                      handleAdjustmentChange(option.value, checked as boolean)
-                    }
-                    className="border-2 border-blue-400 text-blue-600 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
-                  />
-                  <Label htmlFor={option.value} className="text-sm text-slate-800 font-geist cursor-pointer">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </AnimatedCard>
+          <DisabilityForm
+            hasDisability={hasDisability}
+            setHasDisability={setHasDisability}
+            disabilityTypes={disabilityTypes}
+            disabilityOtherDetails={disabilityOtherDetails}
+            setDisabilityOtherDetails={setDisabilityOtherDetails}
+            workplaceAdjustments={workplaceAdjustments}
+            onDisabilityTypeChange={handleDisabilityTypeChange}
+            onAdjustmentChange={handleAdjustmentChange}
+          />
 
           {/* Privacy notice section */}
           <AnimatedCard 
