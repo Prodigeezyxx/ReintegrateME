@@ -31,7 +31,7 @@ const HelpSection: React.FC = () => {
             variant="outline" 
             size="sm"
             className="border-green-300 text-green-700 hover:bg-green-100 hover:border-green-400"
-            onClick={() => window.open('mailto:support@reintegrateme.com', '_blank')}
+            onClick={() => window.open('mailto:support@reintegrateME.com', '_blank')}
           >
             <MessageCircle className="h-4 w-4 mr-2" />
             Email Us

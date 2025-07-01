@@ -16,7 +16,7 @@ const LogoSection: React.FC<LogoSectionProps> = ({ logoError, onLogoError, onLog
       <div className="h-20 w-20 mx-auto mb-4">
         <img
           src={logoUrl}
-          alt="ReintegrateMe Logo"
+          alt="ReintegrateME Logo"
           className="w-full h-full object-contain"
           onError={onLogoError}
           onLoad={onLogoLoad}
@@ -25,7 +25,7 @@ const LogoSection: React.FC<LogoSectionProps> = ({ logoError, onLogoError, onLog
         />
       </div>
       <h1 className="text-3xl font-bold text-slate-800 mb-2">
-        ReintegrateMe
+        ReintegrateME
       </h1>
       <p className="text-slate-600">Choose how you'd like to get started</p>
     </div>

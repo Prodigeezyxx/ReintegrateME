@@ -41,7 +41,7 @@ const SetupStepHeader: React.FC<SetupStepHeaderProps> = ({
         <div className="ml-4">
           <img 
             src={getLogoUrl()} 
-            alt="ReintegrateMe"
+            alt="ReintegrateME"
             className="h-10 w-10 sm:h-12 sm:w-12 animate-float"
             onError={(e) => {
               e.currentTarget.style.display = 'none';

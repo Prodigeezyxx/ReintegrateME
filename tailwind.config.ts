@@ -63,7 +63,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// ReintegrateMe brand colors
+				// ReintegrateME brand colors
 				reintegrate: {
 					'blue': '#2563eb',      // blue-600
 					'blue-light': '#3b82f6', // blue-500

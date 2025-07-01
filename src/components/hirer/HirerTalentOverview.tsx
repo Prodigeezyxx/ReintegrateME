@@ -77,13 +77,13 @@ const HirerTalentOverview = () => {
               <div className="workspace-button">
                 <img 
                   src={getLogoUrl()} 
-                  alt="ReintegrateMe"
+                  alt="ReintegrateME"
                   className="h-4 w-4"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-                <span className="text-slate-800 font-semibold">ReintegrateMe</span>
+                <span className="text-slate-800 font-semibold">ReintegrateME</span>
               </div>
             </div>
           </div>
@@ -91,7 +91,7 @@ const HirerTalentOverview = () => {
           {/* Welcome Section */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-800 font-geist mb-2">
-              Welcome to ReintegrateMe, {companyName}!
+              Welcome to ReintegrateME, {companyName}!
             </h1>
             <p className="text-slate-600 text-lg">
               Discover talented individuals ready to contribute to your team

@@ -51,7 +51,7 @@ const SplashScreen = () => {
           <div className="h-32 w-32 mx-auto mb-6 animate-pulse-gentle">
             <img
               src={logoUrl}
-              alt="ReintegrateMe Logo"
+              alt="ReintegrateME Logo"
               className="w-full h-full object-contain"
               onError={handleLogoError}
               onLoad={handleLogoLoad}
@@ -59,7 +59,7 @@ const SplashScreen = () => {
               style={{ imageRendering: 'auto' }}
             />
           </div>
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">ReintegrateMe</h1>
+          <h1 className="text-4xl font-bold text-slate-800 mb-2">ReintegrateME</h1>
           <p className="text-slate-600 text-lg">Building Better Futures</p>
         </div>
       </div>
