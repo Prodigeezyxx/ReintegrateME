@@ -140,6 +140,7 @@ export interface JobPosting {
   locationCity?: string;
   locationCountry?: string;
   requiredSkills?: string[];
+  subjectToDbsBarring?: boolean;
   salary?: {
     min?: number;
     max?: number;

@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { X, AlertTriangle } from 'lucide-react';
 import { jobCategories } from '../../../data/jobCategories';
 import { employmentTypes } from '../../../services/api';
 import { getSkillById } from '../../../data/skillsDatabase';
@@ -19,6 +20,7 @@ interface JobFormProps {
     experienceLevel: string;
     locationCity: string;
     locationCountry: string;
+    subjectToDbsBarring: boolean;
   };
   selectedSkills: string[];
   isSubmitting: boolean;
@@ -140,6 +142,39 @@ const JobForm: React.FC<JobFormProps> = ({
               placeholder="e.g. United Kingdom"
               required
             />
+          </div>
+
+          {/* DBS Barring Section */}
+          <div className="space-y-3 p-4 border-2 border-amber-200 bg-amber-50 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+              <div className="flex-1">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="subjectToDbsBarring"
+                    checked={jobData.subjectToDbsBarring}
+                    onCheckedChange={(checked) => {
+                      const syntheticEvent = {
+                        target: {
+                          name: 'subjectToDbsBarring',
+                          type: 'checkbox',
+                          checked: checked as boolean
+                        }
+                      } as React.ChangeEvent<HTMLInputElement>;
+                      onChange(syntheticEvent);
+                    }}
+                  />
+                  <label htmlFor="subjectToDbsBarring" className="text-sm font-medium text-amber-800">
+                    Subject to DBS Barring
+                  </label>
+                </div>
+                <p className="text-xs text-amber-700 mt-1">
+                  Check this box if this role requires DBS clearance. Candidates with certain convictions 
+                  (particularly sexual offences, arson, or terrorism-related offences) may be automatically 
+                  barred from these positions.
+                </p>
+              </div>
+            </div>
           </div>
           
           <div className="space-y-2">

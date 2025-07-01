@@ -121,6 +121,7 @@ export type Database = {
           salary_min: number | null
           salary_period: string | null
           status: string | null
+          subject_to_dbs_barring: boolean | null
           title: string
           updated_at: string | null
         }
@@ -141,6 +142,7 @@ export type Database = {
           salary_min?: number | null
           salary_period?: string | null
           status?: string | null
+          subject_to_dbs_barring?: boolean | null
           title: string
           updated_at?: string | null
         }
@@ -161,6 +163,7 @@ export type Database = {
           salary_min?: number | null
           salary_period?: string | null
           status?: string | null
+          subject_to_dbs_barring?: boolean | null
           title?: string
           updated_at?: string | null
         }
