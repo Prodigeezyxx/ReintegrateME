@@ -38,6 +38,51 @@ export const companyAPI = {
     };
   },
 
+  createInitialProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      throw new Error('Authentication required');
+    }
+    
+    const insertData = {
+      user_id: user.id,
+      company_name: profileData.companyName || '',
+      logo_url: profileData.logoUrl,
+      industry: profileData.industry,
+      company_size: profileData.companySize,
+      website_url: profileData.websiteUrl,
+      description: profileData.description,
+      location_city: profileData.locationCity,
+      location_country: profileData.locationCountry,
+      profile_completion_percentage: profileData.profileCompletionPercentage || 30,
+    };
+    
+    const { data: profile, error } = await supabase
+      .from('company_profiles')
+      .insert([insertData])
+      .select()
+      .single();
+    
+    if (error) {
+      throw new Error(`Failed to create company profile: ${error.message}`);
+    }
+    
+    return {
+      id: profile.id,
+      userId: profile.user_id,
+      companyName: profile.company_name,
+      logoUrl: profile.logo_url,
+      industry: profile.industry,
+      companySize: profile.company_size,
+      websiteUrl: profile.website_url,
+      description: profile.description,
+      locationCity: profile.location_city,
+      locationCountry: profile.location_country,
+      profileCompletionPercentage: profile.profile_completion_percentage,
+    };
+  },
+
   updateProfile: async (profileData: Partial<CompanyProfile>): Promise<CompanyProfile> => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
