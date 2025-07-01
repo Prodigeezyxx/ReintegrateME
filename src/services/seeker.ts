@@ -5,7 +5,11 @@ import {
   mapWorkplaceAdjustments, 
   mapDisabilityTypes, 
   mapConvictionTypes, 
-  mapWorkPreferences 
+  mapWorkPreferences,
+  unmapWorkplaceAdjustments,
+  unmapDisabilityTypes,
+  unmapConvictionTypes,
+  unmapWorkPreferences
 } from '../utils/enumMappings';
 
 export const seekerAPI = {
@@ -65,6 +69,7 @@ export const seekerAPI = {
     }
     
     const updateData = {
+      user_id: user.id,
       first_name: allSetupData.firstName || '',
       last_name: allSetupData.lastName || '',
       job_title: allSetupData.jobTitle,
@@ -92,7 +97,7 @@ export const seekerAPI = {
     
     const { data: profile, error } = await supabase
       .from('seeker_profiles')
-      .upsert([{ user_id: user.id, ...updateData }])
+      .upsert(updateData)
       .select()
       .single();
     
@@ -110,7 +115,7 @@ export const seekerAPI = {
       headline: profile.headline,
       sentenceCompleted: profile.sentence_completed,
       currentLegalSupervision: profile.current_legal_supervision,
-      convictionTypes: profile.conviction_types,
+      convictionTypes: profile.conviction_types ? unmapConvictionTypes(profile.conviction_types) : undefined,
       convictionStatus: profile.conviction_status,
       convictionOtherDetails: profile.conviction_other_details,
       barredFromRegulatedWork: profile.barred_from_regulated_work,
@@ -118,12 +123,12 @@ export const seekerAPI = {
       mappaLevel: profile.mappa_level,
       relevantForSafeguardingChecks: profile.relevant_for_safeguarding_checks,
       hasDisability: profile.has_disability,
-      disabilityTypes: profile.disability_types,
+      disabilityTypes: profile.disability_types ? unmapDisabilityTypes(profile.disability_types) : undefined,
       disabilityOtherDetails: profile.disability_other_details,
-      workplaceAdjustments: profile.workplace_adjustments,
+      workplaceAdjustments: profile.workplace_adjustments ? unmapWorkplaceAdjustments(profile.workplace_adjustments) : undefined,
       workplaceAdjustmentsOther: profile.workplace_adjustments_other,
       hasDrivingLicence: profile.has_driving_licence,
-      workPreferences: profile.work_preferences,
+      workPreferences: profile.work_preferences ? unmapWorkPreferences(profile.work_preferences) : undefined,
       openToRelocation: profile.open_to_relocation,
       availabilityStatus: profile.availability_status as 'actively_looking' | 'open_to_opportunities' | 'not_looking',
       profileCompletionPercentage: profile.profile_completion_percentage
@@ -231,7 +236,7 @@ export const seekerAPI = {
       profilePictureUrl: profile.profile_image_url,
       phone: profile.phone_number,
       email: profile.email,
-      workPreferences: profile.work_preferences,
+      workPreferences: profile.work_preferences ? unmapWorkPreferences(profile.work_preferences) : undefined,
       availabilityStatus: profile.availability_status as 'actively_looking' | 'open_to_opportunities' | 'not_looking',
       profileCompletionPercentage: profile.profile_completion_percentage,
     };

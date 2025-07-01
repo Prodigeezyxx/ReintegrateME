@@ -33,7 +33,7 @@ export const convictionTypeMapping = {
   'driving_offences': 'driving_offences',
   'assault_violent_offences': 'assault_violent',
   'sexual_offences': 'sexual_offences',
-  'public_order_offences': 'public_order_offences',
+  'public_order_offences': 'public_order',
   'domestic_abuse_related': 'domestic_abuse',
   'terrorism_related_offences': 'terrorism_related_offences',
   'weapons_offences': 'weapons_offences',
@@ -56,6 +56,23 @@ export const workPreferenceMapping = {
   'nights': 'nights'
 };
 
+// Reverse mappings for converting database values back to frontend types
+export const reverseWorkplaceAdjustmentMapping = Object.fromEntries(
+  Object.entries(workplaceAdjustmentMapping).map(([key, value]) => [value, key])
+);
+
+export const reverseDisabilityTypeMapping = Object.fromEntries(
+  Object.entries(disabilityTypeMapping).map(([key, value]) => [value, key])
+);
+
+export const reverseConvictionTypeMapping = Object.fromEntries(
+  Object.entries(convictionTypeMapping).map(([key, value]) => [value, key])
+);
+
+export const reverseWorkPreferenceMapping = Object.fromEntries(
+  Object.entries(workPreferenceMapping).map(([key, value]) => [value, key])
+);
+
 export const mapWorkplaceAdjustments = (adjustments: string[]): string[] => {
   return adjustments.map(adj => workplaceAdjustmentMapping[adj as keyof typeof workplaceAdjustmentMapping] || adj);
 };
@@ -70,4 +87,21 @@ export const mapConvictionTypes = (types: string[]): string[] => {
 
 export const mapWorkPreferences = (preferences: string[]): string[] => {
   return preferences.map(pref => workPreferenceMapping[pref as keyof typeof workPreferenceMapping] || pref);
+};
+
+// Reverse mapping functions
+export const unmapWorkplaceAdjustments = (adjustments: string[]): string[] => {
+  return adjustments.map(adj => reverseWorkplaceAdjustmentMapping[adj] || adj);
+};
+
+export const unmapDisabilityTypes = (types: string[]): string[] => {
+  return types.map(type => reverseDisabilityTypeMapping[type] || type);
+};
+
+export const unmapConvictionTypes = (types: string[]): string[] => {
+  return types.map(type => reverseConvictionTypeMapping[type] || type);
+};
+
+export const unmapWorkPreferences = (preferences: string[]): string[] => {
+  return preferences.map(pref => reverseWorkPreferenceMapping[pref] || pref);
 };
