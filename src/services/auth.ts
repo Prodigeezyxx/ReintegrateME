@@ -24,6 +24,11 @@ export const authAPI = {
     users.push(newUser);
     setCurrentUser(newUser);
     
+    // Store in localStorage for persistence
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    localStorage.setItem('isAuthenticated', 'true');
+    
+    console.log('User signed up and authenticated:', newUser);
     return newUser;
   },
   
@@ -36,16 +41,53 @@ export const authAPI = {
     }
     
     setCurrentUser(user);
+    
+    // Store in localStorage for persistence
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem('isAuthenticated', 'true');
+    
+    console.log('User logged in:', user);
     return user;
   },
   
   logout: () => {
     setCurrentUser(null);
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('selectedRole');
+    console.log('User logged out');
   },
   
-  getCurrentUser,
+  getCurrentUser: (): User | null => {
+    // First check memory
+    let user = getCurrentUser();
+    
+    // If not in memory, check localStorage
+    if (!user) {
+      try {
+        const storedUser = localStorage.getItem('currentUser');
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        
+        if (storedUser && isAuthenticated === 'true') {
+          user = JSON.parse(storedUser);
+          setCurrentUser(user); // Restore to memory
+          console.log('User restored from localStorage:', user);
+        }
+      } catch (error) {
+        console.error('Error restoring user from localStorage:', error);
+        // Clear corrupted data
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('isAuthenticated');
+      }
+    }
+    
+    return user;
+  },
   
   isAuthenticated: (): boolean => {
-    return getCurrentUser() !== null;
+    const user = authAPI.getCurrentUser();
+    const isAuth = user !== null;
+    console.log('Authentication check:', isAuth, user?.email || 'No user');
+    return isAuth;
   }
 };

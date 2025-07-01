@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -55,23 +56,44 @@ const Authentication = () => {
           return;
         }
         
-        await authAPI.signupEmail(role, email, password);
+        console.log('Signing up user with role:', role);
+        const user = await authAPI.signupEmail(role, email, password);
+        console.log('Signup successful:', user);
         
-        if (role === 'hirer') {
-          navigate('/hirer-setup');
-        } else {
-          navigate('/seeker-setup-step1');
-        }
+        toast({
+          title: "Success",
+          description: "Account created successfully!",
+        });
+        
+        // Small delay to ensure state is properly set
+        setTimeout(() => {
+          if (role === 'hirer') {
+            navigate('/hirer-setup', { replace: true });
+          } else {
+            navigate('/seeker-setup-step1', { replace: true });
+          }
+        }, 100);
       } else {
+        console.log('Logging in user');
         const user = await authAPI.login(email, password);
+        console.log('Login successful:', user);
         
-        if (user.role === 'hirer') {
-          navigate('/hirer-talent-overview');
-        } else {
-          navigate('/seeker-dashboard');
-        }
+        toast({
+          title: "Success",
+          description: "Welcome back!",
+        });
+        
+        // Small delay to ensure state is properly set
+        setTimeout(() => {
+          if (user.role === 'hirer') {
+            navigate('/hirer-talent-overview', { replace: true });
+          } else {
+            navigate('/seeker-dashboard', { replace: true });
+          }
+        }, 100);
       }
     } catch (error) {
+      console.error('Authentication error:', error);
       toast({
         title: "Authentication Error",
         description: error instanceof Error ? error.message : "An error occurred",

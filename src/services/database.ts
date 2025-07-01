@@ -14,8 +14,13 @@ export const mockDatabase: MockDatabase = {
   matches: []
 };
 
-export const getCurrentUser = (): User | null => currentUser;
+export const getCurrentUser = (): User | null => {
+  console.log('Getting current user from memory:', currentUser?.email || 'No user');
+  return currentUser;
+};
+
 export const setCurrentUser = (user: User | null): void => {
+  console.log('Setting current user in memory:', user?.email || 'No user');
   currentUser = user;
 };
 
