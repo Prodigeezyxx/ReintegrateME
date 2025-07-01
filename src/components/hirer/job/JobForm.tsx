@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { X, Info } from 'lucide-react';
 import { jobCategories } from '../../../data/jobCategories';
 import { employmentTypes } from '../../../services/api';
 import { getSkillById } from '../../../data/skillsDatabase';
@@ -19,6 +21,7 @@ interface JobFormProps {
     experienceLevel: string;
     locationCity: string;
     locationCountry: string;
+    subjectToDbsBarring: boolean;
   };
   selectedSkills: string[];
   isSubmitting: boolean;
@@ -140,6 +143,34 @@ const JobForm: React.FC<JobFormProps> = ({
               placeholder="e.g. United Kingdom"
               required
             />
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="subjectToDbsBarring"
+                name="subjectToDbsBarring"
+                checked={jobData.subjectToDbsBarring}
+                onCheckedChange={(checked) => {
+                  const event = {
+                    target: {
+                      name: 'subjectToDbsBarring',
+                      type: 'checkbox',
+                      checked: !!checked
+                    }
+                  } as React.ChangeEvent<HTMLInputElement>;
+                  onChange(event);
+                }}
+              />
+              <Label htmlFor="subjectToDbsBarring" className="text-sm font-medium cursor-pointer">
+                Subject to DBS Barring
+              </Label>
+              <Info className="h-4 w-4 text-gray-400" />
+            </div>
+            <p className="text-xs text-gray-600 ml-6">
+              Check this box if the role involves regulated activities requiring DBS barring checks. 
+              This typically applies to positions working with children or vulnerable adults.
+            </p>
           </div>
           
           <div className="space-y-2">

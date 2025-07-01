@@ -1,3 +1,4 @@
+
 export type UserRole = 'hirer' | 'seeker';
 
 export interface User {
@@ -146,6 +147,7 @@ export interface JobPosting {
     currency?: string;
   };
   status?: 'active' | 'draft' | 'archived';
+  subjectToDbsBarring?: boolean;
   createdAt: Date;
 }
 

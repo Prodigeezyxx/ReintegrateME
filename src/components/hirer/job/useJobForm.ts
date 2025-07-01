@@ -17,6 +17,7 @@ export const useJobForm = () => {
     locationCity: '',
     locationCountry: '',
     requiredSkills: [] as string[],
+    subjectToDbsBarring: false,
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,8 +25,14 @@ export const useJobForm = () => {
   const [isSkillsSheetOpen, setIsSkillsSheetOpen] = useState(false);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setJobData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setJobData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setJobData(prev => ({ ...prev, [name]: value }));
+    }
   };
   
   const handleToggleSkill = (skillId: string) => {

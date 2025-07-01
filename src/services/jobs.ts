@@ -33,6 +33,7 @@ export const jobAPI = {
       locationCountry: jobData.locationCountry,
       requiredSkills: jobData.requiredSkills || [],
       salary: jobData.salary,
+      subjectToDbsBarring: jobData.subjectToDbsBarring || false,
       createdAt: new Date(),
       status: jobData.status as 'active' | 'draft' | 'archived' | undefined,
     };
@@ -80,6 +81,7 @@ export const jobAPI = {
           locationCity: 'London',
           locationCountry: 'United Kingdom',
           requiredSkills: ['cscs_labourer', 'bricklaying', 'time_management'],
+          subjectToDbsBarring: false,
           createdAt: new Date(),
           status: 'active' as const,
           salary: {
@@ -102,6 +104,7 @@ export const jobAPI = {
           locationCity: 'Birmingham',
           locationCountry: 'United Kingdom',
           requiredSkills: ['van_driving', 'route_planning', 'punctuality'],
+          subjectToDbsBarring: false,
           createdAt: new Date(),
           status: 'active' as const,
           salary: {
