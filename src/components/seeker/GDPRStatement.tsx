@@ -19,21 +19,21 @@ const GDPRStatement: React.FC<GDPRStatementProps> = ({
   return (
     <AnimatedCard
       delay={delay}
-      className="glassmorphism border-2 border-blue-400/30 bg-gradient-to-r from-blue-50/90 to-blue-100/90"
+      className="glassmorphism border border-blue-400/20 bg-gradient-to-r from-blue-50/70 to-blue-100/70 py-3 px-4"
     >
-      <div className="flex items-start space-x-3">
-        <Shield className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+      <div className="flex items-start space-x-2">
+        <Shield className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
         <div>
-          <h3 className="text-lg font-semibold text-blue-900 mb-3">
+          <h3 className="text-sm font-medium text-blue-900 mb-2">
             {title}
           </h3>
-          <div className="space-y-3 text-sm text-blue-800">
+          <div className="space-y-2 text-xs text-blue-800">
             <div>
-              <h4 className="font-medium mb-1">Why we ask for this:</h4>
+              <h4 className="font-normal mb-1">Why we ask for this:</h4>
               <p>{whyWeAsk}</p>
             </div>
             <div>
-              <h4 className="font-medium mb-1">How we handle this:</h4>
+              <h4 className="font-normal mb-1">How we handle this:</h4>
               <p>{howWeHandle}</p>
             </div>
           </div>

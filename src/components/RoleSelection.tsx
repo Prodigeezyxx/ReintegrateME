@@ -100,7 +100,7 @@ const RoleSelection = () => {
             <RoleCard
               role="hirer"
               title="I'm Hiring"
-              description="Connect with talented individuals ready to contribute meaningfully to your organization."
+              description="Connect with talented individuals ready to contribute meaningfully to your organisation."
               buttonText="Get Started as Employer"
               colorScheme="orange"
               onSelect={handleRoleSelect}
