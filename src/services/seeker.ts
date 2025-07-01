@@ -1,6 +1,12 @@
 
 import { SeekerProfile } from '../models/types';
 import { supabase } from '@/integrations/supabase/client';
+import { 
+  mapWorkplaceAdjustments, 
+  mapDisabilityTypes, 
+  mapConvictionTypes, 
+  mapWorkPreferences 
+} from '../utils/enumMappings';
 
 export const seekerAPI = {
   createInitialProfile: async (profileData: Partial<SeekerProfile>): Promise<SeekerProfile> => {
@@ -65,7 +71,7 @@ export const seekerAPI = {
       headline: allSetupData.headline,
       sentence_completed: allSetupData.sentenceCompleted,
       current_legal_supervision: allSetupData.currentLegalSupervision,
-      conviction_types: allSetupData.convictionTypes,
+      conviction_types: allSetupData.convictionTypes ? mapConvictionTypes(allSetupData.convictionTypes) : null,
       conviction_status: allSetupData.convictionStatus,
       conviction_other_details: allSetupData.convictionOtherDetails,
       barred_from_regulated_work: allSetupData.barredFromRegulatedWork,
@@ -73,12 +79,12 @@ export const seekerAPI = {
       mappa_level: allSetupData.mappaLevel,
       relevant_for_safeguarding_checks: allSetupData.relevantForSafeguardingChecks,
       has_disability: allSetupData.hasDisability,
-      disability_types: allSetupData.disabilityTypes,
+      disability_types: allSetupData.disabilityTypes ? mapDisabilityTypes(allSetupData.disabilityTypes) : null,
       disability_other_details: allSetupData.disabilityOtherDetails,
-      workplace_adjustments: allSetupData.workplaceAdjustments,
+      workplace_adjustments: allSetupData.workplaceAdjustments ? mapWorkplaceAdjustments(allSetupData.workplaceAdjustments) : null,
       workplace_adjustments_other: allSetupData.workplaceAdjustmentsOther,
       has_driving_licence: allSetupData.hasDrivingLicence,
-      work_preferences: allSetupData.workPreferences,
+      work_preferences: allSetupData.workPreferences ? mapWorkPreferences(allSetupData.workPreferences) : null,
       open_to_relocation: allSetupData.openToRelocation,
       availability_status: 'actively_looking',
       profile_completion_percentage: 85
@@ -165,7 +171,7 @@ export const seekerAPI = {
       throw new Error('Only job seekers can update seeker profiles');
     }
     
-    const updateData = {
+    const updateData: any = {
       first_name: profileData.firstName,
       last_name: profileData.lastName,
       job_title: profileData.jobTitle,
@@ -177,7 +183,7 @@ export const seekerAPI = {
       profile_image_url: profileData.profilePictureUrl,
       phone_number: profileData.phone,
       email: profileData.email,
-      work_preferences: profileData.workPreferences,
+      work_preferences: profileData.workPreferences ? mapWorkPreferences(profileData.workPreferences) : null,
     };
     
     // Calculate completion percentage
