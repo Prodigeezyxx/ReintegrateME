@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -6,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
+import { Shield } from 'lucide-react';
 import { profileSetupManager } from '../../utils/profileSetupManager';
 import AnimatedCard from '../ui/animated-card';
 import AnimatedButton from '../ui/animated-button';
@@ -152,6 +152,36 @@ const SeekerProfileSetupStep3 = () => {
         </div>
 
         <div className="flex-1 space-y-6">
+          {/* GDPR Statement for Disability */}
+          <AnimatedCard
+            delay={50}
+            className="glassmorphism border-2 border-blue-400/30 bg-gradient-to-r from-blue-50/90 to-blue-100/90"
+          >
+            <div className="flex items-start space-x-3">
+              <Shield className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="text-lg font-semibold text-blue-900 mb-3">
+                  Disability Disclosure (GDPR Statement)
+                </h3>
+                <div className="space-y-3 text-sm text-blue-800">
+                  <div>
+                    <h4 className="font-medium mb-1">Why we ask for this:</h4>
+                    <p>
+                      We ask about disabilities to ensure that we provide the right support and make any reasonable adjustments needed to help you access training, employment, and services through ReintegrateMe. Sharing this information is entirely optional.
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-1">How we handle this:</h4>
+                    <p>
+                      This data is considered special category personal data under the UK GDPR. It will only be used to tailor our services to meet your needs and will never be shared without your explicit consent unless required by law. You can choose not to disclose this information.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AnimatedCard>
+
+          {/* Disability Status section */}
           <AnimatedCard
             title="Disability Status"
             delay={100}
@@ -180,6 +210,7 @@ const SeekerProfileSetupStep3 = () => {
             </RadioGroup>
           </AnimatedCard>
 
+          {/* Type of Disability section */}
           {hasDisability && (
             <AnimatedCard
               title="Type of Disability"
@@ -220,6 +251,7 @@ const SeekerProfileSetupStep3 = () => {
             </AnimatedCard>
           )}
 
+          {/* Workplace Adjustments section */}
           <AnimatedCard
             title="Workplace Adjustments"
             description="What adjustments might you need? (optional)"
@@ -245,6 +277,7 @@ const SeekerProfileSetupStep3 = () => {
             </div>
           </AnimatedCard>
 
+          {/* Privacy notice section */}
           <AnimatedCard 
             delay={400}
             className="glassmorphism border-2 border-blue-400/30 bg-gradient-to-r from-blue-50/80 to-indigo-50/80"
