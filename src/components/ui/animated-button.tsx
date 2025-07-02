@@ -17,11 +17,13 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   glow = false,
   pulse = false,
   onClick,
+  disabled,
   ...props 
 }) => {
   const [isClicked, setIsClicked] = useState(false);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled) return;
     if (ripple) {
       setIsClicked(true);
       setTimeout(() => setIsClicked(false), 600);
@@ -37,16 +39,20 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
         "min-h-[44px] touch-manipulation", // Ensure minimum touch target size
         "hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]",
         "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2",
-        glow && "hover:shadow-[0_0_20px_rgba(59,130,246,0.5)]",
-        pulse && "animate-pulse-gentle",
+        "focus-visible:ring-2 focus-visible:ring-white/50",
+        // Improved disabled state
+        "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none",
+        glow && !disabled && "hover:shadow-[0_0_20px_rgba(59,130,246,0.5)]",
+        pulse && !disabled && "animate-pulse-gentle",
         "font-geist font-semibold",
-        isClicked && "animate-pulse",
+        isClicked && !disabled && "animate-pulse",
         className
       )}
       onClick={handleClick}
+      disabled={disabled}
       {...props}
     >
-      {ripple && (
+      {ripple && !disabled && (
         <span 
           className={cn(
             "absolute inset-0 bg-white/30 rounded-full transform scale-0 transition-transform duration-600 ease-out",

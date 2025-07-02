@@ -16,6 +16,7 @@ const SeekerProfileSetupStep3 = () => {
   const [disabilityOtherDetails, setDisabilityOtherDetails] = useState('');
   const [workplaceAdjustments, setWorkplaceAdjustments] = useState<string[]>([]);
   const [workplaceAdjustmentsOther, setWorkplaceAdjustmentsOther] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Load existing data from setup manager
@@ -43,22 +44,34 @@ const SeekerProfileSetupStep3 = () => {
     }
   };
 
-  const handleNext = () => {
-    // Save data to profile manager
-    profileSetupManager.saveStepData(3, {
-      hasDisability,
-      disabilityTypes: hasDisability ? disabilityTypes : undefined,
-      disabilityOtherDetails: disabilityTypes.includes('other') ? disabilityOtherDetails : undefined,
-      workplaceAdjustments,
-      workplaceAdjustmentsOther: workplaceAdjustments.includes('other') ? workplaceAdjustmentsOther : undefined,
-    });
+  const handleNext = async () => {
+    setIsLoading(true);
+    
+    try {
+      // Save data to profile manager
+      profileSetupManager.saveStepData(3, {
+        hasDisability,
+        disabilityTypes: hasDisability ? disabilityTypes : undefined,
+        disabilityOtherDetails: disabilityTypes.includes('other') ? disabilityOtherDetails : undefined,
+        workplaceAdjustments,
+        workplaceAdjustmentsOther: workplaceAdjustments.includes('other') ? workplaceAdjustmentsOther : undefined,
+      });
 
-    toast({
-      title: "Information Saved",
-      description: "Your health and accessibility information has been saved.",
-    });
+      toast({
+        title: "Information Saved",
+        description: "Your health and accessibility information has been saved.",
+      });
 
-    navigate('/seeker-setup-step4');
+      navigate('/seeker-setup-step4');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save information. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBack = () => {
@@ -116,8 +129,8 @@ const SeekerProfileSetupStep3 = () => {
             delay={400}
             className="glassmorphism border-2 border-blue-400/30 bg-gradient-to-r from-blue-50/80 to-indigo-50/80"
           >
-            <div className="text-centre">
-              <p className="text-sm text-slate-700 font-geist">
+            <div className="text-center">
+              <p className="text-sm text-slate-700 font-geist font-medium">
                 <strong>Your privacy matters:</strong> This information helps us match you with inclusive employers. 
                 You control what you share and when.
               </p>
@@ -129,19 +142,30 @@ const SeekerProfileSetupStep3 = () => {
           <AnimatedButton 
             variant="outline" 
             onClick={handleSkip} 
-            className="flex-1 bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white font-geist min-h-[44px]"
+            disabled={isLoading}
+            className="flex-1 bg-white/20 text-white border-white/30 hover:bg-white/30 hover:text-white font-geist min-h-[44px] font-semibold"
+            aria-label="Skip this step and proceed to final step"
           >
             Skip for Now
           </AnimatedButton>
           <AnimatedButton 
             onClick={handleNext} 
+            disabled={isLoading}
             className="flex-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500
               hover:from-blue-600 hover:via-purple-600 hover:to-orange-600
-              text-white font-geist min-h-[44px]"
+              text-white font-geist min-h-[44px] font-semibold shadow-lg"
             ripple={true}
             glow={true}
+            aria-label="Save information and proceed to final step"
           >
-            Continue
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Saving...</span>
+              </div>
+            ) : (
+              'Next: Final Details'
+            )}
           </AnimatedButton>
         </div>
       </div>
