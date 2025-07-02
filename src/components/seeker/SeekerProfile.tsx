@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { getSkillById } from '../../data/skillsDatabase';
 import SkillsManager from './SkillsManager';
 import ImageUpload from '../ui/image-upload';
+import { authAPI } from '../../services/auth';
+import { imageStorageAPI } from '../../services/storage';
 
 interface SeekerProfileData {
   id: string;
@@ -42,8 +44,58 @@ const SeekerProfile = () => {
     fetchProfile();
   }, []);
 
+  // Helper function to detect if we're using mock auth
+  const isUsingMockAuth = (): boolean => {
+    try {
+      const mockUser = authAPI.getCurrentUser();
+      return mockUser !== null;
+    } catch (error) {
+      return true;
+    }
+  };
+
   const fetchProfile = async () => {
     try {
+      // Check if we're using mock auth system
+      if (isUsingMockAuth()) {
+        console.log('SeekerProfile: Mock auth detected - loading from localStorage');
+        
+        // Try to get completed profile data first
+        const completedProfile = localStorage.getItem('seekerProfileComplete');
+        if (completedProfile) {
+          const profileData = JSON.parse(completedProfile);
+          const mockUser = authAPI.getCurrentUser();
+          
+          // Convert saved data to SeekerProfileData format
+          const mockProfile: SeekerProfileData = {
+            id: mockUser?.id || 'mock-id',
+            first_name: profileData.firstName || 'User',
+            last_name: profileData.lastName || '',
+            email: mockUser?.email || '',
+            phone_number: profileData.phoneNumber || '',
+            job_title: profileData.jobTitle || '',
+            headline: profileData.headline || '',
+            bio: profileData.bio || '',
+            location_city: profileData.locationCity || '',
+            location_country: profileData.locationCountry || '',
+            key_skills: profileData.keySkills || [],
+            profile_image_url: profileData.profileImageUrl || '',
+            availability_status: 'available',
+            profile_completion_percentage: profileData.profile_completion_percentage || 0
+          };
+          
+          setProfile(mockProfile);
+          setEditedProfile(mockProfile);
+          console.log('SeekerProfile: Loaded mock profile data');
+          return;
+        }
+        
+        // If no completed profile, show setup needed message
+        console.log('SeekerProfile: No profile data found for mock user');
+        return;
+      }
+
+      // Original Supabase code for real auth
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
@@ -90,6 +142,39 @@ const SeekerProfile = () => {
     if (!profile) return;
 
     try {
+      // Check if we're using mock auth system
+      if (isUsingMockAuth()) {
+        console.log('SeekerProfile: Mock auth detected - saving to localStorage');
+        
+        // Update localStorage with new profile data
+        const updatedProfile = { ...profile, ...editedProfile };
+        localStorage.setItem('seekerProfileComplete', JSON.stringify({
+          firstName: updatedProfile.first_name,
+          lastName: updatedProfile.last_name,
+          email: updatedProfile.email,
+          phoneNumber: updatedProfile.phone_number,
+          jobTitle: updatedProfile.job_title,
+          headline: updatedProfile.headline,
+          bio: updatedProfile.bio,
+          locationCity: updatedProfile.location_city,
+          locationCountry: updatedProfile.location_country,
+          keySkills: updatedProfile.key_skills,
+          profileImageUrl: updatedProfile.profile_image_url,
+          profile_completion_percentage: updatedProfile.profile_completion_percentage,
+          saved_at: new Date().toISOString(),
+          auth_type: 'mock'
+        }));
+        
+        setProfile(updatedProfile as SeekerProfileData);
+        setIsEditing(false);
+        toast({
+          title: "Success",
+          description: "Profile updated successfully",
+        });
+        return;
+      }
+
+      // Original Supabase code for real auth
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { UserRole } from '../models/types';
@@ -14,11 +14,25 @@ interface NavItem {
 
 const MobileNavbar = () => {
   const location = useLocation();
-  const currentUser = authAPI.getCurrentUser();
+  const [currentUser, setCurrentUser] = useState(authAPI.getCurrentUser());
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    // Add a small delay to ensure auth state is settled
+    const timer = setTimeout(() => {
+      const user = authAPI.getCurrentUser();
+      setCurrentUser(user);
+      setIsLoading(false);
+      console.log('MobileNavbar: Auth check complete, user:', user?.email || 'No user');
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+  
   const userRole = currentUser?.role as UserRole;
   
-  // Don't show navbar for hirers at all
-  if (!userRole || userRole === 'hirer') return null;
+  // Don't show navbar while loading or for hirers
+  if (isLoading || !userRole || userRole === 'hirer') return null;
   
   const getSeekerNavItems = (): NavItem[] => [
     {

@@ -5,6 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Upload, X, Camera } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { authAPI } from '@/services/auth';
+import { imageStorageAPI } from '@/services/storage';
 
 interface ImageUploadProps {
   currentImageUrl?: string;
@@ -37,6 +39,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     lg: 'h-32 w-32'
   };
 
+  // Helper function to detect if we're using mock auth
+  const isUsingMockAuth = (): boolean => {
+    try {
+      const mockUser = authAPI.getCurrentUser();
+      return mockUser !== null;
+    } catch (error) {
+      return true;
+    }
+  };
+
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -64,6 +76,29 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     setIsUploading(true);
 
     try {
+      // Check if we're using mock auth system
+      if (isUsingMockAuth()) {
+        console.log('ImageUpload: Mock auth detected - using browser storage for image');
+        
+        // Convert file to base64 for browser storage
+        const base64Image = await imageStorageAPI.fileToBase64(file);
+        const imageKey = `profile_${Date.now()}`;
+        
+        // Store in browser storage
+        imageStorageAPI.storeImage(imageKey, base64Image);
+        
+        setPreviewUrl(base64Image);
+        onImageChange(base64Image);
+
+        toast({
+          title: "Upload successful",
+          description: "Your image has been stored locally"
+        });
+        
+        return;
+      }
+
+      // Original Supabase code for real auth
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
@@ -101,11 +136,28 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
     } catch (error) {
       console.error('Upload error:', error);
-      toast({
-        title: "Upload failed",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive"
-      });
+      
+      // Fallback to browser storage if Supabase fails
+      console.log('Supabase upload failed, falling back to browser storage');
+      try {
+        const base64Image = await imageStorageAPI.fileToBase64(event.target.files![0]);
+        const imageKey = `profile_fallback_${Date.now()}`;
+        
+        imageStorageAPI.storeImage(imageKey, base64Image);
+        setPreviewUrl(base64Image);
+        onImageChange(base64Image);
+
+        toast({
+          title: "Upload successful",
+          description: "Image stored locally (upload service unavailable)"
+        });
+      } catch (fallbackError) {
+        toast({
+          title: "Upload failed",
+          description: "Failed to upload image. Please try again.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsUploading(false);
     }
