@@ -37,7 +37,7 @@ import SeekerAISuite from "./components/seeker/SeekerAISuite";
 import SeekerAICoach from "./components/seeker/SeekerAICoach";
 import SeekerAIChat from "./components/seeker/SeekerAIChat";
 import SeekerCVBuilder from "./components/seeker/SeekerCVBuilder";
-import MobileNavbar from "./components/MobileNavbar";
+
 import MainMenu from "./components/MainMenu";
 import { authAPI } from "./services/api";
 
@@ -97,7 +97,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
           
-          {isAuthenticated && <MobileNavbar />}
+          
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
