@@ -27,14 +27,6 @@ const SeekerDashboard2 = () => {
 
   const quickActions = [
     {
-      title: 'Discover Jobs',
-      description: 'Swipe through job opportunities',
-      icon: <Search className="h-6 w-6" />,
-      color: 'bg-blue-500',
-      path: '/seeker-discover',
-      badge: 'New matches'
-    },
-    {
       title: 'AI Suite',
       description: 'AI Coach, CV Builder & Chat',
       icon: <Bot className="h-6 w-6" />,
@@ -91,9 +83,19 @@ const SeekerDashboard2 = () => {
             <h1 className="text-2xl font-bold text-slate-900 font-geist mb-2">
               Welcome back, {getDisplayName()}!
             </h1>
-            <p className="text-slate-600 font-geist">
+            <p className="text-slate-600 font-geist mb-6">
               Ready to find your next opportunity?
             </p>
+            
+            {/* Primary CTA for Job Discovery */}
+            <Button 
+              onClick={() => navigate('/seeker-discover')}
+              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] text-lg"
+              size="lg"
+            >
+              <Search className="h-5 w-5 mr-2" />
+              Start Swiping
+            </Button>
           </div>
         </AnimatedCard>
 
