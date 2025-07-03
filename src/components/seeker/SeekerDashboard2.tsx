@@ -94,7 +94,7 @@ const SeekerDashboard2 = () => {
           <div className="text-center py-6">
             <div className="mb-4">
               <Avatar className="w-16 h-16 mx-auto mb-3">
-                <AvatarImage src={profileData?.profileImageUrl || profileData?.profile_image_url} />
+                <AvatarImage src={profileData?.profilePictureUrl} />
                 <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
                   <User className="h-8 w-8" />
                 </AvatarFallback>
