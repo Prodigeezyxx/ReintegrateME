@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { authAPI } from '../../services/api';
+import { seekerAPI } from '../../services/seeker';
 import { Bot, Search, FileText, Bell, User, Heart, MessageSquare, Briefcase, ArrowRight, CheckCircle2 } from 'lucide-react';
 import AnimatedCard from '../ui/animated-card';
 import AnimatedProgress from '../ui/animated-progress';
@@ -12,6 +14,7 @@ const SeekerDashboard2 = () => {
   const navigate = useNavigate();
   const [currentUser] = useState(authAPI.getCurrentUser());
   const [favorites, setFavorites] = useState([]);
+  const [profileData, setProfileData] = useState(null);
   
   useEffect(() => {
     // Load favorites from localStorage
@@ -23,7 +26,21 @@ const SeekerDashboard2 = () => {
         console.error('Error parsing favorites:', error);
       }
     }
-  }, []);
+
+    // Load profile data to get profile image
+    const loadProfile = async () => {
+      try {
+        const profile = await seekerAPI.getProfile();
+        setProfileData(profile);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    };
+
+    if (currentUser) {
+      loadProfile();
+    }
+  }, [currentUser]);
 
   const quickActions = [
     {
@@ -76,9 +93,12 @@ const SeekerDashboard2 = () => {
         <AnimatedCard className="mb-6" delay={0}>
           <div className="text-center py-6">
             <div className="mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mx-auto flex items-center justify-center mb-3">
-                <User className="h-8 w-8 text-white" />
-              </div>
+              <Avatar className="w-16 h-16 mx-auto mb-3">
+                <AvatarImage src={profileData?.profileImageUrl || profileData?.profile_image_url} />
+                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                  <User className="h-8 w-8" />
+                </AvatarFallback>
+              </Avatar>
             </div>
             <h1 className="text-2xl font-bold text-slate-900 font-geist mb-2">
               Welcome back, {getDisplayName()}!
