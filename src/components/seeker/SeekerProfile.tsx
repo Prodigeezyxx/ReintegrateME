@@ -79,7 +79,7 @@ const SeekerProfile = () => {
             location_city: profileData.locationCity || '',
             location_country: profileData.locationCountry || '',
             key_skills: profileData.keySkills || [],
-            profile_image_url: profileData.profileImageUrl || '',
+            profile_image_url: profileData.profilePictureUrl || '',
             availability_status: 'available',
             profile_completion_percentage: profileData.profile_completion_percentage || 0
           };
@@ -159,7 +159,7 @@ const SeekerProfile = () => {
           locationCity: updatedProfile.location_city,
           locationCountry: updatedProfile.location_country,
           keySkills: updatedProfile.key_skills,
-          profileImageUrl: updatedProfile.profile_image_url,
+          profilePictureUrl: updatedProfile.profile_image_url,
           profile_completion_percentage: updatedProfile.profile_completion_percentage,
           saved_at: new Date().toISOString(),
           auth_type: 'mock'
