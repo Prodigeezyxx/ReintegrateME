@@ -3,16 +3,33 @@
 const imageStorage = new Map<string, string>();
 
 export const imageStorageAPI = {
-  // Store image in browser memory
+  // Store image in browser memory with better error handling
   storeImage: (key: string, imageData: string): void => {
+    // Always store in memory first
+    imageStorage.set(key, imageData);
+    
     try {
-      imageStorage.set(key, imageData);
-      // Also try to store in localStorage for persistence
+      // Try to clear old images if localStorage is getting full
+      const storageKeys = Object.keys(localStorage);
+      const imageKeys = storageKeys.filter(k => k.startsWith('img_'));
+      
+      // If we have more than 5 images, remove the oldest ones
+      if (imageKeys.length > 5) {
+        const keysToRemove = imageKeys.slice(0, imageKeys.length - 4);
+        keysToRemove.forEach(k => {
+          try {
+            localStorage.removeItem(k);
+          } catch (e) {
+            console.warn('Failed to remove old image:', e);
+          }
+        });
+      }
+      
+      // Try to store the new image
       localStorage.setItem(`img_${key}`, imageData);
     } catch (error) {
-      console.warn('Failed to store image in localStorage:', error);
-      // Fallback to memory only
-      imageStorage.set(key, imageData);
+      console.warn('LocalStorage full, using memory only:', error);
+      // Image is still stored in memory, so it will work for this session
     }
   },
   
