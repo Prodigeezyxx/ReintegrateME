@@ -14,6 +14,15 @@ export const swipeAPI = {
     
     const isLike = swipeType === 'like' || swipeType === 'super_like';
     
+    // For frontend-only implementation, we'll just handle the favorites
+    // and return no matches to avoid database dependencies
+    if (currentUser.role === 'seeker' && swipedEntityType === 'job' && isLike) {
+      // Job is already added to favorites in the component
+      // Just return success without creating matches for now
+      return { isMatch: false };
+    }
+    
+    // Default match probability for when we have proper profiles
     let matchProbability = 0.3;
     
     if (currentUser.role === 'seeker' && swipedEntityType === 'job') {
@@ -29,6 +38,9 @@ export const swipeAPI = {
           const skillMatchRatio = matchingSkills.length / jobSkills.length;
           matchProbability = 0.2 + (skillMatchRatio * 0.6);
         }
+      } else {
+        // If no seeker profile found in mock database, just return no match
+        return { isMatch: false };
       }
     }
     
@@ -41,13 +53,13 @@ export const swipeAPI = {
         const seeker = seekerProfiles.find(p => p.id === swipedEntityId);
         
         if (!seeker) {
-          throw new Error('Seeker not found');
+          return { isMatch: false };
         }
         
         const company = companyProfiles.find(p => p.userId === currentUser?.id);
         
         if (!company) {
-          throw new Error('Company profile not found');
+          return { isMatch: false };
         }
         
         match = {
@@ -65,13 +77,13 @@ export const swipeAPI = {
         const job = jobPostings.find(j => j.id === swipedEntityId);
         
         if (!job) {
-          throw new Error('Job not found');
+          return { isMatch: false };
         }
         
         const seeker = seekerProfiles.find(p => p.userId === currentUser?.id);
         
         if (!seeker) {
-          throw new Error('Seeker profile not found');
+          return { isMatch: false };
         }
         
         match = {
@@ -86,7 +98,7 @@ export const swipeAPI = {
         };
         
       } else {
-        throw new Error('Invalid swipe combination');
+        return { isMatch: false };
       }
       
       matches.push(match);
