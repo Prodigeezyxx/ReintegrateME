@@ -114,7 +114,7 @@ const SeekerDashboard2 = () => {
               size="lg"
             >
               <Search className="h-5 w-5 mr-2" />
-              Start Swiping
+              Swipe to find jobs
             </Button>
           </div>
         </AnimatedCard>
