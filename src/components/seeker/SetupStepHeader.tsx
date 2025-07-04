@@ -25,17 +25,17 @@ const SetupStepHeader: React.FC<SetupStepHeaderProps> = ({
           variant="ghost" 
           size="icon" 
           onClick={onBack} 
-          className="mr-3 text-white hover:bg-white/20 backdrop-blur-md rounded-full border border-white/20 min-h-[44px] font-semibold shadow-lg"
+          className="mr-3 text-slate-900 hover:bg-slate-100 backdrop-blur-md rounded-full border border-slate-300 min-h-[44px] font-semibold shadow-lg bg-white/90"
           ripple={false}
           aria-label="Go back to previous step"
         >
           Back
         </AnimatedButton>
         <div className="flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white font-geist animate-fade-in-scale drop-shadow-lg">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 font-geist animate-fade-in-scale drop-shadow-sm">
             {title}
           </h1>
-          <p className="text-white text-base sm:text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium drop-shadow-md">
+          <p className="text-slate-700 text-base sm:text-lg font-geist mt-1 animate-fade-in-scale animate-delay-100 font-medium drop-shadow-sm">
             {description}
           </p>
         </div>
@@ -54,8 +54,8 @@ const SetupStepHeader: React.FC<SetupStepHeaderProps> = ({
       {/* Progress bar with improved contrast */}
       <div className="mb-6 sm:mb-8 animate-slide-up-stagger animate-delay-200">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-geist text-white font-medium drop-shadow-md">Profile Completion</span>
-          <span className="text-sm font-bold text-white font-geist drop-shadow-md">{progress}%</span>
+          <span className="text-sm font-geist text-slate-700 font-medium drop-shadow-sm">Profile Completion</span>
+          <span className="text-sm font-bold text-slate-900 font-geist drop-shadow-sm">{progress}%</span>
         </div>
         <AnimatedProgress value={progress} animate={true} />
       </div>
