@@ -1,10 +1,9 @@
-
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, Clock, Building2, ArrowLeft, Trash2, Filter } from 'lucide-react';
+import { MapPin, Clock, Building2, ArrowLeft, Trash2, Filter, SortAsc } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import JobDetailView from './JobDetailView';
@@ -144,71 +143,107 @@ const SeekerApplications = () => {
   }
 
   return (
-    <div className="mobile-container p-6 pb-20">
+    <div className="mobile-container p-6 pb-20 bg-gradient-to-b from-slate-50 to-white min-h-screen">
       <div className="flex items-center mb-6">
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={() => navigate('/seeker-dashboard')}
-          className="mr-2"
+          className="mr-2 hover:bg-slate-100 rounded-xl"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold">My Applications</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 font-geist">My Applications</h1>
+          <p className="text-sm text-slate-600 font-geist">Manage your job applications</p>
+        </div>
       </div>
 
-      {/* Filter and Sort Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Applications</SelectItem>
-              <SelectItem value="Under Review">Under Review</SelectItem>
-              <SelectItem value="Interview Scheduled">Interview Scheduled</SelectItem>
-              <SelectItem value="Not Selected">Not Selected</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Sort by:</span>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort applications" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="date-desc">Newest First</SelectItem>
-              <SelectItem value="date-asc">Oldest First</SelectItem>
-              <SelectItem value="company">Company A-Z</SelectItem>
-              <SelectItem value="status">Status</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Modern Filter and Sort Controls */}
+      <div className="mb-8">
+        <Card className="bg-gradient-to-r from-white to-slate-50 border-slate-200/50 shadow-lg shadow-slate-200/20 backdrop-blur-sm">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+                <Filter className="h-4 w-4 text-white" />
+              </div>
+              <CardTitle className="text-lg font-geist text-slate-800">Filter & Sort</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Status Filter Chips */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700 font-geist">Status</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { value: 'all', label: 'All Applications', count: applications.length },
+                  { value: 'Under Review', label: 'Under Review', count: applications.filter(a => a.status === 'Under Review').length },
+                  { value: 'Interview Scheduled', label: 'Interview Scheduled', count: applications.filter(a => a.status === 'Interview Scheduled').length },
+                  { value: 'Not Selected', label: 'Not Selected', count: applications.filter(a => a.status === 'Not Selected').length }
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setStatusFilter(option.value)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 font-geist ${
+                      statusFilter === option.value
+                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-105'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-102'
+                    }`}
+                  >
+                    {option.label} ({option.count})
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sort Options */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700 font-geist flex items-center gap-2">
+                <SortAsc className="h-4 w-4" />
+                Sort by
+              </label>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="bg-white border-slate-200 hover:border-indigo-300 focus:border-indigo-500 transition-colors font-geist">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-slate-200 shadow-xl">
+                  <SelectItem value="date-desc" className="font-geist">Newest First</SelectItem>
+                  <SelectItem value="date-asc" className="font-geist">Oldest First</SelectItem>
+                  <SelectItem value="company" className="font-geist">Company A-Z</SelectItem>
+                  <SelectItem value="status" className="font-geist">Status</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {filteredAndSortedApplications.length === 0 && applications.length > 0 ? (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-            <Filter className="h-8 w-8 text-muted-foreground" />
+          <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Filter className="h-8 w-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">No applications match your filters</h3>
-          <p className="text-muted-foreground mb-6">Try adjusting your filter criteria.</p>
-          <Button variant="outline" onClick={() => setStatusFilter('all')}>
+          <h3 className="text-lg font-semibold mb-2 font-geist text-slate-800">No applications match your filters</h3>
+          <p className="text-slate-600 mb-6 font-geist">Try adjusting your filter criteria.</p>
+          <Button 
+            variant="outline" 
+            onClick={() => setStatusFilter('all')}
+            className="font-geist hover:bg-slate-50"
+          >
             Clear Filters
           </Button>
         </div>
       ) : filteredAndSortedApplications.length === 0 ? (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Building2 className="h-8 w-8 text-gray-400" />
+          <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Building2 className="h-8 w-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">No Applications Yet</h3>
-          <p className="text-gray-500 mb-6">Start exploring jobs and apply to find your next opportunity!</p>
-          <Button onClick={() => navigate('/seeker-discover')}>
+          <h3 className="text-lg font-semibold mb-2 font-geist text-slate-800">No Applications Yet</h3>
+          <p className="text-slate-600 mb-6 font-geist">Start exploring jobs and apply to find your next opportunity!</p>
+          <Button 
+            onClick={() => navigate('/seeker-discover')}
+            className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 font-geist"
+          >
             Discover Jobs
           </Button>
         </div>
@@ -217,26 +252,26 @@ const SeekerApplications = () => {
           {filteredAndSortedApplications.map((application) => (
             <Card 
               key={application.id} 
-              className="ios-card cursor-pointer hover:shadow-md transition-all duration-200 active:scale-98"
+              className="ios-card cursor-pointer hover:shadow-lg transition-all duration-200 active:scale-98 bg-white border-slate-200/50"
               onClick={() => handleApplicationClick(application)}
             >
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <CardTitle className="text-lg">{application.jobTitle}</CardTitle>
-                    <div className="flex items-center text-muted-foreground text-sm mt-1">
+                    <CardTitle className="text-lg font-geist text-slate-800">{application.jobTitle}</CardTitle>
+                    <div className="flex items-center text-slate-600 text-sm mt-1 font-geist">
                       <Building2 className="h-4 w-4 mr-1" />
                       {application.company}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge className={application.statusColor}>
+                    <Badge className={`${application.statusColor} font-geist`}>
                       {application.status}
                     </Badge>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      className="h-8 w-8 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
                       onClick={(e) => handleDeleteApplication(application.id, e)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -245,7 +280,7 @@ const SeekerApplications = () => {
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <div className="flex items-center justify-between text-sm text-slate-500 font-geist">
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-1" />
                     {application.location}
@@ -255,7 +290,7 @@ const SeekerApplications = () => {
                     Applied {application.appliedDate}
                   </div>
                 </div>
-                <div className="mt-2 text-xs text-primary">
+                <div className="mt-2 text-xs text-indigo-600 font-geist font-medium">
                   Tap to view details →
                 </div>
               </CardContent>

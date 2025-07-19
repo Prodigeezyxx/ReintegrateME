@@ -8,7 +8,7 @@ import MatchAnimation from '../MatchAnimation';
 import FavoritesBar from '../FavoritesBar';
 import SeekerProfileView from '../SeekerProfileView';
 import SkeletonLoader from '../SkeletonLoader';
-import { RefreshCw, Users } from 'lucide-react';
+import { RefreshCw, Users, X, Bookmark, Check } from 'lucide-react';
 import { getLogoUrl } from '../../utils/logoUpload';
 
 const HirerDiscover = () => {
@@ -297,38 +297,35 @@ const HirerDiscover = () => {
           </div>
           
           {seekers.length > 0 && currentIndex < seekers.length && (
-            <div className="flex justify-center items-center gap-8 pb-8 mt-4">
+            <div className="flex justify-center items-center gap-6 pb-8 mt-4">
+              {/* Pass/Decline Button - Red X */}
               <button 
-                className="swipe-button pass-button"
+                className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => handleButtonSwipe('left')}
                 aria-label="Pass on this candidate"
                 disabled={isSwipeAnimating}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="h-8 w-8 group-hover:scale-110 transition-transform duration-200" strokeWidth={2.5} />
               </button>
               
+              {/* Save Button - Orange Bookmark */}
               <button 
-                className="swipe-button super-like-button"
+                className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => handleButtonSwipe('up')}
-                aria-label="Super like this candidate"
+                aria-label="Save this candidate"
                 disabled={isSwipeAnimating}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                </svg>
+                <Bookmark className="h-7 w-7 group-hover:scale-110 transition-transform duration-200" strokeWidth={2.5} />
               </button>
               
+              {/* Accept/Like Button - Green Check */}
               <button 
-                className="swipe-button like-button"
+                className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => handleButtonSwipe('right')}
-                aria-label="Like this candidate"
+                aria-label="Accept this candidate"
                 disabled={isSwipeAnimating}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
+                <Check className="h-8 w-8 group-hover:scale-110 transition-transform duration-200" strokeWidth={2.5} />
               </button>
             </div>
           )}
