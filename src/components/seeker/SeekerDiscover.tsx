@@ -8,7 +8,7 @@ import MatchAnimation from '../MatchAnimation';
 import FavoritesBar from '../FavoritesBar';
 import JobDetailView from './JobDetailView';
 import SkeletonLoader from '../SkeletonLoader';
-import { RefreshCw, Briefcase, X, Star, Heart } from 'lucide-react';
+import { RefreshCw, Briefcase, X, Bookmark, Check } from 'lucide-react';
 import { getLogoUrl } from '../../utils/logoUpload';
 
 const SeekerDiscover = () => {
@@ -315,24 +315,24 @@ const SeekerDiscover = () => {
                 <X className="h-8 w-8 group-hover:scale-110 transition-transform duration-200" strokeWidth={2.5} />
               </button>
               
-              {/* Save Button - Blue Star */}
+              {/* Save Button - Orange Bookmark */}
               <button 
-                className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => handleButtonSwipe('up')}
                 aria-label="Save this job"
                 disabled={isSwipeAnimating}
               >
-                <Star className="h-7 w-7 group-hover:scale-110 transition-transform duration-200" strokeWidth={2.5} />
+                <Bookmark className="h-7 w-7 group-hover:scale-110 transition-transform duration-200" strokeWidth={2.5} />
               </button>
               
-              {/* Accept/Like Button - Green Heart */}
+              {/* Accept/Like Button - Green Check */}
               <button 
                 className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => handleButtonSwipe('right')}
                 aria-label="Like this job"
                 disabled={isSwipeAnimating}
               >
-                <Heart className="h-8 w-8 group-hover:scale-110 transition-transform duration-200" strokeWidth={2.5} />
+                <Check className="h-8 w-8 group-hover:scale-110 transition-transform duration-200" strokeWidth={2.5} />
               </button>
             </div>
           )}
