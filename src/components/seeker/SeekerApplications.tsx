@@ -1,17 +1,19 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Clock, Building2, ArrowLeft } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MapPin, Clock, Building2, ArrowLeft, Trash2, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 import JobDetailView from './JobDetailView';
 
 const SeekerApplications = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedJob, setSelectedJob] = useState<any>(null);
-
-  const applications = [
+  const [applications, setApplications] = useState([
     {
       id: 1,
       jobTitle: 'Warehouse Assistant',
@@ -90,7 +92,42 @@ const SeekerApplications = () => {
         'Supportive management'
       ]
     }
-  ];
+  ]);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('date-desc');
+
+  const filteredAndSortedApplications = useMemo(() => {
+    let filtered = applications.filter(app => {
+      if (statusFilter === 'all') return true;
+      return app.status === statusFilter;
+    });
+
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'date-desc':
+          return new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime();
+        case 'date-asc':
+          return new Date(a.appliedDate).getTime() - new Date(b.appliedDate).getTime();
+        case 'company':
+          return a.company.localeCompare(b.company);
+        case 'status':
+          return a.status.localeCompare(b.status);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [applications, statusFilter, sortBy]);
+
+  const handleDeleteApplication = (applicationId: number, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setApplications(prev => prev.filter(app => app.id !== applicationId));
+    toast({
+      title: "Application removed",
+      description: "The application has been removed from your list.",
+    });
+  };
 
   const handleApplicationClick = (application: any) => {
     setSelectedJob(application);
@@ -120,7 +157,51 @@ const SeekerApplications = () => {
         <h1 className="text-2xl font-bold">My Applications</h1>
       </div>
 
-      {applications.length === 0 ? (
+      {/* Filter and Sort Controls */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Applications</SelectItem>
+              <SelectItem value="Under Review">Under Review</SelectItem>
+              <SelectItem value="Interview Scheduled">Interview Scheduled</SelectItem>
+              <SelectItem value="Not Selected">Not Selected</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Sort by:</span>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort applications" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date-desc">Newest First</SelectItem>
+              <SelectItem value="date-asc">Oldest First</SelectItem>
+              <SelectItem value="company">Company A-Z</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {filteredAndSortedApplications.length === 0 && applications.length > 0 ? (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+            <Filter className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No applications match your filters</h3>
+          <p className="text-muted-foreground mb-6">Try adjusting your filter criteria.</p>
+          <Button variant="outline" onClick={() => setStatusFilter('all')}>
+            Clear Filters
+          </Button>
+        </div>
+      ) : filteredAndSortedApplications.length === 0 ? (
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Building2 className="h-8 w-8 text-gray-400" />
@@ -133,7 +214,7 @@ const SeekerApplications = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {applications.map((application) => (
+          {filteredAndSortedApplications.map((application) => (
             <Card 
               key={application.id} 
               className="ios-card cursor-pointer hover:shadow-md transition-all duration-200 active:scale-98"
@@ -141,20 +222,30 @@ const SeekerApplications = () => {
             >
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-lg">{application.jobTitle}</CardTitle>
-                    <div className="flex items-center text-gray-600 text-sm mt-1">
+                    <div className="flex items-center text-muted-foreground text-sm mt-1">
                       <Building2 className="h-4 w-4 mr-1" />
                       {application.company}
                     </div>
                   </div>
-                  <Badge className={application.statusColor}>
-                    {application.status}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={application.statusColor}>
+                      {application.status}
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={(e) => handleDeleteApplication(application.id, e)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-1" />
                     {application.location}
@@ -164,7 +255,7 @@ const SeekerApplications = () => {
                     Applied {application.appliedDate}
                   </div>
                 </div>
-                <div className="mt-2 text-xs text-blue-600">
+                <div className="mt-2 text-xs text-primary">
                   Tap to view details →
                 </div>
               </CardContent>
