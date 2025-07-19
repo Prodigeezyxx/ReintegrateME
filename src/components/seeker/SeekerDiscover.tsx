@@ -165,6 +165,20 @@ const SeekerDiscover = () => {
     setCurrentIndex(0);
     fetchJobs();
   };
+
+  const transformJobData = (job: SwipeableCardData) => {
+    return {
+      id: parseInt(job.id), // Convert string id to number
+      jobTitle: job.titleText,
+      company: job.subtitleText || '',
+      location: job.detailLine1 || '',
+      salary: job.detailLine2,
+      employmentType: job.detailLine2,
+      description: `Join ${job.subtitleText} as a ${job.titleText}`,
+      requirements: job.tags || [],
+      benefits: ['Competitive salary', 'Professional development', 'Supportive environment']
+    };
+  };
   
   const renderMainContent = () => {
     if (isLoading) {
@@ -231,10 +245,11 @@ const SeekerDiscover = () => {
   // If we're showing a specific job, render the job detail view
   if (selectedJob) {
     const isFavorite = favorites.some(fav => fav.id === selectedJob.id);
+    const transformedJob = transformJobData(selectedJob);
     
     return (
       <JobDetailView 
-        job={selectedJob}
+        job={transformedJob}
         onBackClick={() => setSelectedJob(null)}
         isFavorite={isFavorite}
         onFavoriteToggle={handleToggleFavorite}
