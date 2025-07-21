@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from '@/hooks/use-toast';
 import { ArrowLeft, Heart, MessageSquare, MapPin, Briefcase, Star, CheckCircle } from 'lucide-react';
 import { SwipeableCardData } from '../../models/types';
+import { chatStorage } from '../../utils/chatStorage';
 
 interface CandidateProfileViewProps {
   candidate: SwipeableCardData;
@@ -34,10 +34,37 @@ const CandidateProfileView: React.FC<CandidateProfileViewProps> = ({
 
   const handleSendMessage = () => {
     if (contactMessage.trim()) {
+      // Create or find existing chat thread
+      const existingThreads = chatStorage.getThreads();
+      let thread = existingThreads.find(t => t.candidateId === candidate.id);
+      
+      if (!thread) {
+        // Create new thread
+        thread = chatStorage.createThread(
+          candidate.id,
+          candidate.titleText,
+          candidate.primaryImageUrl,
+          candidate.subtitleText
+        );
+        
+        const allThreads = [thread, ...existingThreads];
+        chatStorage.saveThreads(allThreads);
+      }
+      
+      // Add the message to the thread
+      chatStorage.addMessage(thread.id, {
+        senderId: 'current-hirer',
+        senderName: 'You',
+        content: contactMessage,
+        timestamp: new Date(),
+        isFromHirer: true
+      });
+      
       toast({
         title: "Message sent",
         description: `Your message has been sent to ${candidate.titleText}.`,
       });
+      
       setIsContactModalOpen(false);
       setContactMessage('');
       navigate('/hirer-messages');

@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { Briefcase, Plus, RefreshCw, Archive, Trash2 } from 'lucide-react';
 import { jobAPI } from '../../services/api';
 import { JobPosting } from '../../models/types';
+import { SortDropdown, SortOption } from '../ui/sort-dropdown';
 
 const HirerJobsList = () => {
   const [jobs, setJobs] = useState<JobPosting[]>([]);
@@ -14,15 +15,31 @@ const HirerJobsList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [filter, setFilter] = useState('active');
+  const [sortBy, setSortBy] = useState('date_desc');
   const navigate = useNavigate();
+  
+  const sortOptions: SortOption[] = [
+    { value: 'date_desc', label: 'Date (Newest First)' },
+    { value: 'date_asc', label: 'Date (Oldest First)' },
+    { value: 'title_asc', label: 'Title (A-Z)' },
+    { value: 'title_desc', label: 'Title (Z-A)' },
+    { value: 'status_priority', label: 'Status (Active First)' },
+    { value: 'location_asc', label: 'Location (A-Z)' }
+  ];
   
   useEffect(() => {
     fetchJobs();
+    
+    // Load saved sort preference
+    const savedSort = localStorage.getItem('hirer_jobs_sort');
+    if (savedSort) {
+      setSortBy(savedSort);
+    }
   }, []);
   
   useEffect(() => {
-    filterJobs();
-  }, [jobs, filter]);
+    filterAndSortJobs();
+  }, [jobs, filter, sortBy]);
   
   const fetchJobs = async () => {
     try {
@@ -42,12 +59,43 @@ const HirerJobsList = () => {
     }
   };
   
-  const filterJobs = () => {
-    if (filter === 'all') {
-      setFilteredJobs(jobs);
-    } else {
-      setFilteredJobs(jobs.filter(job => job.status === filter));
+  const filterAndSortJobs = () => {
+    let filtered = jobs;
+    
+    // Apply filter
+    if (filter !== 'all') {
+      filtered = jobs.filter(job => job.status === filter);
     }
+    
+    // Apply sort
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'date_desc':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'date_asc':
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case 'title_asc':
+          return a.title.localeCompare(b.title);
+        case 'title_desc':
+          return b.title.localeCompare(a.title);
+        case 'status_priority':
+          const statusOrder = { 'active': 0, 'draft': 1, 'archived': 2 };
+          return (statusOrder[a.status] || 3) - (statusOrder[b.status] || 3);
+        case 'location_asc':
+          const locationA = `${a.locationCity}, ${a.locationCountry}`;
+          const locationB = `${b.locationCity}, ${b.locationCountry}`;
+          return locationA.localeCompare(locationB);
+        default:
+          return 0;
+      }
+    });
+    
+    setFilteredJobs(sorted);
+  };
+  
+  const handleSortChange = (newSort: string) => {
+    setSortBy(newSort);
+    localStorage.setItem('hirer_jobs_sort', newSort);
   };
   
   const handleRefresh = () => {
@@ -67,13 +115,11 @@ const HirerJobsList = () => {
   };
   
   const handleArchiveJob = async (jobId: string) => {
-    // In a real app, we would call an API to archive the job
     toast({
       title: "Job archived",
       description: "The job has been archived successfully.",
     });
     
-    // Update the local state
     setJobs(prevJobs => 
       prevJobs.map(job => 
         job.id === jobId 
@@ -84,13 +130,11 @@ const HirerJobsList = () => {
   };
   
   const handleDeleteJob = async (jobId: string) => {
-    // In a real app, we would call an API to delete the job
     toast({
       title: "Job deleted",
       description: "The job has been deleted successfully.",
     });
     
-    // Update the local state
     setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
   };
   
@@ -110,14 +154,21 @@ const HirerJobsList = () => {
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Manage Jobs</h1>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleRefresh} 
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </Button>
+          <div className="flex gap-2">
+            <SortDropdown
+              options={sortOptions}
+              value={sortBy}
+              onValueChange={handleSortChange}
+            />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleRefresh} 
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </div>
         
         <div className="mb-6">

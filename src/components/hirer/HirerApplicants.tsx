@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { Users, RefreshCw, ArrowLeft, Star, MessageSquare } from 'lucide-react';
 import { jobAPI } from '../../services/api';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { SortDropdown, SortOption } from '../ui/sort-dropdown';
 import CandidateProfileView from './CandidateProfileView';
 
 interface Applicant {
@@ -19,25 +21,45 @@ interface Applicant {
 
 const HirerApplicants = () => {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [filteredApplicants, setFilteredApplicants] = useState<Applicant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState('all');
+  const [sortBy, setSortBy] = useState('status_priority');
   const [jobs, setJobs] = useState<any[]>([]);
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
+  const sortOptions: SortOption[] = [
+    { value: 'status_priority', label: 'Status (New First)' },
+    { value: 'date_desc', label: 'Date (Newest First)' },
+    { value: 'date_asc', label: 'Date (Oldest First)' },
+    { value: 'name_asc', label: 'Name (A-Z)' },
+    { value: 'name_desc', label: 'Name (Z-A)' },
+    { value: 'job_title_asc', label: 'Job Title (A-Z)' }
+  ];
+  
   useEffect(() => {
     fetchJobs();
     fetchApplicants();
     
+    // Load saved sort preference
+    const savedSort = localStorage.getItem('hirer_applicants_sort');
+    if (savedSort) {
+      setSortBy(savedSort);
+    }
+    
     // Check for filter parameter from dashboard navigation
     const filter = searchParams.get('filter');
     if (filter === 'new') {
-      // Auto-filter to new applicants if coming from dashboard
       console.log('Filtering to new applicants');
     }
   }, [searchParams]);
+  
+  useEffect(() => {
+    filterAndSortApplicants();
+  }, [applicants, selectedJobId, sortBy]);
   
   const fetchJobs = async () => {
     try {
@@ -56,8 +78,7 @@ const HirerApplicants = () => {
     try {
       setIsRefreshing(true);
       
-      // In a real app, we would fetch applicants from an API
-      // For now, we'll simulate it with mock data
+      // Mock applicants data with different dates for sorting
       setTimeout(() => {
         const mockApplicants: Applicant[] = [
           {
@@ -90,6 +111,13 @@ const HirerApplicants = () => {
             applyDate: '4 days ago',
             status: 'rejected',
             jobTitle: 'Plumber'
+          },
+          {
+            id: '5',
+            name: 'David Wilson',
+            applyDate: '5 days ago',
+            status: 'new',
+            jobTitle: 'Construction Worker'
           }
         ];
         
@@ -108,6 +136,67 @@ const HirerApplicants = () => {
     }
   };
   
+  const filterAndSortApplicants = () => {
+    let filtered = applicants;
+    
+    // Apply job filter
+    if (selectedJobId !== 'all') {
+      const selectedJob = jobs.find(job => job.id === selectedJobId);
+      if (selectedJob) {
+        filtered = applicants.filter(applicant => applicant.jobTitle === selectedJob.title);
+      }
+    }
+    
+    // Apply sort
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'status_priority':
+          const statusOrder = { 'new': 0, 'shortlisted': 1, 'rejected': 2 };
+          const statusDiff = (statusOrder[a.status] || 3) - (statusOrder[b.status] || 3);
+          // If same status, sort by date
+          if (statusDiff === 0) {
+            return getDateValue(b.applyDate) - getDateValue(a.applyDate);
+          }
+          return statusDiff;
+        case 'date_desc':
+          return getDateValue(b.applyDate) - getDateValue(a.applyDate);
+        case 'date_asc':
+          return getDateValue(a.applyDate) - getDateValue(b.applyDate);
+        case 'name_asc':
+          return a.name.localeCompare(b.name);
+        case 'name_desc':
+          return b.name.localeCompare(a.name);
+        case 'job_title_asc':
+          return a.jobTitle.localeCompare(b.jobTitle);
+        default:
+          return 0;
+      }
+    });
+    
+    setFilteredApplicants(sorted);
+  };
+  
+  const getDateValue = (dateString: string): number => {
+    // Convert relative date strings to timestamps for sorting
+    const now = Date.now();
+    if (dateString.includes('day')) {
+      const days = parseInt(dateString);
+      return now - (days * 24 * 60 * 60 * 1000);
+    } else if (dateString.includes('week')) {
+      const weeks = parseInt(dateString);
+      return now - (weeks * 7 * 24 * 60 * 60 * 1000);
+    } else if (dateString.includes('hour')) {
+      const hours = parseInt(dateString);
+      return now - (hours * 60 * 60 * 1000);
+    }
+    return now;
+  };
+  
+  const handleSortChange = (newSort: string) => {
+    setSortBy(newSort);
+    localStorage.setItem('hirer_applicants_sort', newSort);
+  };
+  
   const handleRefresh = () => {
     fetchApplicants();
   };
@@ -115,10 +204,6 @@ const HirerApplicants = () => {
   const handleFilterByJob = (jobId: string) => {
     setSelectedJobId(jobId);
   };
-  
-  const filteredApplicants = selectedJobId === 'all' 
-    ? applicants 
-    : applicants.filter(applicant => applicant.jobTitle === jobs.find(job => job.id === selectedJobId)?.title);
   
   const handleShortlist = (applicantId: string) => {
     setApplicants(prev =>
@@ -218,14 +303,21 @@ const HirerApplicants = () => {
             </Button>
             <h1 className="text-2xl font-bold">Applicants</h1>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleRefresh} 
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </Button>
+          <div className="flex gap-2">
+            <SortDropdown
+              options={sortOptions}
+              value={sortBy}
+              onValueChange={handleSortChange}
+            />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleRefresh} 
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </div>
         
         <div className="mb-6 overflow-x-auto">

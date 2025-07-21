@@ -7,20 +7,11 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { MessageSquare, RefreshCw, Search } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-
-interface MessageThread {
-  id: string;
-  recipientName: string;
-  recipientImage?: string;
-  lastMessage: string;
-  timestamp: string;
-  unread: boolean;
-  jobTitle?: string;
-}
+import { chatStorage, ChatThread } from '../../utils/chatStorage';
 
 const HirerMessages = () => {
-  const [threads, setThreads] = useState<MessageThread[]>([]);
-  const [filteredThreads, setFilteredThreads] = useState<MessageThread[]>([]);
+  const [threads, setThreads] = useState<ChatThread[]>([]);
+  const [filteredThreads, setFilteredThreads] = useState<ChatThread[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,7 +27,7 @@ const HirerMessages = () => {
     } else {
       const query = searchQuery.toLowerCase();
       setFilteredThreads(threads.filter(thread => 
-        thread.recipientName.toLowerCase().includes(query) || 
+        thread.candidateName.toLowerCase().includes(query) || 
         (thread.jobTitle && thread.jobTitle.toLowerCase().includes(query))
       ));
     }
@@ -46,43 +37,54 @@ const HirerMessages = () => {
     try {
       setIsRefreshing(true);
       
-      // In a real app, we would fetch message threads from an API
-      // For now, we'll simulate it with mock data
-      setTimeout(() => {
-        const mockThreads: MessageThread[] = [
+      // Get threads from localStorage
+      const localThreads = chatStorage.getThreads();
+      
+      // If no local threads, create some demo data
+      if (localThreads.length === 0) {
+        const demoThreads: ChatThread[] = [
           {
             id: '1',
-            recipientName: 'John Smith',
-            recipientImage: 'https://placehold.co/100x100?text=JS',
+            candidateId: '1',
+            candidateName: 'John Smith',
+            candidateImage: 'https://placehold.co/100x100?text=JS',
             lastMessage: "Thanks for your interest in my profile!",
-            timestamp: '10:30 AM',
+            timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
             unread: true,
-            jobTitle: 'Construction Worker'
+            jobTitle: 'Construction Worker',
+            messages: []
           },
           {
             id: '2',
-            recipientName: 'Emily Johnson',
-            recipientImage: 'https://placehold.co/100x100?text=EJ',
+            candidateId: '2',
+            candidateName: 'Emily Johnson',
+            candidateImage: 'https://placehold.co/100x100?text=EJ',
             lastMessage: "When would be a good time to discuss the position?",
-            timestamp: 'Yesterday',
+            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
             unread: false,
-            jobTitle: 'Electrician'
+            jobTitle: 'Electrician',
+            messages: []
           },
           {
             id: '3',
-            recipientName: 'Michael Brown',
+            candidateId: '3',
+            candidateName: 'Michael Brown',
             lastMessage: "I have 5 years of experience in plumbing.",
-            timestamp: '2 days ago',
+            timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
             unread: false,
-            jobTitle: 'Plumber'
+            jobTitle: 'Plumber',
+            messages: []
           }
         ];
         
-        setThreads(mockThreads);
-        setFilteredThreads(mockThreads);
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }, 500);
+        chatStorage.saveThreads(demoThreads);
+        setThreads(demoThreads);
+      } else {
+        setThreads(localThreads);
+      }
+      
+      setIsLoading(false);
+      setIsRefreshing(false);
     } catch (error) {
       toast({
         title: "Error",
@@ -100,6 +102,7 @@ const HirerMessages = () => {
   
   const handleOpenThread = (threadId: string) => {
     // Mark as read
+    chatStorage.markAsRead(threadId);
     setThreads(prev =>
       prev.map(thread =>
         thread.id === threadId
@@ -109,6 +112,22 @@ const HirerMessages = () => {
     );
     
     navigate(`/hirer-messages/${threadId}`);
+  };
+
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+      return `${diffInMinutes} minutes ago`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours} hours ago`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays} days ago`;
+    }
   };
   
   if (isLoading) {
@@ -170,21 +189,21 @@ const HirerMessages = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12">
-                      {thread.recipientImage ? (
-                        <AvatarImage src={thread.recipientImage} alt={thread.recipientName} />
+                      {thread.candidateImage ? (
+                        <AvatarImage src={thread.candidateImage} alt={thread.candidateName} />
                       ) : (
                         <AvatarFallback>
-                          {thread.recipientName.split(' ').map(n => n[0]).join('')}
+                          {thread.candidateName.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-center mb-1">
                         <h3 className={`text-md font-medium truncate ${thread.unread ? 'text-blue-700' : ''}`}>
-                          {thread.recipientName}
+                          {thread.candidateName}
                           {thread.unread && <span className="bg-blue-500 rounded-full h-2 w-2 ml-2 inline-block"></span>}
                         </h3>
-                        <span className="text-xs text-gray-500">{thread.timestamp}</span>
+                        <span className="text-xs text-gray-500">{formatTimestamp(thread.timestamp)}</span>
                       </div>
                       {thread.jobTitle && (
                         <div className="text-xs text-gray-500 mb-1">
@@ -192,7 +211,7 @@ const HirerMessages = () => {
                         </div>
                       )}
                       <p className={`text-sm truncate ${thread.unread ? 'font-medium' : 'text-gray-500'}`}>
-                        {thread.lastMessage}
+                        {thread.lastMessage || 'No messages yet'}
                       </p>
                     </div>
                   </div>
