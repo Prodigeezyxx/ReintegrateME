@@ -145,10 +145,10 @@ export const CVBuilderFlow: React.FC<CVBuilderFlowProps> = ({ onClose }) => {
         </div>
 
         <Button
-          onClick={handleNext}
-          disabled={currentStep === STEPS.length}
+          onClick={currentStep === STEPS.length ? () => window.location.href = '/seeker-dashboard' : handleNext}
+          disabled={false}
           size="sm"
-          className="touch-manipulation min-h-11 disabled:opacity-50"
+          className="touch-manipulation min-h-11"
         >
           {currentStep === STEPS.length ? 'Finish' : 'Next'}
           <ArrowRight className="h-4 w-4 ml-2" />

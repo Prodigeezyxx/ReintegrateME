@@ -8,9 +8,9 @@ import { FileText, Sparkles, Target, Lightbulb } from 'lucide-react';
 import { CVData } from '@/types/cv';
 
 const sampleSummaries = [
-  "Experienced software developer with 5+ years of expertise in full-stack development. Proven track record of delivering scalable web applications using React, Node.js, and cloud technologies. Strong problem-solving skills and passion for clean, maintainable code.",
-  "Results-driven marketing professional with 3+ years experience in digital marketing and brand management. Skilled in social media strategy, content creation, and data analytics. Successfully increased brand engagement by 150% through innovative campaigns.",
-  "Detail-oriented project manager with 7+ years experience leading cross-functional teams. Expert in Agile methodologies and stakeholder management. Delivered 20+ projects on time and under budget, improving operational efficiency by 30%."
+  "Experienced retail sales assistant with 3+ years in customer service and product knowledge. Proven track record of exceeding sales targets and building strong customer relationships. Skilled in cash handling, inventory management, and creating positive shopping experiences.",
+  "Dedicated care worker with 5+ years experience supporting elderly and vulnerable adults. Compassionate professional skilled in personal care, medication administration, and emotional support. Strong communication skills and commitment to maintaining dignity and independence.",
+  "Reliable warehouse operative with 4+ years experience in fast-paced distribution environments. Expert in picking, packing, and quality control procedures. Strong safety record and proven ability to work efficiently both independently and as part of a team."
 ];
 
 interface ProfessionalSummaryStepProps {
