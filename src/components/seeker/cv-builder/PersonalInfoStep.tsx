@@ -60,7 +60,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
                   placeholder="John Doe"
                   value={cvData.personalInfo.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                  className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                 />
               </div>
             </div>
@@ -75,7 +75,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
                   placeholder="john@example.com"
                   value={cvData.personalInfo.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                  className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                   autoComplete="email"
                 />
               </div>
@@ -91,7 +91,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
                   placeholder="+44 123 456 7890"
                   value={cvData.personalInfo.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                  className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                   autoComplete="tel"
                 />
               </div>
@@ -106,7 +106,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
                   placeholder="London, UK"
                   value={cvData.personalInfo.location}
                   onChange={(e) => handleInputChange('location', e.target.value)}
-                  className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                  className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
                     placeholder="https://linkedin.com/in/johndoe"
                     value={cvData.personalInfo.linkedin || ''}
                     onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                    className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                    className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                   />
                 </div>
               </div>
@@ -141,7 +141,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
                     placeholder="https://johndoe.com"
                     value={cvData.personalInfo.website || ''}
                     onChange={(e) => handleInputChange('website', e.target.value)}
-                    className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                    className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                   />
                 </div>
               </div>
@@ -154,6 +154,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
         <Button 
           onClick={onNext} 
           disabled={!isFormValid()}
+          variant="brand-primary"
           size="lg"
           className="touch-manipulation w-full max-w-xs disabled:opacity-50 font-geist"
         >

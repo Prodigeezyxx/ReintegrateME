@@ -68,7 +68,7 @@ export const ProfessionalSummaryStep: React.FC<ProfessionalSummaryStepProps> = (
             placeholder="Write a 2-3 sentence summary highlighting your experience, key skills, and what makes you unique..."
             value={cvData.professionalSummary.content}
             onChange={(e) => handleSummaryChange(e.target.value)}
-            className="min-h-32 resize-none touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+            className="min-h-32 resize-none touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
             maxLength={500}
           />
           
@@ -116,7 +116,7 @@ export const ProfessionalSummaryStep: React.FC<ProfessionalSummaryStepProps> = (
             </div>
 
             <Button 
-              variant="outline"
+              variant="brand-outline"
               size="sm"
               onClick={() => setShowSamples(!showSamples)}
               className="w-full h-11 touch-manipulation font-geist"
@@ -145,6 +145,7 @@ export const ProfessionalSummaryStep: React.FC<ProfessionalSummaryStepProps> = (
         <Button 
           onClick={onNext} 
           disabled={!isFormValid()}
+          variant="brand-primary"
           size="lg"
           className="touch-manipulation w-full max-w-xs disabled:opacity-50 font-geist"
         >

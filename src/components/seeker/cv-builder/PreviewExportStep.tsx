@@ -159,11 +159,11 @@ export const PreviewExportStep: React.FC<PreviewExportStepProps> = ({
             </div>
 
             <div className="pt-4 space-y-3">
-              <Button onClick={handleDownloadPDF} className="w-full h-11 touch-manipulation font-geist">
-                <Download className="h-4 w-4 mr-2" />
-                Download PDF
-              </Button>
-              <Button onClick={handleDownloadPlainText} variant="outline" className="w-full h-11 touch-manipulation font-geist">
+            <Button onClick={handleDownloadPDF} variant="brand-primary" className="w-full h-11 touch-manipulation font-geist">
+              <Download className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+            <Button onClick={handleDownloadPlainText} variant="brand-outline" className="w-full h-11 touch-manipulation font-geist">
                 <FileText className="h-4 w-4 mr-2" />
                 Download ATS Version
               </Button>

@@ -64,7 +64,7 @@ export const TemplateSelection: React.FC<TemplateSelectionProps> = ({
             key={template.id}
             className={`ios-card cursor-pointer transition-all duration-200 touch-manipulation ${
               cvData.template === template.id
-                ? 'ring-2 ring-slate-900 bg-slate-50'
+                ? 'ring-2 ring-reintegrate-blue bg-reintegrate-blue/5'
                 : 'hover:shadow-lg hover:-translate-y-1'
             }`}
             onClick={() => handleTemplateSelect(template.id)}
@@ -76,7 +76,7 @@ export const TemplateSelection: React.FC<TemplateSelectionProps> = ({
                     <FileText className="h-8 w-8 text-slate-600" />
                   </div>
                   {cvData.template === template.id && (
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center">
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-reintegrate-blue rounded-full flex items-center justify-center">
                       <Check className="h-4 w-4 text-white" />
                     </div>
                   )}
@@ -110,6 +110,7 @@ export const TemplateSelection: React.FC<TemplateSelectionProps> = ({
         <Button 
           onClick={onNext} 
           disabled={!cvData.template}
+          variant="brand-primary"
           size="lg"
           className="touch-manipulation w-full max-w-xs disabled:opacity-50 font-geist"
         >

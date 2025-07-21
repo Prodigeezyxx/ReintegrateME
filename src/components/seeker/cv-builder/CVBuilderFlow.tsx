@@ -82,9 +82,9 @@ export const CVBuilderFlow: React.FC<CVBuilderFlowProps> = ({ onClose }) => {
                     onClick={() => handleStepClick(step.id)}
                     className={`w-6 h-6 rounded-full text-xs font-medium transition-all duration-200 touch-manipulation ${
                       currentStep === step.id
-                        ? 'bg-slate-900 text-white scale-110'
+                        ? 'bg-reintegrate-blue text-white scale-110'
                         : currentStep > step.id
-                        ? 'bg-slate-600 text-white'
+                        ? 'bg-reintegrate-blue/70 text-white'
                         : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
                     }`}
                   >
@@ -92,7 +92,7 @@ export const CVBuilderFlow: React.FC<CVBuilderFlowProps> = ({ onClose }) => {
                   </button>
                   {index < STEPS.length - 1 && (
                     <div className={`w-4 h-0.5 mx-1 transition-colors duration-200 ${
-                      currentStep > step.id ? 'bg-slate-600' : 'bg-slate-200'
+                      currentStep > step.id ? 'bg-reintegrate-blue/70' : 'bg-slate-200'
                     }`} />
                   )}
                 </div>
@@ -141,14 +141,14 @@ export const CVBuilderFlow: React.FC<CVBuilderFlowProps> = ({ onClose }) => {
             </span>
             <div className="w-16 bg-slate-200 rounded-full h-1">
               <div 
-                className="bg-slate-900 h-1 rounded-full transition-all duration-300"
+                className="bg-reintegrate-blue h-1 rounded-full transition-all duration-300"
                 style={{ width: `${(currentStep / STEPS.length) * 100}%` }}
               />
             </div>
           </div>
 
           <Button
-            variant={currentStep === STEPS.length ? "default" : "default"}
+            variant="brand-primary"
             onClick={currentStep === STEPS.length ? () => window.location.href = '/seeker-dashboard' : handleNext}
             disabled={false}
             size="sm"

@@ -164,7 +164,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                         placeholder="Software Developer"
                         value={experience.jobTitle}
                         onChange={(e) => updateExperience(experience.id, { jobTitle: e.target.value })}
-                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                       />
                     </div>
                   </div>
@@ -178,7 +178,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                         placeholder="Tech Company Ltd"
                         value={experience.company}
                         onChange={(e) => updateExperience(experience.id, { company: e.target.value })}
-                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                       />
                     </div>
                   </div>
@@ -192,7 +192,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                         placeholder="London, UK"
                         value={experience.location}
                         onChange={(e) => updateExperience(experience.id, { location: e.target.value })}
-                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                       />
                     </div>
                   </div>
@@ -207,7 +207,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                             type="month"
                             value={experience.startDate}
                             onChange={(e) => updateExperience(experience.id, { startDate: e.target.value })}
-                            className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                            className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                           />
                         </div>
                         <div className="relative">
@@ -218,7 +218,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                             onChange={(e) => updateExperience(experience.id, { endDate: e.target.value })}
                             disabled={experience.current}
                             placeholder={experience.current ? "Present" : ""}
-                            className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                            className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                           />
                         </div>
                       </div>
@@ -246,7 +246,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                     <Label className="font-geist">Key Achievements & Responsibilities *</Label>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="brand-outline"
                       size="sm"
                       onClick={() => addAchievement(experience.id)}
                       className="h-9 touch-manipulation font-geist"
@@ -262,7 +262,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                         placeholder="• Developed and maintained web applications using React and Node.js, resulting in 30% improved user engagement"
                         value={achievement}
                         onChange={(e) => updateAchievement(experience.id, achIndex, e.target.value)}
-                        className="flex-1 min-h-16 resize-none touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
+                        className="flex-1 min-h-16 resize-none touch-manipulation border-slate-300 focus:border-reintegrate-blue focus:ring-reintegrate-blue font-geist"
                         rows={2}
                       />
                       {experience.achievements.length > 1 && (
@@ -290,7 +290,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
 
         <Button
           type="button"
-          variant="outline"
+          variant="brand-outline"
           onClick={addWorkExperience}
           className="w-full h-11 touch-manipulation font-geist"
         >
@@ -303,6 +303,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
         <Button 
           onClick={onNext} 
           disabled={!isFormValid()}
+          variant="brand-primary"
           size="lg"
           className="touch-manipulation w-full max-w-xs disabled:opacity-50 font-geist"
         >

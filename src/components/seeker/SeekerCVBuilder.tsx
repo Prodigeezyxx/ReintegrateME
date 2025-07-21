@@ -45,6 +45,7 @@ const SeekerCVBuilder = () => {
                 <Button 
                   onClick={() => setShowCVBuilder(true)} 
                   size="lg" 
+                  variant="brand-primary"
                   className="touch-manipulation font-geist"
                 >
                   <Edit className="h-4 w-4 mr-2" />
@@ -61,7 +62,7 @@ const SeekerCVBuilder = () => {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-reintegrate-blue rounded-lg flex items-center justify-center">
                     <Edit className="h-4 w-4 text-white" />
                   </div>
                   <div>
@@ -71,7 +72,7 @@ const SeekerCVBuilder = () => {
                 </div>
                 
                 <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-reintegrate-orange rounded-lg flex items-center justify-center">
                     <Eye className="h-4 w-4 text-white" />
                   </div>
                   <div>
@@ -81,7 +82,7 @@ const SeekerCVBuilder = () => {
                 </div>
                 
                 <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-reintegrate-blue rounded-lg flex items-center justify-center">
                     <Download className="h-4 w-4 text-white" />
                   </div>
                   <div>
