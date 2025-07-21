@@ -100,20 +100,20 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
   }, []);
 
   return (
-    <div className="p-4 max-w-2xl mx-auto animate-fade-in">
-      <div className="text-center mb-6">
-        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-          <Briefcase className="h-6 w-6 text-primary" />
+    <div className="p-6 max-w-2xl mx-auto">
+      <div className="text-center mb-8">
+        <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Briefcase className="h-6 w-6 text-slate-700" />
         </div>
-        <h2 className="text-xl font-bold mb-2">Work Experience</h2>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2 font-geist">Work Experience</h1>
+        <p className="text-slate-600 font-geist">
           Add your professional experience, starting with your most recent role
         </p>
       </div>
 
       <div className="space-y-4">
         {cvData.workExperience.map((experience, index) => (
-          <Card key={experience.id} className="relative beautiful-shadow">
+          <Card key={experience.id} className="ios-card relative">
             <CardHeader 
               className="cursor-pointer touch-manipulation"
               onClick={() => setExpandedExperience(
@@ -121,17 +121,17 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
               )}
             >
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base">
+                <CardTitle className="text-base font-geist">
                   {experience.jobTitle || `Position ${index + 1}`}
                   {experience.company && (
-                    <span className="text-sm font-normal text-muted-foreground block">
+                    <span className="text-sm font-normal text-slate-600 block">
                       at {experience.company}
                     </span>
                   )}
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   {index === 0 && (
-                    <span className="text-xs bg-reintegrate-blue/10 text-reintegrate-blue px-2 py-1 rounded">
+                    <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded font-geist">
                       Most Recent
                     </span>
                   )}
@@ -156,69 +156,69 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
               <CardContent className="space-y-4">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor={`jobTitle-${experience.id}`}>Job Title *</Label>
+                    <Label htmlFor={`jobTitle-${experience.id}`} className="font-geist">Job Title *</Label>
                     <div className="relative">
-                      <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                       <Input
                         id={`jobTitle-${experience.id}`}
                         placeholder="Software Developer"
                         value={experience.jobTitle}
                         onChange={(e) => updateExperience(experience.id, { jobTitle: e.target.value })}
-                        className="pl-10 h-11 touch-manipulation"
+                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor={`company-${experience.id}`}>Company *</Label>
+                    <Label htmlFor={`company-${experience.id}`} className="font-geist">Company *</Label>
                     <div className="relative">
-                      <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                       <Input
                         id={`company-${experience.id}`}
                         placeholder="Tech Company Ltd"
                         value={experience.company}
                         onChange={(e) => updateExperience(experience.id, { company: e.target.value })}
-                        className="pl-10 h-11 touch-manipulation"
+                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor={`location-${experience.id}`}>Location</Label>
+                    <Label htmlFor={`location-${experience.id}`} className="font-geist">Location</Label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                       <Input
                         id={`location-${experience.id}`}
                         placeholder="London, UK"
                         value={experience.location}
                         onChange={(e) => updateExperience(experience.id, { location: e.target.value })}
-                        className="pl-10 h-11 touch-manipulation"
+                        className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Employment Period *</Label>
+                    <Label className="font-geist">Employment Period *</Label>
                     <div className="space-y-2">
                       <div className="grid grid-cols-2 gap-2">
                         <div className="relative">
-                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                           <Input
                             type="month"
                             value={experience.startDate}
                             onChange={(e) => updateExperience(experience.id, { startDate: e.target.value })}
-                            className="pl-10 h-11 touch-manipulation"
+                            className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
                           />
                         </div>
                         <div className="relative">
-                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                           <Input
                             type="month"
                             value={experience.endDate}
                             onChange={(e) => updateExperience(experience.id, { endDate: e.target.value })}
                             disabled={experience.current}
                             placeholder={experience.current ? "Present" : ""}
-                            className="pl-10 h-11 touch-manipulation"
+                            className="pl-10 h-11 touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
                           />
                         </div>
                       </div>
@@ -233,7 +233,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                             })
                           }
                         />
-                        <Label htmlFor={`current-${experience.id}`} className="text-sm">
+                        <Label htmlFor={`current-${experience.id}`} className="text-sm font-geist">
                           I currently work here
                         </Label>
                       </div>
@@ -243,13 +243,13 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label>Key Achievements & Responsibilities *</Label>
+                    <Label className="font-geist">Key Achievements & Responsibilities *</Label>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => addAchievement(experience.id)}
-                      className="h-9 touch-manipulation"
+                      className="h-9 touch-manipulation font-geist"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Add
@@ -262,7 +262,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                         placeholder="• Developed and maintained web applications using React and Node.js, resulting in 30% improved user engagement"
                         value={achievement}
                         onChange={(e) => updateAchievement(experience.id, achIndex, e.target.value)}
-                        className="flex-1 min-h-16 resize-none touch-manipulation"
+                        className="flex-1 min-h-16 resize-none touch-manipulation border-slate-300 focus:border-slate-900 focus:ring-slate-900 font-geist"
                         rows={2}
                       />
                       {experience.achievements.length > 1 && (
@@ -280,8 +280,8 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
                   ))}
                 </div>
 
-                <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg">
-                  <p><strong className="text-reintegrate-orange">Tip:</strong> Start with action verbs (Developed, Led, Implemented) and include quantifiable results where possible.</p>
+                <div className="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg font-geist">
+                  <p><strong className="text-slate-700">Tip:</strong> Start with action verbs (Developed, Led, Implemented) and include quantifiable results where possible.</p>
                 </div>
               </CardContent>
             )}
@@ -292,7 +292,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
           type="button"
           variant="outline"
           onClick={addWorkExperience}
-          className="w-full h-11 touch-manipulation"
+          className="w-full h-11 touch-manipulation font-geist"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Another Position
@@ -304,7 +304,7 @@ export const WorkExperienceStep: React.FC<WorkExperienceStepProps> = ({
           onClick={onNext} 
           disabled={!isFormValid()}
           size="lg"
-          className="min-h-11 touch-manipulation w-full max-w-xs bg-reintegrate-orange hover:bg-reintegrate-orange/90 disabled:opacity-50"
+          className="touch-manipulation w-full max-w-xs disabled:opacity-50 font-geist"
         >
           Continue to Skills & Education
         </Button>
