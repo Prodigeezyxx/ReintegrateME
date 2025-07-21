@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -79,9 +80,9 @@ export const PreviewExportStep: React.FC<PreviewExportStepProps> = ({
   const { score, checks } = generateATSScore();
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 80) return 'text-reintegrate-blue';
+    if (score >= 60) return 'text-reintegrate-orange';
+    return 'text-destructive';
   };
 
   const getScoreLabel = (score: number) => {
@@ -91,67 +92,72 @@ export const PreviewExportStep: React.FC<PreviewExportStepProps> = ({
   };
 
   const handleDownloadPDF = () => {
-    // This would integrate with a PDF generation service
     console.log('Downloading PDF with data:', cvData);
     alert('PDF download functionality would be implemented here');
   };
 
   const handleDownloadPlainText = () => {
-    // Generate plain text version for ATS systems
     console.log('Downloading plain text with data:', cvData);
     alert('Plain text download functionality would be implemented here');
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="text-center mb-8">
-        <Eye className="h-12 w-12 text-primary mx-auto mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Preview & Export</h2>
-        <p className="text-muted-foreground">
+    <div className="p-4 max-w-2xl mx-auto animate-fade-in">
+      <div className="text-center mb-6">
+        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Eye className="h-6 w-6 text-primary" />
+        </div>
+        <h2 className="text-xl font-bold mb-2">Preview & Export</h2>
+        <p className="text-sm text-muted-foreground">
           Review your CV and download when ready
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* ATS Score Card */}
-        <Card className="lg:col-span-1">
+      <div className="space-y-6">
+        {/* ATS Score Card - Mobile First */}
+        <Card className="beautiful-shadow">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CheckCircle className="h-5 w-5 text-reintegrate-blue" />
               ATS Compatibility
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-center">
-              <div className={`text-4xl font-bold ${getScoreColor(score)}`}>
-                {score}%
+            <div className="flex items-center justify-between">
+              <div>
+                <div className={`text-3xl font-bold ${getScoreColor(score)}`}>
+                  {score}%
+                </div>
+                <p className={`text-sm font-medium ${getScoreColor(score)}`}>
+                  {getScoreLabel(score)}
+                </p>
               </div>
-              <p className={`text-sm font-medium ${getScoreColor(score)}`}>
-                {getScoreLabel(score)}
-              </p>
+              <div className="w-16 h-16 rounded-full border-4 border-muted flex items-center justify-center">
+                <span className="text-xs font-medium">{score}%</span>
+              </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               {checks.map((check, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm">
+                <div key={index} className="flex items-start gap-3 text-sm">
                   {check.passed ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CheckCircle className="h-4 w-4 text-reintegrate-blue mt-0.5 flex-shrink-0" />
                   ) : (
-                    <AlertCircle className="h-4 w-4 text-red-600" />
+                    <AlertCircle className="h-4 w-4 text-reintegrate-orange mt-0.5 flex-shrink-0" />
                   )}
-                  <span className={check.passed ? 'text-green-700' : 'text-red-700'}>
+                  <span className={check.passed ? 'text-foreground' : 'text-muted-foreground'}>
                     {check.text}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="pt-4 space-y-2">
-              <Button onClick={handleDownloadPDF} className="w-full">
+            <div className="pt-4 space-y-3">
+              <Button onClick={handleDownloadPDF} className="w-full h-11 touch-manipulation bg-reintegrate-orange hover:bg-reintegrate-orange/90">
                 <Download className="h-4 w-4 mr-2" />
                 Download PDF
               </Button>
-              <Button onClick={handleDownloadPlainText} variant="outline" className="w-full">
+              <Button onClick={handleDownloadPlainText} variant="outline" className="w-full h-11 touch-manipulation">
                 <FileText className="h-4 w-4 mr-2" />
                 Download ATS Version
               </Button>
@@ -159,27 +165,24 @@ export const PreviewExportStep: React.FC<PreviewExportStepProps> = ({
           </CardContent>
         </Card>
 
-        {/* CV Preview */}
-        <Card className="lg:col-span-2">
+        {/* CV Preview - Mobile Optimized */}
+        <Card className="beautiful-shadow">
           <CardHeader>
-            <CardTitle>CV Preview</CardTitle>
+            <CardTitle className="text-lg">CV Preview</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Personal Info */}
             <div className="text-center border-b pb-4">
-              <h1 className="text-2xl font-bold">{cvData.personalInfo.fullName}</h1>
-              <div className="text-muted-foreground mt-2 space-x-2">
-                <span>{cvData.personalInfo.email}</span>
-                <span>•</span>
-                <span>{cvData.personalInfo.phone}</span>
-                <span>•</span>
-                <span>{cvData.personalInfo.location}</span>
+              <h1 className="text-xl font-bold mb-2">{cvData.personalInfo.fullName}</h1>
+              <div className="text-sm text-muted-foreground space-y-1">
+                <div>{cvData.personalInfo.email}</div>
+                <div>{cvData.personalInfo.phone}</div>
+                <div>{cvData.personalInfo.location}</div>
               </div>
               {(cvData.personalInfo.linkedin || cvData.personalInfo.website) && (
-                <div className="text-muted-foreground mt-1 space-x-2">
-                  {cvData.personalInfo.linkedin && <span>{cvData.personalInfo.linkedin}</span>}
-                  {cvData.personalInfo.linkedin && cvData.personalInfo.website && <span>•</span>}
-                  {cvData.personalInfo.website && <span>{cvData.personalInfo.website}</span>}
+                <div className="text-sm text-muted-foreground mt-2 space-y-1">
+                  {cvData.personalInfo.linkedin && <div className="break-all">{cvData.personalInfo.linkedin}</div>}
+                  {cvData.personalInfo.website && <div className="break-all">{cvData.personalInfo.website}</div>}
                 </div>
               )}
             </div>
@@ -187,18 +190,18 @@ export const PreviewExportStep: React.FC<PreviewExportStepProps> = ({
             {/* Professional Summary */}
             {cvData.professionalSummary.content && (
               <div>
-                <h2 className="text-xl font-semibold mb-2">Professional Summary</h2>
-                <p className="text-muted-foreground">{cvData.professionalSummary.content}</p>
+                <h2 className="text-lg font-semibold mb-2 text-reintegrate-blue">Professional Summary</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">{cvData.professionalSummary.content}</p>
               </div>
             )}
 
             {/* Skills */}
             {cvData.skills.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold mb-3">Skills</h2>
+                <h2 className="text-lg font-semibold mb-3 text-reintegrate-blue">Skills</h2>
                 <div className="flex flex-wrap gap-2">
                   {cvData.skills.map((skill, index) => (
-                    <Badge key={index} variant="secondary">
+                    <Badge key={index} variant="secondary" className="text-xs">
                       {skill.name}
                     </Badge>
                   ))}
@@ -209,22 +212,20 @@ export const PreviewExportStep: React.FC<PreviewExportStepProps> = ({
             {/* Work Experience */}
             {cvData.workExperience.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold mb-3">Work Experience</h2>
+                <h2 className="text-lg font-semibold mb-3 text-reintegrate-blue">Work Experience</h2>
                 <div className="space-y-4">
                   {cvData.workExperience.map((exp, index) => (
                     <div key={exp.id}>
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-semibold">{exp.jobTitle}</h3>
-                          <p className="text-muted-foreground">{exp.company} • {exp.location}</p>
-                        </div>
-                        <div className="text-sm text-muted-foreground">
+                      <div className="mb-2">
+                        <h3 className="font-semibold text-sm">{exp.jobTitle}</h3>
+                        <p className="text-sm text-muted-foreground">{exp.company} • {exp.location}</p>
+                        <p className="text-xs text-muted-foreground">
                           {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
-                        </div>
+                        </p>
                       </div>
-                      <ul className="list-disc list-inside space-y-1 text-sm">
+                      <ul className="list-disc list-inside space-y-1">
                         {exp.achievements.filter(achievement => achievement.trim()).map((achievement, achIndex) => (
-                          <li key={achIndex} className="text-muted-foreground">{achievement}</li>
+                          <li key={achIndex} className="text-xs text-muted-foreground leading-relaxed">{achievement}</li>
                         ))}
                       </ul>
                       {index < cvData.workExperience.length - 1 && <Separator className="mt-4" />}
@@ -237,19 +238,15 @@ export const PreviewExportStep: React.FC<PreviewExportStepProps> = ({
             {/* Education */}
             {cvData.education.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold mb-3">Education</h2>
+                <h2 className="text-lg font-semibold mb-3 text-reintegrate-blue">Education</h2>
                 <div className="space-y-3">
                   {cvData.education.map((edu) => (
                     <div key={edu.id}>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-semibold">{edu.degree}</h3>
-                          <p className="text-muted-foreground">{edu.institution} • {edu.location}</p>
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {edu.startDate} - {edu.current ? 'Present' : edu.endDate}
-                        </div>
-                      </div>
+                      <h3 className="font-semibold text-sm">{edu.degree}</h3>
+                      <p className="text-sm text-muted-foreground">{edu.institution} • {edu.location}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {edu.startDate} - {edu.current ? 'Present' : edu.endDate}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -259,15 +256,15 @@ export const PreviewExportStep: React.FC<PreviewExportStepProps> = ({
             {/* Certifications */}
             {cvData.certifications.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold mb-3">Certifications</h2>
+                <h2 className="text-lg font-semibold mb-3 text-reintegrate-blue">Certifications</h2>
                 <div className="space-y-2">
                   {cvData.certifications.map((cert) => (
-                    <div key={cert.id} className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-semibold">{cert.name}</h3>
-                        <p className="text-muted-foreground">{cert.issuer}</p>
+                    <div key={cert.id} className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-sm">{cert.name}</h3>
+                        <p className="text-sm text-muted-foreground">{cert.issuer}</p>
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-xs text-muted-foreground ml-2">
                         {cert.date}
                       </div>
                     </div>

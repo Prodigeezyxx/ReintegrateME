@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -126,26 +127,28 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="text-center mb-8">
-        <Brain className="h-12 w-12 text-primary mx-auto mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Skills & Education</h2>
-        <p className="text-muted-foreground">
+    <div className="p-4 max-w-2xl mx-auto animate-fade-in">
+      <div className="text-center mb-6">
+        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Brain className="h-6 w-6 text-primary" />
+        </div>
+        <h2 className="text-xl font-bold mb-2">Skills & Education</h2>
+        <p className="text-sm text-muted-foreground">
           Showcase your skills, education, and certifications
         </p>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Skills Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5" />
+        <Card className="beautiful-shadow">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Brain className="h-5 w-5 text-reintegrate-blue" />
               Skills *
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="skillName">Skill Name</Label>
                 <Input
@@ -154,57 +157,58 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
                   value={newSkillName}
                   onChange={(e) => setNewSkillName(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && addSkill()}
+                  className="h-11 touch-manipulation"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="skillCategory">Category</Label>
-                <Select value={newSkillCategory} onValueChange={setNewSkillCategory}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skillCategories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="skillCategory">Category</Label>
+                  <Select value={newSkillCategory} onValueChange={setNewSkillCategory}>
+                    <SelectTrigger className="h-11 touch-manipulation">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {skillCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="skillLevel">Proficiency</Label>
+                  <Select value={newSkillLevel} onValueChange={(value) => setNewSkillLevel(value as typeof skillLevels[number])}>
+                    <SelectTrigger className="h-11 touch-manipulation">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {skillLevels.map((level) => (
+                        <SelectItem key={level} value={level}>
+                          {level}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="skillLevel">Proficiency</Label>
-                <Select value={newSkillLevel} onValueChange={(value) => setNewSkillLevel(value as typeof skillLevels[number])}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skillLevels.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {level}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-end">
-                <Button onClick={addSkill} disabled={!newSkillName.trim()}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add
-                </Button>
-              </div>
+              <Button onClick={addSkill} disabled={!newSkillName.trim()} className="w-full h-11 touch-manipulation bg-reintegrate-orange hover:bg-reintegrate-orange/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Skill
+              </Button>
             </div>
 
             {cvData.skills.length > 0 && (
               <div className="space-y-3">
-                <h4 className="font-medium">Your Skills</h4>
+                <h4 className="font-medium text-reintegrate-blue">Your Skills</h4>
                 <div className="flex flex-wrap gap-2">
                   {cvData.skills.map((skill, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-2">
+                    <Badge key={index} variant="secondary" className="flex items-center gap-2 touch-manipulation">
                       <span>{skill.name}</span>
                       <span className="text-xs opacity-70">({skill.level})</span>
                       <button
                         onClick={() => removeSkill(index)}
-                        className="ml-1 hover:text-destructive"
+                        className="ml-1 hover:text-destructive touch-manipulation"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -217,29 +221,30 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
         </Card>
 
         {/* Education Section */}
-        <Card>
-          <CardHeader>
+        <Card className="beautiful-shadow">
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <GraduationCap className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <GraduationCap className="h-5 w-5 text-reintegrate-blue" />
                 Education
               </CardTitle>
-              <Button variant="outline" size="sm" onClick={addEducation}>
+              <Button variant="outline" size="sm" onClick={addEducation} className="h-9 touch-manipulation">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Education
+                Add
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {cvData.education.map((education) => (
               <Card key={education.id} className="p-4">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Degree/Qualification</Label>
                     <Input
                       placeholder="Bachelor of Science in Computer Science"
                       value={education.degree}
                       onChange={(e) => updateEducation(education.id, { degree: e.target.value })}
+                      className="h-11 touch-manipulation"
                     />
                   </div>
                   <div className="space-y-2">
@@ -248,6 +253,7 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
                       placeholder="University of Example"
                       value={education.institution}
                       onChange={(e) => updateEducation(education.id, { institution: e.target.value })}
+                      className="h-11 touch-manipulation"
                     />
                   </div>
                   <div className="space-y-2">
@@ -256,23 +262,25 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
                       placeholder="London, UK"
                       value={education.location}
                       onChange={(e) => updateEducation(education.id, { location: e.target.value })}
+                      className="h-11 touch-manipulation"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label>Duration</Label>
-                    <div className="flex gap-2 items-center">
+                    <div className="grid grid-cols-2 gap-2">
                       <Input
                         type="month"
                         value={education.startDate}
                         onChange={(e) => updateEducation(education.id, { startDate: e.target.value })}
+                        className="h-11 touch-manipulation"
                       />
-                      <span className="text-muted-foreground text-sm">to</span>
                       <Input
                         type="month"
                         value={education.endDate}
                         onChange={(e) => updateEducation(education.id, { endDate: e.target.value })}
                         disabled={education.current}
                         placeholder={education.current ? "Present" : ""}
+                        className="h-11 touch-manipulation"
                       />
                     </div>
                     <div className="flex items-center space-x-2">
@@ -297,6 +305,7 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
                     variant="ghost"
                     size="sm"
                     onClick={() => removeEducation(education.id)}
+                    className="h-9 w-9 p-0 touch-manipulation"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -307,29 +316,30 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
         </Card>
 
         {/* Certifications Section */}
-        <Card>
-          <CardHeader>
+        <Card className="beautiful-shadow">
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Award className="h-5 w-5 text-reintegrate-blue" />
                 Certifications
               </CardTitle>
-              <Button variant="outline" size="sm" onClick={addCertification}>
+              <Button variant="outline" size="sm" onClick={addCertification} className="h-9 touch-manipulation">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Certification
+                Add
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {cvData.certifications.map((certification) => (
               <Card key={certification.id} className="p-4">
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Certification Name</Label>
                     <Input
                       placeholder="AWS Certified Solutions Architect"
                       value={certification.name}
                       onChange={(e) => updateCertification(certification.id, { name: e.target.value })}
+                      className="h-11 touch-manipulation"
                     />
                   </div>
                   <div className="space-y-2">
@@ -338,6 +348,7 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
                       placeholder="Amazon Web Services"
                       value={certification.issuer}
                       onChange={(e) => updateCertification(certification.id, { issuer: e.target.value })}
+                      className="h-11 touch-manipulation"
                     />
                   </div>
                   <div className="space-y-2">
@@ -346,6 +357,7 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
                       type="month"
                       value={certification.date}
                       onChange={(e) => updateCertification(certification.id, { date: e.target.value })}
+                      className="h-11 touch-manipulation"
                     />
                   </div>
                 </div>
@@ -354,6 +366,7 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
                     variant="ghost"
                     size="sm"
                     onClick={() => removeCertification(certification.id)}
+                    className="h-9 w-9 p-0 touch-manipulation"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -364,11 +377,12 @@ export const SkillsEducationStep: React.FC<SkillsEducationStepProps> = ({
         </Card>
       </div>
 
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-6 pb-6">
         <Button 
           onClick={onNext} 
           disabled={!isFormValid()}
           size="lg"
+          className="min-h-11 touch-manipulation w-full max-w-xs bg-reintegrate-orange hover:bg-reintegrate-orange/90 disabled:opacity-50"
         >
           Continue to Preview & Export
         </Button>
