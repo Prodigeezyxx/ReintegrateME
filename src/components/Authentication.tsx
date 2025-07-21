@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { authAPI } from '../services/api';
 import { UserRole } from '../models/types';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthState {
   role?: UserRole;
@@ -20,6 +21,7 @@ const Authentication = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSocialLoading, setIsSocialLoading] = useState<string | null>(null);
   const [mode, setMode] = useState<'login' | 'signup'>(state.mode || 'login');
   const role = state.role || localStorage.getItem('selectedRole') as UserRole || undefined;
   
@@ -103,6 +105,66 @@ const Authentication = () => {
       setIsLoading(false);
     }
   };
+
+  const handleGoogleAuth = async () => {
+    setIsSocialLoading('google');
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        console.error('Google auth error:', error);
+        toast({
+          title: "Authentication Error",
+          description: "Failed to authenticate with Google. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Google auth error:', error);
+      toast({
+        title: "Authentication Error", 
+        description: "An unexpected error occurred with Google authentication.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSocialLoading(null);
+    }
+  };
+
+  const handleFacebookAuth = async () => {
+    setIsSocialLoading('facebook');
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        console.error('Facebook auth error:', error);
+        toast({
+          title: "Authentication Error",
+          description: "Failed to authenticate with Facebook. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Facebook auth error:', error);
+      toast({
+        title: "Authentication Error",
+        description: "An unexpected error occurred with Facebook authentication.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSocialLoading(null);
+    }
+  };
   
   const toggleMode = () => {
     setMode(mode === 'login' ? 'signup' : 'login');
@@ -128,38 +190,38 @@ const Authentication = () => {
         </button>
         
         <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-center mb-8">{getTitle()}</h1>
+          <h1 className="text-3xl font-bold text-center mb-8 font-geist text-slate-800">{getTitle()}</h1>
           
           <form onSubmit={handleAuth} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-gray-700 font-medium">Email</label>
+              <label htmlFor="email" className="text-slate-700 font-medium font-geist">Email</label>
               <Input
                 id="email"
                 type="email"
                 placeholder="your@email.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="ios-input"
+                className="ios-input focus:ring-2 focus:ring-reintegrate-blue focus:border-reintegrate-blue"
                 required
               />
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="password" className="text-gray-700 font-medium">Password</label>
+              <label htmlFor="password" className="text-slate-700 font-medium font-geist">Password</label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="ios-input"
+                className="ios-input focus:ring-2 focus:ring-reintegrate-blue focus:border-reintegrate-blue"
                 required
               />
             </div>
             
             {mode === 'login' && (
               <div className="text-right">
-                <button type="button" className="text-sm text-reme-orange">
+                <button type="button" className="text-sm text-reintegrate-orange hover:text-reintegrate-orange-dark">
                   Forgot Password?
                 </button>
               </div>
@@ -167,7 +229,7 @@ const Authentication = () => {
             
             <Button
               type="submit"
-              className="w-full py-6 text-lg bg-reme-orange hover:bg-orange-600 transition-colors"
+              className="w-full py-6 text-lg bg-reintegrate-orange hover:bg-reintegrate-orange-dark transition-colors font-geist font-semibold"
               disabled={isLoading}
             >
               {isLoading ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Sign Up'}
@@ -175,11 +237,11 @@ const Authentication = () => {
           </form>
           
           <div className="mt-8 text-center">
-            <p className="text-gray-600">
+            <p className="text-slate-600 font-geist">
               {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
               <button
                 type="button"
-                className="text-reme-orange font-medium"
+                className="text-reintegrate-orange font-medium hover:text-reintegrate-orange-dark"
                 onClick={toggleMode}
               >
                 {mode === 'login' ? 'Sign Up' : 'Log In'}
@@ -187,32 +249,44 @@ const Authentication = () => {
             </p>
           </div>
           
-          {/* Social login buttons would go here in a real implementation */}
           <div className="mt-8">
             <div className="relative flex items-center justify-center">
-              <hr className="w-full border-gray-300" />
-              <span className="absolute bg-white px-3 text-gray-500 text-sm">
+              <hr className="w-full border-slate-300" />
+              <span className="absolute bg-white px-3 text-slate-500 text-sm font-geist">
                 or continue with
               </span>
             </div>
             
-            <div className="grid grid-cols-3 gap-3 mt-6">
-              <button className="flex justify-center items-center py-2.5 border border-gray-300 rounded-md hover:bg-gray-50">
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
-                  <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" fill="#4285F4"/>
-                  <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" fill="#4285F4"/>
-                </svg>
+            <div className="grid grid-cols-2 gap-3 mt-6">
+              <button 
+                onClick={handleGoogleAuth}
+                disabled={isSocialLoading !== null}
+                className="flex justify-center items-center py-2.5 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSocialLoading === 'google' ? (
+                  <div className="animate-spin h-5 w-5 border-2 border-slate-300 border-t-reintegrate-blue rounded-full"></div>
+                ) : (
+                  <svg className="h-5 w-5" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                )}
               </button>
-              <button className="flex justify-center items-center py-2.5 border border-gray-300 rounded-md hover:bg-gray-50">
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
-                  <path d="M18.228 20.212l-1.2-1.2c2.4-2.4 3.8-5.4 3.8-8.8 0-3.4-1.4-6.4-3.8-8.8l1.2-1.2c2.6 2.6 4 5.9 4 10 0 4.1-1.4 7.5-4 10zM15.622 17.606l-1.2-1.2c1.6-1.6 2.4-3.6 2.4-5.6 0-2-0.8-4.1-2.4-5.6l1.2-1.2c1.8 1.8 2.8 4.2 2.8 6.8 0 2.7-1 5-2.8 6.8z" fill="#000"/>
-                  <path d="M12.204 14.354V9.646c0-0.4-0.1-0.7-0.4-1-0.3-0.3-0.6-0.4-1-0.4h-1.5c-0.4 0-0.7 0.1-1 0.4-0.3 0.3-0.4 0.6-0.4 1v4.7c0 0.4 0.1 0.7 0.4 1 0.3 0.3 0.6 0.4 1 0.4h1.5c0.4 0 0.7-0.1 1-0.4 0.3-0.3 0.4-0.6 0.4-1z" fill="#000"/>
-                </svg>
-              </button>
-              <button className="flex justify-center items-center py-2.5 border border-gray-300 rounded-md hover:bg-gray-50">
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
-                  <path d="M19 3H5C3.895 3 3 3.895 3 5V19C3 20.105 3.895 21 5 21H19C20.105 21 21 20.105 21 19V5C21 3.895 20.105 3 19 3ZM9 17H6.477V10H9V17ZM7.694 8.717C6.923 8.717 6.408 8.203 6.408 7.517C6.408 6.831 6.922 6.317 7.779 6.317C8.55 6.317 9.065 6.831 9.065 7.517C9.065 8.203 8.551 8.717 7.694 8.717ZM18 17H15.558V13.174C15.558 12.116 14.907 11.872 14.663 11.872C14.419 11.872 13.605 12.035 13.605 13.174C13.605 13.337 13.605 17 13.605 17H11.082V10H13.605V10.977C13.93 10.407 14.581 10 15.802 10C17.023 10 18 10.977 18 13.174V17Z" fill="#0077B5"/>
-                </svg>
+              
+              <button 
+                onClick={handleFacebookAuth}
+                disabled={isSocialLoading !== null}
+                className="flex justify-center items-center py-2.5 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSocialLoading === 'facebook' ? (
+                  <div className="animate-spin h-5 w-5 border-2 border-slate-300 border-t-reintegrate-blue rounded-full"></div>
+                ) : (
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#1877F2">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                )}
               </button>
             </div>
           </div>
