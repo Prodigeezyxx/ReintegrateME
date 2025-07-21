@@ -159,63 +159,47 @@ const SeekerApplications = () => {
         </div>
       </div>
 
-      {/* Modern Filter and Sort Controls */}
-      <div className="mb-8">
-        <Card className="bg-gradient-to-r from-white to-slate-50 border-slate-200/50 shadow-lg shadow-slate-200/20 backdrop-blur-sm">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
-                <Filter className="h-4 w-4 text-white" />
-              </div>
-              <CardTitle className="text-lg font-geist text-slate-800">Filter & Sort</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Status Filter Chips */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 font-geist">Status</label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { value: 'all', label: 'All Applications', count: applications.length },
-                  { value: 'Under Review', label: 'Under Review', count: applications.filter(a => a.status === 'Under Review').length },
-                  { value: 'Interview Scheduled', label: 'Interview Scheduled', count: applications.filter(a => a.status === 'Interview Scheduled').length },
-                  { value: 'Not Selected', label: 'Not Selected', count: applications.filter(a => a.status === 'Not Selected').length }
-                ].map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setStatusFilter(option.value)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 font-geist ${
-                      statusFilter === option.value
-                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-105'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-102'
-                    }`}
-                  >
-                    {option.label} ({option.count})
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Sort Options */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 font-geist flex items-center gap-2">
-                <SortAsc className="h-4 w-4" />
-                Sort by
-              </label>
+      {/* Compact Filter and Sort Controls */}
+      <div className="mb-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200/60 p-4">
+          {/* Status Filter Chips */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-slate-700 font-geist">Filter by Status</h3>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="bg-white border-slate-200 hover:border-indigo-300 focus:border-indigo-500 transition-colors font-geist">
+                <SelectTrigger className="w-[140px] h-8 bg-white/50 border-slate-200 text-xs font-geist">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 shadow-xl">
-                  <SelectItem value="date-desc" className="font-geist">Newest First</SelectItem>
-                  <SelectItem value="date-asc" className="font-geist">Oldest First</SelectItem>
-                  <SelectItem value="company" className="font-geist">Company A-Z</SelectItem>
-                  <SelectItem value="status" className="font-geist">Status</SelectItem>
+                <SelectContent className="bg-white border-slate-200">
+                  <SelectItem value="date-desc" className="font-geist text-xs">Newest First</SelectItem>
+                  <SelectItem value="date-asc" className="font-geist text-xs">Oldest First</SelectItem>
+                  <SelectItem value="company" className="font-geist text-xs">Company A-Z</SelectItem>
+                  <SelectItem value="status" className="font-geist text-xs">Status</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { value: 'all', label: 'All Applications', count: applications.length },
+                { value: 'Under Review', label: 'Under Review', count: applications.filter(a => a.status === 'Under Review').length },
+                { value: 'Interview Scheduled', label: 'Interview Scheduled', count: applications.filter(a => a.status === 'Interview Scheduled').length },
+                { value: 'Not Selected', label: 'Not Selected', count: applications.filter(a => a.status === 'Not Selected').length }
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setStatusFilter(option.value)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 font-geist ${
+                    statusFilter === option.value
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {option.label} ({option.count})
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {filteredAndSortedApplications.length === 0 && applications.length > 0 ? (
