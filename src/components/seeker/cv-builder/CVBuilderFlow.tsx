@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -64,21 +65,23 @@ export const CVBuilderFlow: React.FC<CVBuilderFlowProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Mobile-optimized header with progress */}
-      <div className="flex items-center justify-between p-4 border-b bg-background sticky top-0 z-10">
-        <Button variant="ghost" size="icon" onClick={onClose} className="shrink-0">
+    <div className="h-full flex flex-col">
+      {/* Mobile-optimized header with glassmorphism */}
+      <div className="flex items-center justify-between p-4 border-b bg-white/90 backdrop-blur-lg sticky top-0 z-10 safe-area-inset-top">
+        <Button variant="ghost" size="icon" onClick={onClose} className="shrink-0 touch-manipulation">
           <ArrowLeft className="h-5 w-5" />
         </Button>
+        
+        {/* Compact progress indicator */}
         <div className="flex-1 mx-3 max-w-xs">
           <div className="flex items-center justify-between">
             {STEPS.map((step, index) => (
               <div key={step.id} className="flex items-center">
                 <button
                   onClick={() => handleStepClick(step.id)}
-                  className={`w-6 h-6 rounded-full text-xs font-medium transition-colors touch-manipulation ${
+                  className={`w-6 h-6 rounded-full text-xs font-medium transition-all duration-200 touch-manipulation ${
                     currentStep === step.id
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-primary text-primary-foreground scale-110'
                       : currentStep > step.id
                       ? 'bg-primary/20 text-primary'
                       : 'bg-muted text-muted-foreground'
@@ -87,7 +90,7 @@ export const CVBuilderFlow: React.FC<CVBuilderFlowProps> = ({ onClose }) => {
                   {step.id}
                 </button>
                 {index < STEPS.length - 1 && (
-                  <div className={`w-6 h-0.5 mx-1 ${
+                  <div className={`w-4 h-0.5 mx-1 transition-colors duration-200 ${
                     currentStep > step.id ? 'bg-primary' : 'bg-muted'
                   }`} />
                 )}
@@ -95,14 +98,17 @@ export const CVBuilderFlow: React.FC<CVBuilderFlowProps> = ({ onClose }) => {
             ))}
           </div>
           <div className="text-center mt-1">
-            <span className="text-xs font-medium hidden sm:inline">{STEPS[currentStep - 1]?.name}</span>
+            <span className="text-xs font-medium text-muted-foreground hidden sm:inline">
+              {STEPS[currentStep - 1]?.name}
+            </span>
           </div>
         </div>
+        
         <div className="w-10 shrink-0" />
       </div>
 
-      {/* Mobile-optimized content */}
-      <div className="flex-1 overflow-auto bg-background">
+      {/* Mobile-optimized scrollable content */}
+      <div className="flex-1 overflow-auto bg-gradient-to-br from-background via-background to-background/95">
         {CurrentStepComponent && (
           <CurrentStepComponent
             cvData={cvData}
@@ -113,28 +119,36 @@ export const CVBuilderFlow: React.FC<CVBuilderFlowProps> = ({ onClose }) => {
         )}
       </div>
 
-      {/* Mobile-optimized navigation */}
-      <div className="flex justify-between items-center p-4 border-t bg-background safe-area-inset-bottom">
+      {/* Mobile-optimized bottom navigation */}
+      <div className="flex justify-between items-center p-4 border-t bg-white/90 backdrop-blur-lg safe-area-inset-bottom">
         <Button
           variant="outline"
           onClick={handlePrevious}
           disabled={currentStep === 1}
           size="sm"
-          className="touch-manipulation"
+          className="touch-manipulation min-h-11 disabled:opacity-50"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Previous
         </Button>
         
-        <span className="text-xs text-muted-foreground">
-          {currentStep}/{STEPS.length}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground font-medium">
+            {currentStep}/{STEPS.length}
+          </span>
+          <div className="w-16 bg-muted rounded-full h-1">
+            <div 
+              className="bg-primary h-1 rounded-full transition-all duration-300"
+              style={{ width: `${(currentStep / STEPS.length) * 100}%` }}
+            />
+          </div>
+        </div>
 
         <Button
           onClick={handleNext}
           disabled={currentStep === STEPS.length}
           size="sm"
-          className="touch-manipulation"
+          className="touch-manipulation min-h-11 disabled:opacity-50"
         >
           {currentStep === STEPS.length ? 'Finish' : 'Next'}
           <ArrowRight className="h-4 w-4 ml-2" />

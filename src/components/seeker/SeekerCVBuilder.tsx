@@ -12,7 +12,7 @@ const SeekerCVBuilder = () => {
 
   if (showCVBuilder) {
     return (
-      <div className="h-screen flex flex-col bg-background">
+      <div className="mobile-container flex flex-col h-screen">
         <CVBuilderFlow onClose={() => setShowCVBuilder(false)} />
       </div>
     );
@@ -45,7 +45,7 @@ const SeekerCVBuilder = () => {
               </div>
               <h3 className="text-lg font-semibold mb-2">No CV Yet</h3>
               <p className="text-muted-foreground mb-6">Create your first professional CV to get started</p>
-              <Button onClick={() => setShowCVBuilder(true)} size="lg">
+              <Button onClick={() => setShowCVBuilder(true)} size="lg" className="min-h-11 touch-manipulation">
                 <Edit className="h-4 w-4 mr-2" />
                 Create CV
               </Button>
